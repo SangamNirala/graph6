@@ -18,7 +18,7 @@ export default function App() {
   const [success, setSuccess] = useState('')
   const [isPlaying, setIsPlaying] = useState(false)
 
-  const generateScript = async () => {
+  const generateScript = async (retryCount = 0) => {
     if (!businessDescription.trim()) {
       setError('Please enter a business description')
       setTimeout(() => setError(''), 3000) // Clear error after 3 seconds
@@ -32,6 +32,9 @@ export default function App() {
     setAudioUrl('') // Clear previous audio
     
     try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 second timeout
+
       const response = await fetch('/api/generate-script', {
         method: 'POST',
         headers: {
@@ -45,32 +48,60 @@ export default function App() {
             max_tokens: 1000
           }
         }),
+        signal: controller.signal
       })
       
-      // Check if the response is ok before trying to parse JSON
+      clearTimeout(timeoutId)
+      
+      // Handle different HTTP status codes
       if (!response.ok) {
-        // Handle different types of errors
+        let errorMessage = 'Unknown error occurred'
+        
+        // Handle specific error codes
         if (response.status === 502) {
-          throw new Error('Server temporarily unavailable. Please try again in a moment.')
+          errorMessage = 'The service is temporarily unavailable due to server routing issues. This may be an infrastructure problem with the external URL.'
+        } else if (response.status === 503) {
+          errorMessage = 'Service temporarily unavailable. Please try again in a moment.'
+        } else if (response.status === 504) {
+          errorMessage = 'Request timeout. The server took too long to respond.'
         } else if (response.status >= 500) {
-          throw new Error('Server error. Please try again later.')
+          errorMessage = 'Internal server error. Please try again later.'
         } else if (response.status === 404) {
-          throw new Error('API endpoint not found.')
+          errorMessage = 'API endpoint not found. Please check the service configuration.'
+        } else if (response.status === 400) {
+          errorMessage = 'Bad request. Please check your input and try again.'
+        } else if (response.status === 401) {
+          errorMessage = 'Unauthorized. Please check API credentials.'
+        } else if (response.status === 429) {
+          errorMessage = 'Too many requests. Please wait a moment and try again.'
         }
         
-        // Try to get error message from response if possible
+        // Try to get more detailed error message from response
         try {
-          const errorData = await response.json()
-          throw new Error(errorData.error || `Request failed with status ${response.status}`)
+          const contentType = response.headers.get('content-type')
+          if (contentType && contentType.includes('application/json')) {
+            const errorData = await response.json()
+            if (errorData.error) {
+              errorMessage = errorData.error
+            }
+          }
         } catch (jsonError) {
-          throw new Error(`Request failed with status ${response.status}`)
+          // If we can't parse the error response, use the status-based message
+          console.warn('Could not parse error response:', jsonError)
         }
+        
+        throw new Error(errorMessage)
       }
       
       // Check if response has content before parsing JSON
+      const contentType = response.headers.get('content-type')
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error('Server returned invalid content type. Expected JSON response.')
+      }
+      
       const responseText = await response.text()
-      if (!responseText) {
-        throw new Error('Empty response from server')
+      if (!responseText || responseText.trim() === '') {
+        throw new Error('Server returned empty response. Please try again.')
       }
       
       let data
@@ -79,18 +110,48 @@ export default function App() {
       } catch (jsonError) {
         console.error('JSON Parse Error:', jsonError)
         console.error('Response Text:', responseText)
-        throw new Error('Invalid response format from server')
+        console.error('Response Headers:', Object.fromEntries(response.headers.entries()))
+        throw new Error('Server returned invalid JSON response. This may indicate a routing or configuration issue.')
+      }
+      
+      if (!data || typeof data !== 'object') {
+        throw new Error('Server returned invalid data structure.')
       }
       
       if (!data.script) {
-        throw new Error('No script generated. Please try again.')
+        throw new Error('No script generated in response. Please try again.')
       }
       
       setGeneratedScript(data.script)
       setSuccess('Script generated successfully!')
       setTimeout(() => setSuccess(''), 5000) // Clear success after 5 seconds
+      
     } catch (err) {
-      setError(err.message)
+      console.error('Script generation error:', err)
+      
+      let errorMessage = err.message
+      
+      // Handle specific error types
+      if (err.name === 'AbortError') {
+        errorMessage = 'Request timed out. The server took too long to respond.'
+      } else if (err.name === 'TypeError' && err.message.includes('Failed to fetch')) {
+        errorMessage = 'Network error. Please check your internet connection and try again.'
+      }
+      
+      // Add retry logic for certain errors
+      if (retryCount < 2 && (
+        err.message.includes('502') || 
+        err.message.includes('503') || 
+        err.message.includes('temporarily unavailable') ||
+        err.message.includes('timeout')
+      )) {
+        console.log(`Retrying script generation (attempt ${retryCount + 1}/2)...`)
+        setTimeout(() => generateScript(retryCount + 1), 2000) // Retry after 2 seconds
+        return
+      }
+      
+      setError(errorMessage)
+      setTimeout(() => setError(''), 10000) // Clear error after 10 seconds for longer messages
     } finally {
       setIsGeneratingScript(false)
     }
