@@ -12,7 +12,7 @@ import sys
 from typing import Dict, Any
 
 # Get base URL from environment - use internal localhost for testing
-BASE_URL = os.getenv('NEXT_PUBLIC_BASE_URL', 'https://f3903a6f-9607-44c1-bb73-67c9a5ad43be.preview.emergentagent.com')
+BASE_URL = os.getenv('NEXT_PUBLIC_BASE_URL', 'https://2c9dc19c-c523-43ae-9a64-3a12453c3999.preview.emergentagent.com')
 # Use internal localhost for backend testing to avoid ingress issues
 API_BASE = "http://localhost:3000/api"
 TEST_TIMEOUT = 60
