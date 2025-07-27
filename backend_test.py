@@ -23,7 +23,7 @@ class BackendTester:
         self.total_tests = 0
         self.passed_tests = 0
         self.failed_tests = 0
-        self.api_base = self.api_base
+        self.api_base = API_BASE
         self.using_localhost = False
         
     def check_api_connectivity(self):
