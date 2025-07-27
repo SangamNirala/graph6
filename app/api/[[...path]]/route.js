@@ -117,6 +117,8 @@ async function handleRoute(request, { params }) {
   const route = `/${path.join('/')}`
   const method = request.method
 
+  console.log(`[API] ${method} ${route} - params:`, params, 'path:', path)
+
   try {
     const db = await connectToMongo()
 
