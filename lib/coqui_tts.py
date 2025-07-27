@@ -132,6 +132,11 @@ class CoquiTTSGenerator:
                 word_count = len(text.split())
                 duration_seconds = max(3, min(30, word_count * 0.4))  # 3-30 seconds
             
+            # Check if numpy and soundfile are available
+            if np is None or sf is None:
+                logger.warning("numpy or soundfile not available, using basic mock audio")
+                return self._create_minimal_wav()
+            
             # Generate audio data
             sample_rate = 22050
             samples = int(duration_seconds * sample_rate)
