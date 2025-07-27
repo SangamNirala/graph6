@@ -320,27 +320,39 @@ async function handleRoute(request, { params }) {
       }
 
       try {
-        const audioBuffer = await generateVoiceover(body.text, body.voice_style)
+        const voiceModel = body.voice_model || 'tacotron2_ljspeech'
+        const audioFormat = body.audio_format || 'wav'
+        
+        const result = await generateVoiceover(body.text, voiceModel, audioFormat)
         
         // Save to database for history
         const voiceoverRecord = {
           id: uuidv4(),
           text: body.text,
-          voice_style: body.voice_style || 'professional',
+          voice_model: voiceModel,
+          audio_format: audioFormat,
+          fallback_used: result.fallback_used,
+          model_used: result.model_used,
+          duration_estimate: result.duration_estimate,
           created_at: new Date()
         }
         
         await db.collection('voiceovers').insertOne(voiceoverRecord)
         
         // Return audio as response
-        return new NextResponse(audioBuffer, {
+        return new NextResponse(result.audioBuffer, {
           status: 200,
           headers: {
-            'Content-Type': 'audio/wav',
-            'Content-Length': audioBuffer.length.toString(),
+            'Content-Type': result.mime_type,
+            'Content-Length': result.audioBuffer.length.toString(),
+            'X-TTS-Model-Used': result.model_used,
+            'X-TTS-Fallback-Used': result.fallback_used.toString(),
+            'X-TTS-Format': result.format,
+            'X-TTS-Duration': result.duration_estimate.toString(),
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
             'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'Access-Control-Expose-Headers': 'X-TTS-Model-Used, X-TTS-Fallback-Used, X-TTS-Format, X-TTS-Duration'
           }
         })
       } catch (error) {
