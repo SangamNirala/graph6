@@ -206,6 +206,10 @@ class CoquiTTSGenerator:
         if target_format == 'wav':
             return audio_bytes  # Already in WAV format
         
+        if AudioSegment is None:
+            logger.warning("AudioSegment not available, returning WAV format")
+            return audio_bytes
+        
         try:
             # Write to temporary WAV file
             temp_wav = os.path.join(self.temp_dir, f"temp_{uuid.uuid4().hex}.wav")
