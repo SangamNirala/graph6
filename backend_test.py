@@ -16,9 +16,10 @@ import sys
 from typing import Dict, Any
 from datetime import datetime
 
-# Get base URL from environment
+# Get base URL from environment - use internal localhost for testing
 BASE_URL = os.getenv('NEXT_PUBLIC_BASE_URL', 'https://b08fb6a0-2723-451c-8ea2-f188bed36c6d.preview.emergentagent.com')
-API_BASE = f"{BASE_URL}/api"
+# Use internal localhost for backend testing to avoid ingress issues
+API_BASE = "http://localhost:3000/api"
 TEST_TIMEOUT = 60
 
 class CoquiTTSBackendTester:
