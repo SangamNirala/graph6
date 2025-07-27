@@ -157,7 +157,7 @@ export default function App() {
     }
   }
 
-  const generateVoiceover = async () => {
+  const generateVoiceover = async (retryCount = 0) => {
     if (!generatedScript.trim()) {
       setError('Please generate a script first')
       setTimeout(() => setError(''), 3000) // Clear error after 3 seconds
@@ -170,6 +170,9 @@ export default function App() {
     setAudioUrl('') // Clear previous audio
     
     try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 second timeout
+
       const response = await fetch('/api/generate-voiceover', {
         method: 'POST',
         headers: {
@@ -179,36 +182,91 @@ export default function App() {
           text: generatedScript,
           voice_style: 'professional'
         }),
+        signal: controller.signal
       })
       
-      // Check if the response is ok before processing
+      clearTimeout(timeoutId)
+      
+      // Handle different HTTP status codes
       if (!response.ok) {
-        // Handle different types of errors
+        let errorMessage = 'Unknown error occurred'
+        
+        // Handle specific error codes
         if (response.status === 502) {
-          throw new Error('Server temporarily unavailable. Please try again in a moment.')
+          errorMessage = 'The service is temporarily unavailable due to server routing issues. This may be an infrastructure problem with the external URL.'
+        } else if (response.status === 503) {
+          errorMessage = 'Voiceover service temporarily unavailable. Please try again in a moment.'
+        } else if (response.status === 504) {
+          errorMessage = 'Request timeout. The voiceover generation took too long.'
         } else if (response.status >= 500) {
-          throw new Error('Server error. Please try again later.')
+          errorMessage = 'Internal server error during voiceover generation. Please try again later.'
+        } else if (response.status === 404) {
+          errorMessage = 'Voiceover API endpoint not found. Please check the service configuration.'
+        } else if (response.status === 400) {
+          errorMessage = 'Bad request. Please check your script and try again.'
+        } else if (response.status === 429) {
+          errorMessage = 'Too many requests. Please wait a moment and try again.'
         }
         
+        // Try to get more detailed error message from response
         try {
-          const errorData = await response.json()
-          throw new Error(errorData.error || `Request failed with status ${response.status}`)
+          const contentType = response.headers.get('content-type')
+          if (contentType && contentType.includes('application/json')) {
+            const errorData = await response.json()
+            if (errorData.error) {
+              errorMessage = errorData.error
+            }
+          }
         } catch (jsonError) {
-          throw new Error(`Request failed with status ${response.status}`)
+          // If we can't parse the error response, use the status-based message
+          console.warn('Could not parse error response:', jsonError)
         }
+        
+        throw new Error(errorMessage)
+      }
+      
+      // Check content type for audio response
+      const contentType = response.headers.get('content-type')
+      if (!contentType || !contentType.includes('audio/')) {
+        throw new Error('Server returned invalid content type. Expected audio response.')
       }
       
       const audioBlob = await response.blob()
-      if (audioBlob.size === 0) {
-        throw new Error('Empty audio response from server')
+      if (!audioBlob || audioBlob.size === 0) {
+        throw new Error('Server returned empty audio response. Please try again.')
       }
       
       const audioUrl = URL.createObjectURL(audioBlob)
       setAudioUrl(audioUrl)
       setSuccess('Voiceover generated successfully!')
       setTimeout(() => setSuccess(''), 5000) // Clear success after 5 seconds
+      
     } catch (err) {
-      setError(err.message)
+      console.error('Voiceover generation error:', err)
+      
+      let errorMessage = err.message
+      
+      // Handle specific error types
+      if (err.name === 'AbortError') {
+        errorMessage = 'Voiceover generation timed out. The server took too long to respond.'
+      } else if (err.name === 'TypeError' && err.message.includes('Failed to fetch')) {
+        errorMessage = 'Network error during voiceover generation. Please check your internet connection and try again.'
+      }
+      
+      // Add retry logic for certain errors
+      if (retryCount < 2 && (
+        err.message.includes('502') || 
+        err.message.includes('503') || 
+        err.message.includes('temporarily unavailable') ||
+        err.message.includes('timeout')
+      )) {
+        console.log(`Retrying voiceover generation (attempt ${retryCount + 1}/2)...`)
+        setTimeout(() => generateVoiceover(retryCount + 1), 2000) // Retry after 2 seconds
+        return
+      }
+      
+      setError(errorMessage)
+      setTimeout(() => setError(''), 10000) // Clear error after 10 seconds for longer messages
     } finally {
       setIsGeneratingVoice(false)
     }
