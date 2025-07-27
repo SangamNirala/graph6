@@ -96,6 +96,7 @@ export default function App() {
       const audioUrl = URL.createObjectURL(audioBlob)
       setAudioUrl(audioUrl)
       setSuccess('Voiceover generated successfully!')
+      setTimeout(() => setSuccess(''), 5000) // Clear success after 5 seconds
     } catch (err) {
       setError(err.message)
     } finally {
