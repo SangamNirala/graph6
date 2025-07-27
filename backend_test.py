@@ -14,6 +14,9 @@ from datetime import datetime
 BASE_URL = os.getenv('NEXT_PUBLIC_BASE_URL', 'https://2dee0019-5bcc-4c2d-9ae6-38ca6d3f5e42.preview.emergentagent.com')
 API_BASE = f"{BASE_URL}/api"
 
+# For testing, use localhost if external URL fails
+LOCALHOST_API = "http://localhost:3000/api"
+
 class BackendTester:
     def __init__(self):
         self.results = []
