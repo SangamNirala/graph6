@@ -309,12 +309,16 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Script Generation with Groq API Integration"
-    - "MongoDB Storage Integration"
+    - "Core User Flow - Business Description to Script Generation"
+    - "Script to Voiceover Generation Flow"
+    - "Frontend-Backend Integration"
+    - "Audio Player Functionality"
   stuck_tasks: []
-  test_all: true
+  test_all: false
   test_priority: "high_first"
 
 agent_communication:
     - agent: "testing"
       message: "CRITICAL SUCCESS: Fixed Groq integration by updating deprecated model 'mixtral-8x7b-32768' to current production model 'llama-3.3-70b-versatile'. All backend API endpoints are now working perfectly. Script generation produces highly relevant, well-structured content with proper business context. MongoDB storage is functioning correctly. All 9 backend tests passed with 100% success rate."
+    - agent: "testing"
+      message: "FRONTEND TESTING INITIATED: Found complete frontend implementation with comprehensive UI. Fixed deprecated Groq model in frontend to match backend. Added 7 frontend testing tasks covering core user flows, UI/UX, integration, and audio functionality. Ready to execute comprehensive frontend testing as requested."
