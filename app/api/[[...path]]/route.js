@@ -73,36 +73,182 @@ Guidelines:
   }
 }
 
-// Bark TTS integration (Mock for now - will need Docker setup)
-async function generateVoiceover(text, voiceStyle = 'professional') {
+// Import Coqui TTS integration
+import { spawn } from 'child_process'
+import fs from 'fs'
+import path from 'path'
+
+// Coqui TTS integration with fallback to mock audio
+async function generateVoiceover(text, voiceModel = 'tacotron2_ljspeech', audioFormat = 'wav') {
   try {
-    // For MVP, we'll create a mock audio response
-    // In production, this would call the Bark TTS Docker container
+    console.log(`Generating voiceover with model: ${voiceModel}, format: ${audioFormat}`)
     
-    // Mock audio generation - creating a simple WAV header for testing
-    const mockAudioBuffer = Buffer.alloc(1024, 0) // Empty buffer for now
+    // Call Python TTS script
+    const result = await callCoquiTTS(text, voiceModel, audioFormat)
     
-    // Add WAV header (simplified)
-    const wavHeader = Buffer.from([
-      0x52, 0x49, 0x46, 0x46, // "RIFF"
-      0x00, 0x04, 0x00, 0x00, // File size (placeholder)
-      0x57, 0x41, 0x56, 0x45, // "WAVE"
-      0x66, 0x6d, 0x74, 0x20, // "fmt "
-      0x10, 0x00, 0x00, 0x00, // Subchunk size
-      0x01, 0x00,             // Audio format (PCM)
-      0x01, 0x00,             // Number of channels
-      0x44, 0xac, 0x00, 0x00, // Sample rate (44100)
-      0x88, 0x58, 0x01, 0x00, // Byte rate
-      0x02, 0x00,             // Block align
-      0x10, 0x00,             // Bits per sample
-      0x64, 0x61, 0x74, 0x61, // "data"
-      0x00, 0x04, 0x00, 0x00  // Data size
-    ])
-    
-    return Buffer.concat([wavHeader, mockAudioBuffer])
+    if (result.success && result.audio_data) {
+      console.log(`✅ TTS generation successful: ${result.audio_data.length} bytes, fallback: ${result.fallback_used}`)
+      return {
+        audioBuffer: Buffer.from(result.audio_data, 'base64'),
+        success: true,
+        fallback_used: result.fallback_used,
+        model_used: result.model_used,
+        format: result.format,
+        mime_type: result.mime_type,
+        duration_estimate: result.duration_estimate,
+        error: result.error
+      }
+    } else {
+      throw new Error(result.error || 'TTS generation failed')
+    }
   } catch (error) {
-    console.error('Error generating voiceover:', error)
-    throw new Error('Failed to generate voiceover')
+    console.error('Error in generateVoiceover:', error)
+    
+    // Fallback to mock audio
+    console.log('Using fallback mock audio generation')
+    const mockAudioBuffer = generateMockAudio(text)
+    
+    return {
+      audioBuffer: mockAudioBuffer,
+      success: true,
+      fallback_used: true,
+      model_used: 'mock_audio',
+      format: 'wav',
+      mime_type: 'audio/wav',
+      duration_estimate: Math.max(3, Math.min(30, text.split(' ').length * 0.4)),
+      error: error.message
+    }
+  }
+}
+
+// Call Coqui TTS Python script
+function callCoquiTTS(text, voiceModel, audioFormat) {
+  return new Promise((resolve, reject) => {
+    const pythonScript = `
+import sys
+import json
+import base64
+sys.path.append('/app/lib')
+from coqui_tts import generate_coqui_voice
+
+try:
+    text = sys.argv[1]
+    voice_model = sys.argv[2] if len(sys.argv) > 2 else 'tacotron2_ljspeech'
+    audio_format = sys.argv[3] if len(sys.argv) > 3 else 'wav'
+    
+    result = generate_coqui_voice(text, voice_model, audio_format)
+    
+    # Convert binary data to base64 for JSON transport
+    if result['audio_data']:
+        result['audio_data'] = base64.b64encode(result['audio_data']).decode('utf-8')
+    
+    print(json.dumps(result))
+except Exception as e:
+    print(json.dumps({'success': False, 'error': str(e)}))
+`
+    
+    const pythonProcess = spawn('python', ['-c', pythonScript, text, voiceModel, audioFormat])
+    
+    let stdout = ''
+    let stderr = ''
+    
+    pythonProcess.stdout.on('data', (data) => {
+      stdout += data.toString()
+    })
+    
+    pythonProcess.stderr.on('data', (data) => {
+      stderr += data.toString()
+    })
+    
+    pythonProcess.on('close', (code) => {
+      if (code === 0) {
+        try {
+          const result = JSON.parse(stdout.trim())
+          resolve(result)
+        } catch (e) {
+          reject(new Error(`Failed to parse TTS result: ${e.message}`))
+        }
+      } else {
+        reject(new Error(`Python TTS process failed with code ${code}: ${stderr}`))
+      }
+    })
+    
+    pythonProcess.on('error', (error) => {
+      reject(new Error(`Failed to spawn Python process: ${error.message}`))
+    })
+  })
+}
+
+// Enhanced mock audio generation (fallback)
+function generateMockAudio(text) {
+  try {
+    // Estimate duration based on text length
+    const wordCount = text.split(' ').length
+    const durationSeconds = Math.max(3, Math.min(30, wordCount * 0.4))
+    const sampleRate = 22050
+    const samples = Math.floor(durationSeconds * sampleRate)
+    
+    // Create WAV header
+    const wavHeader = Buffer.alloc(44)
+    
+    // RIFF header
+    wavHeader.write('RIFF', 0, 'ascii')
+    wavHeader.writeUInt32LE(36 + samples * 2, 4)
+    wavHeader.write('WAVE', 8, 'ascii')
+    
+    // fmt chunk
+    wavHeader.write('fmt ', 12, 'ascii')
+    wavHeader.writeUInt32LE(16, 16)  // chunk size
+    wavHeader.writeUInt16LE(1, 20)   // audio format (PCM)
+    wavHeader.writeUInt16LE(1, 22)   // num channels
+    wavHeader.writeUInt32LE(sampleRate, 24)
+    wavHeader.writeUInt32LE(sampleRate * 2, 28)  // byte rate
+    wavHeader.writeUInt16LE(2, 32)   // block align
+    wavHeader.writeUInt16LE(16, 34)  // bits per sample
+    
+    // data chunk
+    wavHeader.write('data', 36, 'ascii')
+    wavHeader.writeUInt32LE(samples * 2, 40)
+    
+    // Generate audio data with multiple frequencies
+    const audioData = Buffer.alloc(samples * 2)
+    for (let i = 0; i < samples; i++) {
+      const t = i / sampleRate
+      const freq1 = 220 // A3
+      const freq2 = 330 // E4
+      const freq3 = 440 // A4
+      
+      const sample = (
+        0.3 * Math.sin(2 * Math.PI * freq1 * t) +
+        0.2 * Math.sin(2 * Math.PI * freq2 * t) +
+        0.1 * Math.sin(2 * Math.PI * freq3 * t)
+      )
+      
+      // Apply fade in/out
+      const fadeLength = Math.floor(0.1 * sampleRate)
+      let amplitude = 1
+      if (i < fadeLength) {
+        amplitude = i / fadeLength
+      } else if (i > samples - fadeLength) {
+        amplitude = (samples - i) / fadeLength
+      }
+      
+      const value = Math.round(sample * amplitude * 16000)
+      audioData.writeInt16LE(Math.max(-32768, Math.min(32767, value)), i * 2)
+    }
+    
+    return Buffer.concat([wavHeader, audioData])
+  } catch (error) {
+    console.error('Error generating mock audio:', error)
+    // Return minimal WAV as absolute fallback
+    return Buffer.from([
+      0x52, 0x49, 0x46, 0x46, 0x44, 0x10, 0x00, 0x00,
+      0x57, 0x41, 0x56, 0x45, 0x66, 0x6d, 0x74, 0x20,
+      0x10, 0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00,
+      0x44, 0xac, 0x00, 0x00, 0x88, 0x58, 0x01, 0x00,
+      0x02, 0x00, 0x10, 0x00, 0x64, 0x61, 0x74, 0x61,
+      0x00, 0x10, 0x00, 0x00, ...Buffer.alloc(4096, 0)
+    ])
   }
 }
 
