@@ -365,6 +365,15 @@ export default function App() {
           </div>
         </div>
 
+        {connectionStatus === 'disconnected' && (
+          <Alert className="mb-6 border-orange-200 bg-orange-50">
+            <AlertDescription className="text-orange-800">
+              <strong>Connection Issue:</strong> The backend service appears to be unavailable. 
+              This might be due to external URL routing issues. Some features may not work properly.
+            </AlertDescription>
+          </Alert>
+        )}
+
         {error && (
           <Alert className="mb-6 border-red-200 bg-red-50">
             <AlertDescription className="text-red-800">{error}</AlertDescription>
