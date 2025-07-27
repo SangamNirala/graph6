@@ -335,13 +335,13 @@ Guidelines:
               <Mic className="w-3 h-3 mr-1" />
               Groq AI
             </Badge>
-            <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+            <Badge variant="secondary" className="bg-purple-100 text-purple-800">
               <Volume2 className="w-3 h-3 mr-1" />
-              Coqui TTS
+              Web Audio API
             </Badge>
             <Badge variant="secondary" className="bg-emerald-100 text-emerald-800">
               <div className="w-2 h-2 bg-emerald-500 rounded-full mr-1 animate-pulse"></div>
-              Direct API
+              Enhanced Client-Side
             </Badge>
           </div>
         </div>
