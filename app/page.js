@@ -338,10 +338,10 @@ Guidelines:
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Volume2 className="w-5 h-5" />
-                Generated Demo Audio
+                Generated Voiceover
               </CardTitle>
               <CardDescription>
-                Demo audio file ready for download
+                AI-generated voiceover ready for download
               </CardDescription>
             </CardHeader>
             <CardContent>
