@@ -365,11 +365,7 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus:
-    - "Coqui TTS Integration Module"
-    - "Backend API Voiceover Generation Update"
-    - "Voice Models API Endpoint"
-    - "Enhanced Mock Audio Fallback"
+  current_focus: []
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
