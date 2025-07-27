@@ -17,6 +17,7 @@ export default function App() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [isPlaying, setIsPlaying] = useState(false)
+  const [connectionStatus, setConnectionStatus] = useState('checking') // checking, connected, disconnected
 
   const generateScript = async (retryCount = 0) => {
     if (!businessDescription.trim()) {
