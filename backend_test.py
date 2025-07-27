@@ -1,28 +1,25 @@
 #!/usr/bin/env python3
 """
-Backend Testing Suite for AI Business Video Script & Voiceover Generator
-Focus: Coqui TTS Integration Testing
-
-Tests the newly implemented Coqui TTS integration including:
-1. Coqui TTS Integration Module functionality
-2. Enhanced Voiceover Generation API with TTS
-3. Voice Models API endpoint
-4. Enhanced Mock Audio Fallback
-5. Backward compatibility verification
+Backend API Testing for Coqui TTS Integration
+Tests the fixed Coqui TTS integration focusing on:
+1. Voice Models API Endpoint
+2. Voiceover Generation API Endpoint  
+3. Error Handling with invalid parameters
+4. Python Subprocess Integration
 """
 
 import requests
 import json
-import sys
-import os
 import time
-import base64
-from typing import Dict, Any, List
+import os
+import sys
+from typing import Dict, Any
 from datetime import datetime
 
-# Test configuration
-BASE_URL = "http://localhost:3000/api"
-TEST_TIMEOUT = 30
+# Get base URL from environment
+BASE_URL = os.getenv('NEXT_PUBLIC_BASE_URL', 'https://b08fb6a0-2723-451c-8ea2-f188bed36c6d.preview.emergentagent.com')
+API_BASE = f"{BASE_URL}/api"
+TEST_TIMEOUT = 60
 
 class CoquiTTSBackendTester:
     def __init__(self):
