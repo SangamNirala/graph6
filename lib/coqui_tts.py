@@ -22,9 +22,11 @@ try:
 except ImportError as e:
     print(f"Warning: TTS dependencies not available: {e}")
     TTS_AVAILABLE = False
-    # Create dummy TTS class for type hints
-    class TTS:
-        pass
+    # Create dummy classes for type hints
+    TTS = None
+    AudioSegment = None
+    sf = None
+    np = None
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
