@@ -359,14 +359,51 @@ Guidelines:
   }
 
   const togglePlayback = () => {
-    const audio = document.getElementById('audio-player')
-    if (audio) {
+    // For speech synthesis, we need to handle it differently than regular audio
+    if (audioUrl) {
       if (isPlaying) {
-        audio.pause()
+        // Stop speech synthesis
+        speechSynthesis.cancel()
+        setIsPlaying(false)
+        console.log('🛑 Speech synthesis stopped')
       } else {
-        audio.play()
+        // Start speech synthesis with the script text
+        if (speechSynthesis.speaking) {
+          speechSynthesis.cancel()
+        }
+        
+        const utterance = new SpeechSynthesisUtterance(generatedScript)
+        utterance.rate = 0.85
+        utterance.pitch = 1.0
+        utterance.volume = 0.9
+        
+        // Try to use the best available voice
+        const voices = speechSynthesis.getVoices()
+        const bestVoice = voices.find(voice => 
+          voice.lang.startsWith('en') && voice.name.toLowerCase().includes('female')
+        ) || voices.find(voice => voice.lang.startsWith('en'))
+        
+        if (bestVoice) {
+          utterance.voice = bestVoice
+        }
+        
+        utterance.onstart = () => {
+          setIsPlaying(true)
+          console.log('🗣️ Started speaking the script')
+        }
+        
+        utterance.onend = () => {
+          setIsPlaying(false)
+          console.log('✅ Finished speaking the script')
+        }
+        
+        utterance.onerror = (error) => {
+          setIsPlaying(false)
+          console.error('❌ Speech error:', error)
+        }
+        
+        speechSynthesis.speak(utterance)
       }
-      setIsPlaying(!isPlaying)
     }
   }
 
