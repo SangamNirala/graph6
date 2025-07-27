@@ -137,15 +137,18 @@ backend:
 
   - task: "Voice Models API Endpoint"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/app/api/[[...path]]/route.js"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Added new /api/voice-models endpoint to provide available voice models and audio formats to frontend. Includes fallback model information when TTS is not available."
+        - working: true
+          agent: "testing"
+          comment: "✅ WORKING PERFECTLY: Voice models API endpoint fully functional. Fixed Python subprocess JSON parsing issue by suppressing warnings. Endpoint now returns all 5 voice models (tacotron2_ljspeech, vits_ljspeech, tacotron2_ek1, glow_tts, speedy_speech) with proper structure including description, quality, and speed fields. Also returns all 4 audio formats (WAV, MP3, OGG, FLAC) with correct MIME types. No more subprocess errors."
 
   - task: "Enhanced Mock Audio Fallback"
     implemented: true
