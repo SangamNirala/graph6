@@ -72,6 +72,7 @@ Guidelines:
     return response.data.choices[0]?.message?.content
   } catch (error) {
     console.error('Error generating script:', error.response?.data || error.message)
+    console.error('Full error:', error)
     throw new Error('Failed to generate script')
   }
 }
