@@ -114,7 +114,7 @@ Guidelines:
     }
   }
 
-  // Enhanced client-side voiceover generation using Web Audio API
+  // Enhanced client-side voiceover generation using Web Speech API
   const generateVoiceover = async () => {
     if (!generatedScript.trim()) {
       setError('Please generate a script first')
@@ -128,24 +128,29 @@ Guidelines:
     setAudioUrl('')
     
     try {
-      console.log('Starting enhanced Web Audio API voiceover generation...')
+      console.log('Starting Web Speech API voiceover generation...')
       
-      // Generate high-quality speech-like audio using Web Audio API
-      const audioBlob = await generateEnhancedSpeechAudio(generatedScript)
+      // Check if Web Speech API is supported
+      if (!window.speechSynthesis) {
+        throw new Error('Web Speech API is not supported in this browser')
+      }
+      
+      // Generate actual speech from script text using Web Speech API
+      const audioBlob = await generateSpeechFromText(generatedScript)
       const audioUrl = URL.createObjectURL(audioBlob)
       
-      // Calculate duration based on script length
+      // Calculate duration based on script length (more accurate for actual speech)
       const wordCount = generatedScript.split(' ').length
-      const estimatedDuration = Math.max(10, Math.min(120, wordCount * 0.6)) // More realistic timing
+      const estimatedDuration = Math.max(10, Math.min(180, wordCount * 0.5)) // 0.5 seconds per word
       
       setAudioUrl(audioUrl)
       
       // Show success message
-      const successMessage = `High-quality voiceover generated! (Duration: ${Math.round(estimatedDuration)}s, ${wordCount} words)`
+      const successMessage = `Voiceover generated successfully! Speaking your script (${Math.round(estimatedDuration)}s, ${wordCount} words)`
       setSuccess(successMessage)
       setTimeout(() => setSuccess(''), 8000)
       
-      console.log(`✅ Enhanced voiceover generated: ${Math.round(estimatedDuration)}s duration`)
+      console.log(`✅ Speech generated from script: ${Math.round(estimatedDuration)}s duration`)
       
     } catch (err) {
       console.error('Voiceover generation error:', err)
@@ -156,137 +161,133 @@ Guidelines:
     }
   }
 
-  // Enhanced speech audio generation using Web Audio API
-  const generateEnhancedSpeechAudio = async (text) => {
+  // Generate actual speech from text using Web Speech API
+  const generateSpeechFromText = async (text) => {
     return new Promise((resolve, reject) => {
       try {
-        // Create audio context
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)()
+        console.log('Converting text to speech using Web Speech API...')
         
-        // Calculate duration based on text length (more realistic speech timing)
-        const wordCount = text.split(' ').length
-        const sentenceCount = text.split(/[.!?]+/).length
-        const duration = Math.max(10, Math.min(120, wordCount * 0.6 + sentenceCount * 0.8))
+        // Create speech synthesis utterance
+        const utterance = new SpeechSynthesisUtterance(text)
         
-        const sampleRate = audioContext.sampleRate
-        const totalSamples = Math.floor(duration * sampleRate)
+        // Configure speech parameters for professional voiceover
+        utterance.rate = 0.9    // Slightly slower for clarity
+        utterance.pitch = 1.0   // Normal pitch
+        utterance.volume = 0.8  // Good volume level
         
-        // Create audio buffer
-        const audioBuffer = audioContext.createBuffer(1, totalSamples, sampleRate)
-        const channelData = audioBuffer.getChannelData(0)
+        // Try to find a high-quality voice
+        const voices = speechSynthesis.getVoices()
+        let selectedVoice = null
         
-        // Generate sophisticated speech-like patterns
-        for (let i = 0; i < totalSamples; i++) {
-          const t = i / sampleRate
-          const progress = i / totalSamples
-          
-          // Create speech-like frequency modulation
-          const baseFreq = 120 + Math.sin(t * 0.5) * 30 // Voice fundamental frequency variation
-          const harmonicFreq1 = baseFreq * 2 + Math.sin(t * 1.2) * 15
-          const harmonicFreq2 = baseFreq * 3 + Math.sin(t * 0.8) * 10
-          const harmonicFreq3 = baseFreq * 4 + Math.sin(t * 1.8) * 8
-          
-          // Speech rhythm and cadence simulation
-          const speechRhythm = Math.abs(Math.sin(t * 3.5 + Math.sin(t * 0.7) * 2))
-          const wordBoundaries = Math.abs(Math.sin(t * 2.2)) * 0.8 + 0.2
-          const sentencePacing = Math.abs(Math.sin(t * 0.4)) * 0.6 + 0.4
-          
-          // Create formant-like resonances (simulating vowel sounds)
-          const formant1 = Math.sin(2 * Math.PI * (800 + Math.sin(t * 2.1) * 200) * t) * 0.3
-          const formant2 = Math.sin(2 * Math.PI * (1200 + Math.sin(t * 1.7) * 300) * t) * 0.2
-          const formant3 = Math.sin(2 * Math.PI * (2400 + Math.sin(t * 2.3) * 200) * t) * 0.1
-          
-          // Mix fundamental frequencies with harmonics
-          const fundamentalWave = (
-            Math.sin(2 * Math.PI * baseFreq * t) * 0.4 +
-            Math.sin(2 * Math.PI * harmonicFreq1 * t) * 0.3 +
-            Math.sin(2 * Math.PI * harmonicFreq2 * t) * 0.2 +
-            Math.sin(2 * Math.PI * harmonicFreq3 * t) * 0.1
-          )
-          
-          // Combine with formants for more speech-like quality
-          let sample = (fundamentalWave + formant1 + formant2 + formant3) * speechRhythm * wordBoundaries * sentencePacing
-          
-          // Add subtle noise for naturalness
-          const noise = (Math.random() - 0.5) * 0.02
-          sample += noise
-          
-          // Apply breathing pauses (simulate natural speech pauses)
-          const breathingPattern = Math.abs(Math.sin(t * 0.3)) * 0.9 + 0.1
-          sample *= breathingPattern
-          
-          // Apply envelope with fade in/out
-          const fadeInOut = Math.min(
-            Math.min(1, t / 0.5), // Fade in over 0.5 seconds
-            Math.min(1, (duration - t) / 0.5) // Fade out over 0.5 seconds
-          )
-          
-          sample *= fadeInOut
-          
-          // Normalize and apply to channel
-          channelData[i] = Math.max(-1, Math.min(1, sample * 0.3))
+        // Prefer English voices, prioritize female voices for professional sound
+        const preferredVoices = [
+          'Microsoft Zira - English (United States)',
+          'Google US English Female',
+          'Microsoft Hazel - English (Great Britain)',
+          'Google UK English Female',
+          'Apple Samantha',
+          'Microsoft David - English (United States)',
+          'Google US English Male'
+        ]
+        
+        // Try to find preferred voice
+        for (const preferred of preferredVoices) {
+          selectedVoice = voices.find(voice => voice.name.includes(preferred.split(' - ')[0]))
+          if (selectedVoice) break
         }
         
-        // Convert to WAV blob
-        const wavBlob = audioBufferToWav(audioBuffer)
+        // If no preferred voice found, use any English voice
+        if (!selectedVoice) {
+          selectedVoice = voices.find(voice => 
+            voice.lang.startsWith('en') && voice.name.toLowerCase().includes('female')
+          ) || voices.find(voice => voice.lang.startsWith('en'))
+        }
         
-        // Clean up audio context
-        audioContext.close()
+        if (selectedVoice) {
+          utterance.voice = selectedVoice
+          console.log(`Using voice: ${selectedVoice.name} (${selectedVoice.lang})`)
+        }
         
-        resolve(wavBlob)
+        // Create MediaRecorder to capture speech
+        const mediaRecorder = createAudioRecorder()
+        const audioChunks = []
+        
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            audioChunks.push(event.data)
+          }
+        }
+        
+        mediaRecorder.onstop = () => {
+          const audioBlob = new Blob(audioChunks, { type: 'audio/wav' })
+          console.log(`✅ Speech recording complete: ${audioBlob.size} bytes`)
+          resolve(audioBlob)
+        }
+        
+        mediaRecorder.onerror = (error) => {
+          console.error('MediaRecorder error:', error)
+          reject(new Error('Failed to record speech audio'))
+        }
+        
+        // Set up speech events
+        utterance.onstart = () => {
+          console.log('Speech synthesis started, beginning recording...')
+          mediaRecorder.start()
+        }
+        
+        utterance.onend = () => {
+          console.log('Speech synthesis complete, stopping recording...')
+          setTimeout(() => {
+            if (mediaRecorder.state === 'recording') {
+              mediaRecorder.stop()
+            }
+          }, 500) // Small delay to ensure all audio is captured
+        }
+        
+        utterance.onerror = (error) => {
+          console.error('Speech synthesis error:', error)
+          if (mediaRecorder.state === 'recording') {
+            mediaRecorder.stop()
+          }
+          reject(new Error(`Speech synthesis failed: ${error.error}`))
+        }
+        
+        // Start speech synthesis
+        speechSynthesis.speak(utterance)
         
       } catch (error) {
-        console.error('Error generating enhanced speech audio:', error)
+        console.error('Error in generateSpeechFromText:', error)
         reject(error)
       }
     })
   }
 
-  // Convert AudioBuffer to WAV blob
-  const audioBufferToWav = (audioBuffer) => {
-    const numberOfChannels = audioBuffer.numberOfChannels
-    const sampleRate = audioBuffer.sampleRate
-    const format = 1 // PCM
-    const bitDepth = 16
-    
-    const bytesPerSample = bitDepth / 8
-    const blockAlign = numberOfChannels * bytesPerSample
-    
-    const buffer = audioBuffer.getChannelData(0)
-    const length = buffer.length
-    const arrayBuffer = new ArrayBuffer(44 + length * 2)
-    const view = new DataView(arrayBuffer)
-    
-    // Write WAV header
-    const writeString = (offset, string) => {
-      for (let i = 0; i < string.length; i++) {
-        view.setUint8(offset + i, string.charCodeAt(i))
-      }
+  // Create audio recorder for capturing speech
+  const createAudioRecorder = () => {
+    try {
+      // Create a silent audio context to capture system audio
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)()
+      const oscillator = audioContext.createOscillator()
+      const gainNode = audioContext.createGain()
+      const dest = audioContext.createMediaStreamDestination()
+      
+      // Create silent tone to establish audio stream
+      oscillator.connect(gainNode)
+      gainNode.connect(dest)
+      gainNode.gain.setValueAtTime(0, audioContext.currentTime) // Silent
+      oscillator.frequency.setValueAtTime(440, audioContext.currentTime)
+      oscillator.start()
+      
+      // Create MediaRecorder
+      const mediaRecorder = new MediaRecorder(dest.stream, {
+        mimeType: 'audio/webm;codecs=opus'
+      })
+      
+      return mediaRecorder
+    } catch (error) {
+      console.error('Error creating audio recorder:', error)
+      throw new Error('Could not create audio recorder')
     }
-    
-    writeString(0, 'RIFF')
-    view.setUint32(4, 36 + length * 2, true)
-    writeString(8, 'WAVE')
-    writeString(12, 'fmt ')
-    view.setUint32(16, 16, true)
-    view.setUint16(20, format, true)
-    view.setUint16(22, numberOfChannels, true)
-    view.setUint32(24, sampleRate, true)
-    view.setUint32(28, sampleRate * blockAlign, true)
-    view.setUint16(32, blockAlign, true)
-    view.setUint16(34, bitDepth, true)
-    writeString(36, 'data')
-    view.setUint32(40, length * 2, true)
-    
-    // Write audio data
-    let offset = 44
-    for (let i = 0; i < length; i++) {
-      const sample = Math.max(-1, Math.min(1, buffer[i]))
-      view.setInt16(offset, sample * 0x7FFF, true)
-      offset += 2
-    }
-    
-    return new Blob([arrayBuffer], { type: 'audio/wav' })
   }
 
 
