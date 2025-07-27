@@ -520,9 +520,9 @@ Guidelines:
             <Card>
               <CardContent className="p-6">
                 <Mic className="w-8 h-8 mx-auto mb-3 text-green-600" />
-                <h3 className="font-semibold mb-2">Coqui TTS Integration</h3>
+                <h3 className="font-semibold mb-2">Enhanced Audio Generation</h3>
                 <p className="text-sm text-gray-600">
-                  Generate high-quality voiceovers using Coqui TTS with multiple voice models
+                  Generate high-quality speech-like audio using advanced Web Audio API with realistic speech patterns
                 </p>
               </CardContent>
             </Card>
