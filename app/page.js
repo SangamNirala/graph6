@@ -129,7 +129,7 @@ Guidelines:
     
     try {
       // Call the backend API to generate voiceover
-      const response = await fetch('/api/generate-voiceover', {
+      const response = await fetch('/api/generate-voiceover/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
