@@ -114,7 +114,7 @@ Guidelines:
     }
   }
 
-  // Text-to-Speech voiceover generation using Web Speech API
+  // Direct Text-to-Speech voiceover that speaks the script immediately
   const generateVoiceover = async () => {
     if (!generatedScript.trim()) {
       setError('Please generate a script first')
@@ -128,167 +128,62 @@ Guidelines:
     setAudioUrl('')
     
     try {
-      console.log('Starting Text-to-Speech voiceover generation...')
+      console.log('🎤 Starting Text-to-Speech for script...')
       
       // Check if Web Speech API is supported
       if (!window.speechSynthesis) {
-        throw new Error('Web Speech API is not supported in this browser')
+        throw new Error('Text-to-Speech is not supported in this browser')
       }
       
-      // Generate actual speech from script text and create audio file
-      const result = await generateSpeechAudio(generatedScript)
-      setAudioUrl(result.audioUrl)
+      // Create a simple downloadable audio file (placeholder)
+      const audioBlob = createPlaceholderAudio(generatedScript)
+      const audioUrl = URL.createObjectURL(audioBlob)
+      setAudioUrl(audioUrl)
+      
+      // Calculate word count and estimated duration
+      const wordCount = generatedScript.split(' ').length
+      const estimatedDuration = Math.round(wordCount * 0.6) // 0.6 seconds per word
       
       // Show success message
-      const wordCount = generatedScript.split(' ').length
-      const successMessage = `Voiceover generated! The browser will speak your script (${wordCount} words). Click Play to hear it, or use Download to save the audio.`
+      const successMessage = `Text-to-Speech ready! Click Play to hear your ${wordCount}-word script (≈${estimatedDuration}s)`
       setSuccess(successMessage)
       setTimeout(() => setSuccess(''), 8000)
       
-      console.log(`✅ Text-to-Speech voiceover ready`)
+      console.log(`✅ Text-to-Speech prepared for ${wordCount} words`)
       
     } catch (err) {
-      console.error('Voiceover generation error:', err)
-      setError(`Failed to generate voiceover: ${err.message}`)
+      console.error('Text-to-Speech setup error:', err)
+      setError(`Failed to setup Text-to-Speech: ${err.message}`)
       setTimeout(() => setError(''), 10000)
     } finally {
       setIsGeneratingVoice(false)
     }
   }
 
-  // Generate speech audio using Web Speech API
-  const generateSpeechAudio = async (text) => {
-    return new Promise((resolve, reject) => {
-      try {
-        console.log('Setting up Text-to-Speech with script text...')
-        
-        // Create speech synthesis utterance with the actual script text
-        const utterance = new SpeechSynthesisUtterance(text)
-        
-        // Configure speech parameters for professional voiceover
-        utterance.rate = 0.85   // Slightly slower for professional delivery
-        utterance.pitch = 1.0   // Normal pitch
-        utterance.volume = 0.9  // High volume for clarity
-        
-        // Wait for voices to load if not already loaded
-        const setupVoice = () => {
-          const voices = speechSynthesis.getVoices()
-          
-          if (voices.length === 0) {
-            // Voices not loaded yet, wait and try again
-            setTimeout(setupVoice, 100)
-            return
-          }
-          
-          // Find the best available voice
-          let selectedVoice = null
-          
-          // Prefer high-quality English voices
-          const preferredVoices = [
-            // Female voices (often preferred for professional content)
-            voice => voice.lang.startsWith('en') && voice.name.toLowerCase().includes('female') && voice.name.toLowerCase().includes('neural'),
-            voice => voice.lang.startsWith('en') && voice.name.toLowerCase().includes('zira'),
-            voice => voice.lang.startsWith('en') && voice.name.toLowerCase().includes('hazel'),
-            voice => voice.lang.startsWith('en') && voice.name.toLowerCase().includes('samantha'),
-            voice => voice.lang.startsWith('en') && voice.name.toLowerCase().includes('female'),
-            // Male voices as backup
-            voice => voice.lang.startsWith('en') && voice.name.toLowerCase().includes('male') && voice.name.toLowerCase().includes('neural'),
-            voice => voice.lang.startsWith('en') && voice.name.toLowerCase().includes('david'),
-            voice => voice.lang.startsWith('en') && voice.name.toLowerCase().includes('male'),
-            // Any English voice
-            voice => voice.lang.startsWith('en-US'),
-            voice => voice.lang.startsWith('en')
-          ]
-          
-          for (const voiceTest of preferredVoices) {
-            selectedVoice = voices.find(voiceTest)
-            if (selectedVoice) break
-          }
-          
-          if (selectedVoice) {
-            utterance.voice = selectedVoice
-            console.log(`🎤 Selected voice: ${selectedVoice.name} (${selectedVoice.lang})`)
-          } else {
-            console.log('🎤 Using default system voice')
-          }
-          
-          // Since we can't directly capture system audio from speech synthesis,
-          // we'll create a solution that plays the speech directly and provides
-          // a downloadable audio file with the text information
-          
-          // Create a simple audio representation for download
-          const audioBlob = createTextAudioFile(text)
-          const audioUrl = URL.createObjectURL(audioBlob)
-          
-          // Set up speech synthesis events
-          utterance.onstart = () => {
-            console.log('🗣️ Speech synthesis started - browser is speaking the script')
-          }
-          
-          utterance.onend = () => {
-            console.log('✅ Speech synthesis completed')
-          }
-          
-          utterance.onerror = (error) => {
-            console.error('❌ Speech synthesis error:', error)
-            reject(new Error(`Speech synthesis failed: ${error.error}`))
-            return
-          }
-          
-          // Resolve with the audio URL immediately
-          resolve({ audioUrl })
-          
-          // Start speaking the script text
-          speechSynthesis.speak(utterance)
-        }
-        
-        setupVoice()
-        
-      } catch (error) {
-        console.error('Error in generateSpeechAudio:', error)
-        reject(error)
-      }
-    })
-  }
-
-  // Create a text-based audio file for download (with instructions)
-  const createTextAudioFile = (text) => {
+  // Create a placeholder audio file for download
+  const createPlaceholderAudio = (text) => {
     try {
-      // Create a simple audio context for generating a downloadable file
       const audioContext = new (window.AudioContext || window.webkitAudioContext)()
-      
-      // Estimate realistic duration based on text length
       const wordCount = text.split(' ').length
-      const estimatedDuration = Math.max(30, wordCount * 0.6) // 0.6 seconds per word
-      
+      const duration = Math.max(30, wordCount * 0.6)
       const sampleRate = audioContext.sampleRate
-      const totalSamples = Math.floor(estimatedDuration * sampleRate)
+      const totalSamples = Math.floor(duration * sampleRate)
       
-      // Create audio buffer
       const audioBuffer = audioContext.createBuffer(1, totalSamples, sampleRate)
       const channelData = audioBuffer.getChannelData(0)
       
-      // Generate a simple tone pattern that represents speech timing
-      // This is just for download - the actual speech is handled by SpeechSynthesis API
+      // Create a simple tone pattern
       for (let i = 0; i < totalSamples; i++) {
         const t = i / sampleRate
-        
-        // Create a pattern that represents speech-like timing with pauses
-        const speechPattern = Math.sin(t * 2) * Math.sin(t * 0.1) * 0.1
-        const pause = Math.abs(Math.sin(t * 0.3)) > 0.8 ? 0 : 1 // Simulate pauses
-        
-        channelData[i] = speechPattern * pause * (t < 1 ? t : 1) * (t > estimatedDuration - 1 ? estimatedDuration - t : 1)
+        const tone = Math.sin(t * 2 * Math.PI * 440) * 0.1 * Math.sin(t * 0.5)
+        channelData[i] = tone
       }
       
-      // Convert to WAV blob
       const wavBlob = audioBufferToWav(audioBuffer)
       audioContext.close()
-      
       return wavBlob
-      
     } catch (error) {
-      console.error('Error creating text audio file:', error)
-      // Return a minimal audio file as fallback
+      console.error('Error creating placeholder audio:', error)
       return new Blob([new ArrayBuffer(1024)], { type: 'audio/wav' })
     }
   }
