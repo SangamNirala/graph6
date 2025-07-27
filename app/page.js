@@ -315,7 +315,7 @@ Guidelines:
                   ) : (
                     <>
                       <Mic className="w-4 h-4 mr-2" />
-                      Generate Demo Audio
+                      Generate Voiceover
                     </>
                   )}
                 </Button>
