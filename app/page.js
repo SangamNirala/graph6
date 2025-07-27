@@ -19,6 +19,33 @@ export default function App() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [connectionStatus, setConnectionStatus] = useState('checking') // checking, connected, disconnected
 
+  // Check API connection status on component mount
+  useEffect(() => {
+    const checkConnection = async () => {
+      try {
+        const response = await fetch('/api/', {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
+        })
+        
+        if (response.ok) {
+          setConnectionStatus('connected')
+        } else {
+          setConnectionStatus('disconnected')
+        }
+      } catch (error) {
+        console.error('Connection check failed:', error)
+        setConnectionStatus('disconnected')
+      }
+    }
+    
+    checkConnection()
+    
+    // Check connection every 30 seconds
+    const interval = setInterval(checkConnection, 30000)
+    return () => clearInterval(interval)
+  }, [])
+
   const generateScript = async (retryCount = 0) => {
     if (!businessDescription.trim()) {
       setError('Please enter a business description')
