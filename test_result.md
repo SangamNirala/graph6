@@ -358,6 +358,21 @@ frontend:
           agent: "testing"
           comment: "Minor: Form validation logic exists in code but error alerts not consistently triggering for empty inputs. However, core functionality works perfectly - users can successfully complete the entire workflow. Success messages display correctly. Long input handling (4000+ characters) works gracefully."
 
+  - task: "Audio Generation Duration Fix"
+    implemented: true
+    working: true
+    file: "/app/app/page.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "user"
+          comment: "User reported that generated audio was only 10 seconds instead of matching the 90-second script duration. Also reported that no voice could be heard when playing the audio."
+        - working: true
+          agent: "main"
+          comment: "FIXED: Root cause was frontend using Web Audio API to generate 10-second demo audio instead of calling backend TTS integration. Updated generateVoiceover() function to properly call /api/generate-voiceover endpoint with full script text. Backend already had correct duration estimation based on script length (word count * 0.4 seconds). Now audio duration matches script length and uses proper TTS/fallback audio with audible voice. Ready for testing."
+
 metadata:
   created_by: "main_agent"
   version: "2.0"
