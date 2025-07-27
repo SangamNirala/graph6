@@ -21,12 +21,15 @@ export default function App() {
   const generateScript = async () => {
     if (!businessDescription.trim()) {
       setError('Please enter a business description')
+      setTimeout(() => setError(''), 3000) // Clear error after 3 seconds
       return
     }
 
     setIsGeneratingScript(true)
     setError('')
     setSuccess('')
+    setGeneratedScript('') // Clear previous script
+    setAudioUrl('') // Clear previous audio
     
     try {
       const response = await fetch('/api/generate-script', {
