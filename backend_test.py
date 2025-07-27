@@ -23,6 +23,29 @@ class BackendTester:
         self.total_tests = 0
         self.passed_tests = 0
         self.failed_tests = 0
+        self.api_base = API_BASE
+        self.using_localhost = False
+        
+    def check_api_connectivity(self):
+        """Check if API is accessible and switch to localhost if needed"""
+        try:
+            response = requests.get(f"{API_BASE}", timeout=5)
+            if response.status_code in [200, 404]:  # Any valid response
+                return API_BASE
+        except:
+            pass
+        
+        # Try localhost
+        try:
+            response = requests.get(f"{LOCALHOST_API}", timeout=5)
+            if response.status_code in [200, 404]:
+                self.using_localhost = True
+                print(f"⚠️  External URL not accessible, using localhost for testing")
+                return LOCALHOST_API
+        except:
+            pass
+        
+        return API_BASE  # Return original if both fail
         
     def log_result(self, test_name, status, message, details=None):
         """Log test result"""
