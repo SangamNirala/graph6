@@ -142,8 +142,15 @@ Guidelines:
       })
       
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
+        let errorMessage = `HTTP error! status: ${response.status}`
+        try {
+          const errorData = await response.json()
+          errorMessage = errorData.error || errorMessage
+        } catch (parseError) {
+          // If we can't parse JSON, use the status text or generic message
+          errorMessage = response.statusText || `Server error (${response.status})`
+        }
+        throw new Error(errorMessage)
       }
       
       // Get the audio data as blob
