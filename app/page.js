@@ -114,7 +114,7 @@ Guidelines:
     }
   }
 
-  // Generate mock voiceover (since we can't easily do TTS on frontend)
+  // Generate voiceover using backend Coqui TTS integration
   const generateVoiceover = async () => {
     if (!generatedScript.trim()) {
       setError('Please generate a script first')
@@ -128,34 +128,47 @@ Guidelines:
     setAudioUrl('')
     
     try {
-      // Simulate processing time
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      // Call the backend API to generate voiceover
+      const response = await fetch('/api/generate-voiceover', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text: generatedScript,
+          voice_model: 'tacotron2_ljspeech', // Use high-quality voice model
+          audio_format: 'wav'
+        }),
+      })
       
-      // Create a simple audio file using Web Audio API
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)()
-      const duration = 10 // 10 seconds
-      const sampleRate = audioContext.sampleRate
-      const buffer = audioContext.createBuffer(1, duration * sampleRate, sampleRate)
-      const channelData = buffer.getChannelData(0)
-      
-      // Generate a simple tone pattern
-      for (let i = 0; i < channelData.length; i++) {
-        const t = i / sampleRate
-        channelData[i] = Math.sin(2 * Math.PI * 440 * t) * 0.1 * Math.sin(2 * Math.PI * 0.5 * t)
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
       }
       
-      // Convert to WAV
-      const wavBuffer = audioBufferToWav(buffer)
-      const audioBlob = new Blob([wavBuffer], { type: 'audio/wav' })
+      // Get the audio data as blob
+      const audioBlob = await response.blob()
       const audioUrl = URL.createObjectURL(audioBlob)
       
+      // Get TTS metadata from headers
+      const modelUsed = response.headers.get('X-TTS-Model-Used') || 'unknown'
+      const fallbackUsed = response.headers.get('X-TTS-Fallback-Used') === 'true'
+      const duration = response.headers.get('X-TTS-Duration') || 'unknown'
+      
       setAudioUrl(audioUrl)
-      setSuccess('Demo voiceover generated successfully!')
-      setTimeout(() => setSuccess(''), 5000)
+      
+      // Show success message with details
+      const successMessage = fallbackUsed 
+        ? `Demo voiceover generated successfully! (Using fallback audio - ${duration}s)`
+        : `Voiceover generated successfully! (Model: ${modelUsed}, Duration: ${duration}s)`
+      
+      setSuccess(successMessage)
+      setTimeout(() => setSuccess(''), 8000)
       
     } catch (err) {
-      setError('Failed to generate voiceover demo')
-      setTimeout(() => setError(''), 5000)
+      console.error('Voiceover generation error:', err)
+      setError(`Failed to generate voiceover: ${err.message}`)
+      setTimeout(() => setError(''), 8000)
     } finally {
       setIsGeneratingVoice(false)
     }
