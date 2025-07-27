@@ -608,9 +608,9 @@ Guidelines:
             <Card>
               <CardContent className="p-6">
                 <Mic className="w-8 h-8 mx-auto mb-3 text-green-600" />
-                <h3 className="font-semibold mb-2">Enhanced Audio Generation</h3>
+                <h3 className="font-semibold mb-2">Text-to-Speech Voiceover</h3>
                 <p className="text-sm text-gray-600">
-                  Generate high-quality speech-like audio using advanced Web Audio API with realistic speech patterns
+                  Generate natural voiceovers using browser's built-in Text-to-Speech that speaks your script text
                 </p>
               </CardContent>
             </Card>
