@@ -12,7 +12,7 @@ from datetime import datetime
 
 # Get base URL from environment or use default
 BASE_URL = os.getenv('NEXT_PUBLIC_BASE_URL', 'https://2dee0019-5bcc-4c2d-9ae6-38ca6d3f5e42.preview.emergentagent.com')
-API_BASE = f"{BASE_URL}/api"
+self.api_base = f"{BASE_URL}/api"
 
 # For testing, use localhost if external URL fails
 LOCALHOST_API = "http://localhost:3000/api"
@@ -23,15 +23,15 @@ class BackendTester:
         self.total_tests = 0
         self.passed_tests = 0
         self.failed_tests = 0
-        self.api_base = API_BASE
+        self.api_base = self.api_base
         self.using_localhost = False
         
     def check_api_connectivity(self):
         """Check if API is accessible and switch to localhost if needed"""
         try:
-            response = requests.get(f"{API_BASE}", timeout=5)
+            response = requests.get(f"{self.api_base}", timeout=5)
             if response.status_code in [200, 404]:  # Any valid response
-                return API_BASE
+                return self.api_base
         except:
             pass
         
@@ -45,7 +45,7 @@ class BackendTester:
         except:
             pass
         
-        return API_BASE  # Return original if both fail
+        return self.api_base  # Return original if both fail
         
     def log_result(self, test_name, status, message, details=None):
         """Log test result"""
@@ -102,7 +102,7 @@ class BackendTester:
             }
             
             response = requests.post(
-                f"{API_BASE}/generate-script",
+                f"{self.api_base}/generate-script",
                 json=payload,
                 headers={"Content-Type": "application/json"},
                 timeout=30  # Groq API might take some time
@@ -147,7 +147,7 @@ class BackendTester:
         try:
             # Test missing prompt
             response = requests.post(
-                f"{API_BASE}/generate-script",
+                f"{self.api_base}/generate-script",
                 json={},
                 headers={"Content-Type": "application/json"},
                 timeout=10
@@ -181,7 +181,7 @@ class BackendTester:
             }
             
             response = requests.post(
-                f"{API_BASE}/generate-voiceover",
+                f"{self.api_base}/generate-voiceover",
                 json=payload,
                 headers={"Content-Type": "application/json"},
                 timeout=15
@@ -218,7 +218,7 @@ class BackendTester:
         try:
             # Test missing text
             response = requests.post(
-                f"{API_BASE}/generate-voiceover",
+                f"{self.api_base}/generate-voiceover",
                 json={},
                 headers={"Content-Type": "application/json"},
                 timeout=10
@@ -246,7 +246,7 @@ class BackendTester:
     def test_scripts_history(self):
         """Test scripts history endpoint"""
         try:
-            response = requests.get(f"{API_BASE}/scripts", timeout=10)
+            response = requests.get(f"{self.api_base}/scripts", timeout=10)
             
             if response.status_code == 200:
                 data = response.json()
@@ -270,7 +270,7 @@ class BackendTester:
     def test_voiceovers_history(self):
         """Test voiceovers history endpoint"""
         try:
-            response = requests.get(f"{API_BASE}/voiceovers", timeout=10)
+            response = requests.get(f"{self.api_base}/voiceovers", timeout=10)
             
             if response.status_code == 200:
                 data = response.json()
@@ -294,7 +294,7 @@ class BackendTester:
     def test_invalid_route(self):
         """Test that invalid routes return 404"""
         try:
-            response = requests.get(f"{API_BASE}/invalid-route", timeout=10)
+            response = requests.get(f"{self.api_base}/invalid-route", timeout=10)
             
             if response.status_code == 404:
                 data = response.json()
@@ -322,7 +322,7 @@ class BackendTester:
             test_prompt = f"Test script generation for MongoDB storage verification - {datetime.now().isoformat()}"
             
             response = requests.post(
-                f"{API_BASE}/generate-script",
+                f"{self.api_base}/generate-script",
                 json={"prompt": test_prompt},
                 headers={"Content-Type": "application/json"},
                 timeout=30
@@ -338,7 +338,7 @@ class BackendTester:
             time.sleep(1)
             
             # Check if the script appears in history
-            history_response = requests.get(f"{API_BASE}/scripts", timeout=10)
+            history_response = requests.get(f"{self.api_base}/scripts", timeout=10)
             
             if history_response.status_code == 200:
                 scripts = history_response.json()
