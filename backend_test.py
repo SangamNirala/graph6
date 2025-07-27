@@ -364,7 +364,12 @@ class BackendTester:
     
     def run_all_tests(self):
         """Run all backend tests"""
-        print(f"🚀 Starting Backend API Tests for: {API_BASE}")
+        # Check connectivity and set API base
+        self.api_base = self.check_api_connectivity()
+        
+        print(f"🚀 Starting Backend API Tests for: {self.api_base}")
+        if self.using_localhost:
+            print("   (Note: Testing locally due to external URL issues)")
         print("=" * 60)
         
         # Test in order of priority
