@@ -44,7 +44,7 @@ class BackendTester:
     def test_root_endpoint(self):
         """Test the root API endpoint"""
         try:
-            response = requests.get(f"{API_BASE}/", timeout=10)
+            response = requests.get(f"{API_BASE}", timeout=10)
             
             if response.status_code == 200:
                 data = response.json()
