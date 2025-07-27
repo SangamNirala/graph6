@@ -364,6 +364,69 @@ async function handleRoute(request, { params }) {
       }
     }
 
+    // Get Available Voice Models endpoint - GET /api/voice-models
+    if (route === '/voice-models' && method === 'GET') {
+      try {
+        // Get available models from Coqui TTS
+        const result = await callCoquiTTS('', 'get_models', '')
+        
+        if (result.success && result.models) {
+          return handleCORS(NextResponse.json({
+            models: result.models,
+            formats: result.formats || {
+              'wav': { mime_type: 'audio/wav', extension: '.wav' },
+              'mp3': { mime_type: 'audio/mpeg', extension: '.mp3' },
+              'ogg': { mime_type: 'audio/ogg', extension: '.ogg' },
+              'flac': { mime_type: 'audio/flac', extension: '.flac' }
+            }
+          }))
+        } else {
+          // Fallback model information
+          return handleCORS(NextResponse.json({
+            models: {
+              'tacotron2_ljspeech': {
+                description: 'High-quality female voice (LJSpeech dataset)',
+                quality: 'high',
+                speed: 'medium'
+              },
+              'vits_ljspeech': {
+                description: 'Fast, natural female voice (VITS model)',
+                quality: 'high',
+                speed: 'fast'
+              },
+              'tacotron2_ek1': {
+                description: 'Alternative female voice (EK1 dataset)',
+                quality: 'medium',
+                speed: 'medium'
+              },
+              'glow_tts': {
+                description: 'Flow-based TTS with natural prosody',
+                quality: 'high',
+                speed: 'fast'
+              },
+              'speedy_speech': {
+                description: 'Ultra-fast TTS for quick generation',
+                quality: 'medium',
+                speed: 'very_fast'
+              }
+            },
+            formats: {
+              'wav': { mime_type: 'audio/wav', extension: '.wav' },
+              'mp3': { mime_type: 'audio/mpeg', extension: '.mp3' },
+              'ogg': { mime_type: 'audio/ogg', extension: '.ogg' },
+              'flac': { mime_type: 'audio/flac', extension: '.flac' }
+            }
+          }))
+        }
+      } catch (error) {
+        console.error('Error getting voice models:', error)
+        return handleCORS(NextResponse.json(
+          { error: 'Failed to get voice models' }, 
+          { status: 500 }
+        ))
+      }
+    }
+
     // Get Scripts History endpoint - GET /api/scripts
     if (route === '/scripts' && method === 'GET') {
       const scripts = await db.collection('scripts')
