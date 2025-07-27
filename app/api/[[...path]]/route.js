@@ -124,7 +124,34 @@ async function generateVoiceover(text, voiceModel = 'tacotron2_ljspeech', audioF
 // Call Coqui TTS Python script
 function callCoquiTTS(text, voiceModel, audioFormat) {
   return new Promise((resolve, reject) => {
-    const pythonScript = `
+    let pythonScript
+    
+    if (voiceModel === 'get_models') {
+      // Special case to get available models
+      pythonScript = `
+import sys
+import json
+sys.path.append('/app/lib')
+from coqui_tts import CoquiTTSGenerator
+
+try:
+    generator = CoquiTTSGenerator()
+    models = generator.get_available_models()
+    formats = generator.get_supported_formats()
+    
+    result = {
+        'success': True,
+        'models': models,
+        'formats': formats
+    }
+    
+    print(json.dumps(result))
+except Exception as e:
+    print(json.dumps({'success': False, 'error': str(e)}))
+`
+    } else {
+      // Regular TTS generation
+      pythonScript = `
 import sys
 import json
 import base64
@@ -146,6 +173,7 @@ try:
 except Exception as e:
     print(json.dumps({'success': False, 'error': str(e)}))
 `
+    }
     
     const pythonProcess = spawn('python', ['-c', pythonScript, text, voiceModel, audioFormat])
     
