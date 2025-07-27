@@ -120,12 +120,28 @@ export default function App() {
         }),
       })
       
+      // Check if the response is ok before processing
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Failed to generate voiceover')
+        // Handle different types of errors
+        if (response.status === 502) {
+          throw new Error('Server temporarily unavailable. Please try again in a moment.')
+        } else if (response.status >= 500) {
+          throw new Error('Server error. Please try again later.')
+        }
+        
+        try {
+          const errorData = await response.json()
+          throw new Error(errorData.error || `Request failed with status ${response.status}`)
+        } catch (jsonError) {
+          throw new Error(`Request failed with status ${response.status}`)
+        }
       }
       
       const audioBlob = await response.blob()
+      if (audioBlob.size === 0) {
+        throw new Error('Empty audio response from server')
+      }
+      
       const audioUrl = URL.createObjectURL(audioBlob)
       setAudioUrl(audioUrl)
       setSuccess('Voiceover generated successfully!')
