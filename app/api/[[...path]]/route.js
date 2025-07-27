@@ -36,9 +36,6 @@ async function generateScript(prompt, options = {}) {
   const config = { ...defaultOptions, ...options }
   
   try {
-    console.log('Groq API Key available:', !!process.env.GROQ_API_KEY)
-    console.log('Groq API Key length:', process.env.GROQ_API_KEY?.length || 0)
-    
     const response = await axios.post('https://api.groq.com/openai/v1/chat/completions', {
       model: config.model,
       messages: [
