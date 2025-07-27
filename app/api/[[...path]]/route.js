@@ -157,10 +157,12 @@ except Exception as e:
 import sys
 import json
 import base64
+import warnings
+warnings.filterwarnings('ignore')  # Suppress warnings to avoid JSON parsing issues
 sys.path.append('/app/lib')
-from coqui_tts import generate_coqui_voice
 
 try:
+    from coqui_tts import generate_coqui_voice
     text = sys.argv[1]
     voice_model = sys.argv[2] if len(sys.argv) > 2 else 'tacotron2_ljspeech'
     audio_format = sys.argv[3] if len(sys.argv) > 3 else 'wav'
