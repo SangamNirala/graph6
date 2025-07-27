@@ -343,6 +343,25 @@ export default function App() {
               <Volume2 className="w-3 h-3 mr-1" />
               Bark TTS
             </Badge>
+            {/* Connection Status Indicator */}
+            {connectionStatus === 'connected' && (
+              <Badge variant="secondary" className="bg-emerald-100 text-emerald-800">
+                <div className="w-2 h-2 bg-emerald-500 rounded-full mr-1 animate-pulse"></div>
+                Connected
+              </Badge>
+            )}
+            {connectionStatus === 'disconnected' && (
+              <Badge variant="secondary" className="bg-red-100 text-red-800">
+                <div className="w-2 h-2 bg-red-500 rounded-full mr-1"></div>
+                Disconnected
+              </Badge>
+            )}
+            {connectionStatus === 'checking' && (
+              <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                Checking...
+              </Badge>
+            )}
           </div>
         </div>
 
