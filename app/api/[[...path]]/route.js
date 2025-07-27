@@ -1,6 +1,7 @@
 import { MongoClient } from 'mongodb'
 import { v4 as uuidv4 } from 'uuid'
 import { NextResponse } from 'next/server'
+import axios from 'axios'
 
 // MongoDB connection
 let client
@@ -24,6 +25,87 @@ function handleCORS(response) {
   return response
 }
 
+// Groq API client
+async function generateScript(prompt, options = {}) {
+  const defaultOptions = {
+    model: "mixtral-8x7b-32768",
+    temperature: 0.7,
+    max_tokens: 1000
+  }
+  
+  const config = { ...defaultOptions, ...options }
+  
+  try {
+    const response = await axios.post('https://api.groq.com/openai/v1/chat/completions', {
+      model: config.model,
+      messages: [
+        {
+          role: "system",
+          content: `You are a professional business video script writer. Create engaging, concise, and compelling scripts for business videos that are perfect for voiceover. 
+
+Guidelines:
+- Keep scripts between 60-90 seconds when spoken
+- Use clear, professional language
+- Include a strong hook at the beginning
+- Structure: Hook → Problem → Solution → Benefits → Call to Action
+- Write in a conversational tone suitable for voiceover
+- Include natural pauses and emphasis markers where appropriate
+- Make it engaging and persuasive for business audiences`
+        },
+        {
+          role: "user",
+          content: `Create a compelling business video script based on this description: ${prompt}`
+        }
+      ],
+      temperature: config.temperature,
+      max_tokens: config.max_tokens
+    }, {
+      headers: {
+        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+        'Content-Type': 'application/json'
+      }
+    })
+    
+    return response.data.choices[0]?.message?.content
+  } catch (error) {
+    console.error('Error generating script:', error.response?.data || error.message)
+    throw new Error('Failed to generate script')
+  }
+}
+
+// Bark TTS integration (Mock for now - will need Docker setup)
+async function generateVoiceover(text, voiceStyle = 'professional') {
+  try {
+    // For MVP, we'll create a mock audio response
+    // In production, this would call the Bark TTS Docker container
+    
+    // Mock audio generation - creating a simple WAV header for testing
+    const mockAudioBuffer = Buffer.alloc(1024, 0) // Empty buffer for now
+    
+    // Add WAV header (simplified)
+    const wavHeader = Buffer.from([
+      0x52, 0x49, 0x46, 0x46, // "RIFF"
+      0x00, 0x04, 0x00, 0x00, // File size (placeholder)
+      0x57, 0x41, 0x56, 0x45, // "WAVE"
+      0x66, 0x6d, 0x74, 0x20, // "fmt "
+      0x10, 0x00, 0x00, 0x00, // Subchunk size
+      0x01, 0x00,             // Audio format (PCM)
+      0x01, 0x00,             // Number of channels
+      0x44, 0xac, 0x00, 0x00, // Sample rate (44100)
+      0x88, 0x58, 0x01, 0x00, // Byte rate
+      0x02, 0x00,             // Block align
+      0x10, 0x00,             // Bits per sample
+      0x64, 0x61, 0x74, 0x61, // "data"
+      0x00, 0x04, 0x00, 0x00  // Data size
+    ])
+    
+    return Buffer.concat([wavHeader, mockAudioBuffer])
+  } catch (error) {
+    console.error('Error generating voiceover:', error)
+    throw new Error('Failed to generate voiceover')
+  }
+}
+
 // OPTIONS handler for CORS
 export async function OPTIONS() {
   return handleCORS(new NextResponse(null, { status: 200 }))
@@ -38,16 +120,119 @@ async function handleRoute(request, { params }) {
   try {
     const db = await connectToMongo()
 
-    // Root endpoint - GET /api/root (since /api/ is not accessible with catch-all)
-    if (route === '/root' && method === 'GET') {
-      return handleCORS(NextResponse.json({ message: "Hello World" }))
-    }
-    // Root endpoint - GET /api/root (since /api/ is not accessible with catch-all)
+    // Root endpoint - GET /api/
     if (route === '/' && method === 'GET') {
-      return handleCORS(NextResponse.json({ message: "Hello World" }))
+      return handleCORS(NextResponse.json({ message: "AI Business Video Script & Voiceover Generator API" }))
     }
 
-    // Status endpoints - POST /api/status
+    // Generate Script endpoint - POST /api/generate-script
+    if (route === '/generate-script' && method === 'POST') {
+      const body = await request.json()
+      
+      if (!body.prompt) {
+        return handleCORS(NextResponse.json(
+          { error: "Prompt is required" }, 
+          { status: 400 }
+        ))
+      }
+
+      try {
+        const script = await generateScript(body.prompt, body.options)
+        
+        // Save to database for history
+        const scriptRecord = {
+          id: uuidv4(),
+          prompt: body.prompt,
+          script: script,
+          created_at: new Date(),
+          options: body.options || {}
+        }
+        
+        await db.collection('scripts').insertOne(scriptRecord)
+        
+        return handleCORS(NextResponse.json({ script }))
+      } catch (error) {
+        console.error('Script generation error:', error)
+        return handleCORS(NextResponse.json(
+          { error: error.message || 'Failed to generate script' }, 
+          { status: 500 }
+        ))
+      }
+    }
+
+    // Generate Voiceover endpoint - POST /api/generate-voiceover
+    if (route === '/generate-voiceover' && method === 'POST') {
+      const body = await request.json()
+      
+      if (!body.text) {
+        return handleCORS(NextResponse.json(
+          { error: "Text is required" }, 
+          { status: 400 }
+        ))
+      }
+
+      try {
+        const audioBuffer = await generateVoiceover(body.text, body.voice_style)
+        
+        // Save to database for history
+        const voiceoverRecord = {
+          id: uuidv4(),
+          text: body.text,
+          voice_style: body.voice_style || 'professional',
+          created_at: new Date()
+        }
+        
+        await db.collection('voiceovers').insertOne(voiceoverRecord)
+        
+        // Return audio as response
+        return new NextResponse(audioBuffer, {
+          status: 200,
+          headers: {
+            'Content-Type': 'audio/wav',
+            'Content-Length': audioBuffer.length.toString(),
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          }
+        })
+      } catch (error) {
+        console.error('Voiceover generation error:', error)
+        return handleCORS(NextResponse.json(
+          { error: error.message || 'Failed to generate voiceover' }, 
+          { status: 500 }
+        ))
+      }
+    }
+
+    // Get Scripts History endpoint - GET /api/scripts
+    if (route === '/scripts' && method === 'GET') {
+      const scripts = await db.collection('scripts')
+        .find({})
+        .sort({ created_at: -1 })
+        .limit(50)
+        .toArray()
+
+      // Remove MongoDB's _id field from response
+      const cleanedScripts = scripts.map(({ _id, ...rest }) => rest)
+      
+      return handleCORS(NextResponse.json(cleanedScripts))
+    }
+
+    // Get Voiceovers History endpoint - GET /api/voiceovers
+    if (route === '/voiceovers' && method === 'GET') {
+      const voiceovers = await db.collection('voiceovers')
+        .find({})
+        .sort({ created_at: -1 })
+        .limit(50)
+        .toArray()
+
+      // Remove MongoDB's _id field from response
+      const cleanedVoiceovers = voiceovers.map(({ _id, ...rest }) => rest)
+      
+      return handleCORS(NextResponse.json(cleanedVoiceovers))
+    }
+
+    // Status endpoints - POST /api/status (keeping existing functionality)
     if (route === '/status' && method === 'POST') {
       const body = await request.json()
       
@@ -68,7 +253,7 @@ async function handleRoute(request, { params }) {
       return handleCORS(NextResponse.json(statusObj))
     }
 
-    // Status endpoints - GET /api/status
+    // Status endpoints - GET /api/status (keeping existing functionality)
     if (route === '/status' && method === 'GET') {
       const statusChecks = await db.collection('status_checks')
         .find({})
