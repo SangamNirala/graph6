@@ -65,12 +65,14 @@ export default function App() {
   const generateVoiceover = async () => {
     if (!generatedScript.trim()) {
       setError('Please generate a script first')
+      setTimeout(() => setError(''), 3000) // Clear error after 3 seconds
       return
     }
 
     setIsGeneratingVoice(true)
     setError('')
     setSuccess('')
+    setAudioUrl('') // Clear previous audio
     
     try {
       const response = await fetch('/api/generate-voiceover', {
