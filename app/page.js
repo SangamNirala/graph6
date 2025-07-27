@@ -47,10 +47,43 @@ export default function App() {
         }),
       })
       
-      const data = await response.json()
-      
+      // Check if the response is ok before trying to parse JSON
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to generate script')
+        // Handle different types of errors
+        if (response.status === 502) {
+          throw new Error('Server temporarily unavailable. Please try again in a moment.')
+        } else if (response.status >= 500) {
+          throw new Error('Server error. Please try again later.')
+        } else if (response.status === 404) {
+          throw new Error('API endpoint not found.')
+        }
+        
+        // Try to get error message from response if possible
+        try {
+          const errorData = await response.json()
+          throw new Error(errorData.error || `Request failed with status ${response.status}`)
+        } catch (jsonError) {
+          throw new Error(`Request failed with status ${response.status}`)
+        }
+      }
+      
+      // Check if response has content before parsing JSON
+      const responseText = await response.text()
+      if (!responseText) {
+        throw new Error('Empty response from server')
+      }
+      
+      let data
+      try {
+        data = JSON.parse(responseText)
+      } catch (jsonError) {
+        console.error('JSON Parse Error:', jsonError)
+        console.error('Response Text:', responseText)
+        throw new Error('Invalid response format from server')
+      }
+      
+      if (!data.script) {
+        throw new Error('No script generated. Please try again.')
       }
       
       setGeneratedScript(data.script)
