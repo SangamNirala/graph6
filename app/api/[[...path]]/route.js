@@ -131,10 +131,12 @@ function callCoquiTTS(text, voiceModel, audioFormat) {
       pythonScript = `
 import sys
 import json
+import warnings
+warnings.filterwarnings('ignore')  # Suppress warnings to avoid JSON parsing issues
 sys.path.append('/app/lib')
-from coqui_tts import CoquiTTSGenerator
 
 try:
+    from coqui_tts import CoquiTTSGenerator
     generator = CoquiTTSGenerator()
     models = generator.get_available_models()
     formats = generator.get_supported_formats()
