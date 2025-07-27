@@ -10,8 +10,12 @@ import uuid
 import io
 import tempfile
 import logging
+import warnings
 from typing import Optional, Dict, Any
 from pathlib import Path
+
+# Suppress warnings to avoid interference with JSON output in subprocess calls
+warnings.filterwarnings('ignore')
 
 try:
     from TTS.api import TTS
@@ -20,7 +24,7 @@ try:
     import numpy as np
     TTS_AVAILABLE = True
 except ImportError as e:
-    print(f"Warning: TTS dependencies not available: {e}")
+    # Suppress the warning message that was causing JSON parsing issues
     TTS_AVAILABLE = False
     # Create dummy classes for type hints
     TTS = None
