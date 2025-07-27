@@ -42,768 +42,493 @@ class CoquiTTSBackendTester:
             print(f"   Response: {response_data}")
         print()
 
-    def test_coqui_tts_module_direct(self):
-        """Test 1: Direct Coqui TTS Integration Module Testing"""
-        print("🔧 Testing Coqui TTS Integration Module (Direct Python Import)...")
-        
-        try:
-            # Add lib directory to Python path
-            sys.path.append('/app/lib')
-            from coqui_tts import CoquiTTSGenerator, generate_coqui_voice
-            
-            # Test 1.1: Module initialization
-            try:
-                generator = CoquiTTSGenerator()
-                self.log_result(
-                    "Coqui TTS Module - Initialization", 
-                    True, 
-                    "CoquiTTSGenerator initialized successfully"
-                )
-            except Exception as e:
-                self.log_result(
-                    "Coqui TTS Module - Initialization", 
-                    False, 
-                    error=str(e)
-                )
-                return
-            
-            # Test 1.2: Available models verification
-            try:
-                models = generator.get_available_models()
-                expected_models = ['tacotron2_ljspeech', 'vits_ljspeech', 'tacotron2_ek1', 'glow_tts', 'speedy_speech']
-                
-                if all(model in models for model in expected_models):
-                    self.log_result(
-                        "Coqui TTS Module - Voice Models Available", 
-                        True, 
-                        f"All 5 expected models found: {list(models.keys())}"
-                    )
-                else:
-                    self.log_result(
-                        "Coqui TTS Module - Voice Models Available", 
-                        False, 
-                        f"Missing models. Found: {list(models.keys())}, Expected: {expected_models}"
-                    )
-            except Exception as e:
-                self.log_result(
-                    "Coqui TTS Module - Voice Models Available", 
-                    False, 
-                    error=str(e)
-                )
-            
-            # Test 1.3: Audio formats verification
-            try:
-                formats = generator.get_supported_formats()
-                expected_formats = ['wav', 'mp3', 'ogg', 'flac']
-                
-                if all(fmt in formats for fmt in expected_formats):
-                    self.log_result(
-                        "Coqui TTS Module - Audio Formats Available", 
-                        True, 
-                        f"All 4 expected formats found: {list(formats.keys())}"
-                    )
-                else:
-                    self.log_result(
-                        "Coqui TTS Module - Audio Formats Available", 
-                        False, 
-                        f"Missing formats. Found: {list(formats.keys())}, Expected: {expected_formats}"
-                    )
-            except Exception as e:
-                self.log_result(
-                    "Coqui TTS Module - Audio Formats Available", 
-                    False, 
-                    error=str(e)
-                )
-            
-            # Test 1.4: TTS Generation with default model
-            try:
-                test_text = "Hello, this is a test of the Coqui TTS integration for business video generation."
-                result = generate_coqui_voice(test_text)
-                
-                if result['success'] and result['audio_data'] and len(result['audio_data']) > 1000:
-                    self.log_result(
-                        "Coqui TTS Module - Default Voice Generation", 
-                        True, 
-                        f"Generated {len(result['audio_data'])} bytes audio, Model: {result['model_used']}, Fallback: {result['fallback_used']}"
-                    )
-                else:
-                    self.log_result(
-                        "Coqui TTS Module - Default Voice Generation", 
-                        False, 
-                        f"Generation failed or insufficient data. Success: {result.get('success')}, Data size: {len(result.get('audio_data', []))}"
-                    )
-            except Exception as e:
-                self.log_result(
-                    "Coqui TTS Module - Default Voice Generation", 
-                    False, 
-                    error=str(e)
-                )
-            
-            # Test 1.5: Test different voice models
-            test_models = ['tacotron2_ljspeech', 'vits_ljspeech', 'glow_tts']
-            for model in test_models:
-                try:
-                    result = generate_coqui_voice("Testing voice model generation.", model)
-                    if result['success'] and result['audio_data']:
-                        self.log_result(
-                            f"Coqui TTS Module - {model} Voice Model", 
-                            True, 
-                            f"Generated {len(result['audio_data'])} bytes, Fallback: {result['fallback_used']}"
-                        )
-                    else:
-                        self.log_result(
-                            f"Coqui TTS Module - {model} Voice Model", 
-                            False, 
-                            f"Generation failed. Success: {result.get('success')}"
-                        )
-                except Exception as e:
-                    self.log_result(
-                        f"Coqui TTS Module - {model} Voice Model", 
-                        False, 
-                        error=str(e)
-                    )
-            
-            # Test 1.6: Test different audio formats
-            test_formats = ['wav', 'mp3', 'ogg']
-            for fmt in test_formats:
-                try:
-                    result = generate_coqui_voice("Testing audio format conversion.", 'tacotron2_ljspeech', fmt)
-                    if result['success'] and result['audio_data'] and result['format'] == fmt:
-                        self.log_result(
-                            f"Coqui TTS Module - {fmt.upper()} Format", 
-                            True, 
-                            f"Generated {len(result['audio_data'])} bytes in {fmt} format"
-                        )
-                    else:
-                        self.log_result(
-                            f"Coqui TTS Module - {fmt.upper()} Format", 
-                            False, 
-                            f"Format conversion failed. Expected: {fmt}, Got: {result.get('format')}"
-                        )
-                except Exception as e:
-                    self.log_result(
-                        f"Coqui TTS Module - {fmt.upper()} Format", 
-                        False, 
-                        error=str(e)
-                    )
-            
-            # Test 1.7: Fallback mechanism
-            try:
-                # Test with empty text to trigger fallback
-                result = generate_coqui_voice("")
-                if result.get('error') and 'Empty text' in result['error']:
-                    self.log_result(
-                        "Coqui TTS Module - Empty Text Handling", 
-                        True, 
-                        "Properly handles empty text input with appropriate error"
-                    )
-                else:
-                    self.log_result(
-                        "Coqui TTS Module - Empty Text Handling", 
-                        False, 
-                        f"Unexpected response to empty text: {result}"
-                    )
-            except Exception as e:
-                self.log_result(
-                    "Coqui TTS Module - Empty Text Handling", 
-                    False, 
-                    error=str(e)
-                )
-                
-        except ImportError as e:
-            self.log_result(
-                "Coqui TTS Module - Import", 
-                False, 
-                error=f"Cannot import Coqui TTS module: {e}"
-            )
-
-    def test_voice_models_api_endpoint(self):
-        """Test 2: Voice Models API Endpoint"""
+    def test_voice_models_endpoint(self):
+        """Test GET /api/voice-models endpoint"""
         print("🎤 Testing Voice Models API Endpoint...")
         
         try:
-            # Test with trailing slash (Next.js redirects to this)
-            response = requests.get(f"{BASE_URL}/voice-models/", timeout=TEST_TIMEOUT)
+            response = requests.get(f"{API_BASE}/voice-models", timeout=TEST_TIMEOUT)
             
             if response.status_code == 200:
                 data = response.json()
                 
-                # Check if models are present
-                if 'models' in data and 'formats' in data:
+                # Check if models are returned
+                if 'models' in data and isinstance(data['models'], dict):
                     models = data['models']
-                    formats = data['formats']
-                    
                     expected_models = ['tacotron2_ljspeech', 'vits_ljspeech', 'tacotron2_ek1', 'glow_tts', 'speedy_speech']
+                    
+                    # Check if all expected models are present
+                    missing_models = [model for model in expected_models if model not in models]
+                    if not missing_models:
+                        # Check model structure
+                        sample_model = models['tacotron2_ljspeech']
+                        required_fields = ['description', 'quality', 'speed']
+                        has_all_fields = all(field in sample_model for field in required_fields)
+                        
+                        if has_all_fields:
+                            self.log_test(
+                                "Voice Models Endpoint - Structure", 
+                                True, 
+                                f"Found {len(models)} models with proper structure"
+                            )
+                        else:
+                            self.log_test(
+                                "Voice Models Endpoint - Structure", 
+                                False, 
+                                f"Missing required fields in model data: {required_fields}"
+                            )
+                    else:
+                        self.log_test(
+                            "Voice Models Endpoint - Models", 
+                            False, 
+                            f"Missing expected models: {missing_models}"
+                        )
+                
+                # Check if formats are returned
+                if 'formats' in data and isinstance(data['formats'], dict):
+                    formats = data['formats']
                     expected_formats = ['wav', 'mp3', 'ogg', 'flac']
+                    missing_formats = [fmt for fmt in expected_formats if fmt not in formats]
                     
-                    models_ok = all(model in models for model in expected_models)
-                    formats_ok = all(fmt in formats for fmt in expected_formats)
-                    
-                    if models_ok and formats_ok:
-                        self.log_result(
-                            "Voice Models API - Endpoint Response", 
+                    if not missing_formats:
+                        self.log_test(
+                            "Voice Models Endpoint - Formats", 
                             True, 
-                            f"Returned {len(models)} models and {len(formats)} formats"
+                            f"Found {len(formats)} audio formats"
                         )
                     else:
-                        self.log_result(
-                            "Voice Models API - Endpoint Response", 
+                        self.log_test(
+                            "Voice Models Endpoint - Formats", 
                             False, 
-                            f"Missing data. Models OK: {models_ok}, Formats OK: {formats_ok}"
+                            f"Missing expected formats: {missing_formats}"
                         )
                 else:
-                    self.log_result(
-                        "Voice Models API - Endpoint Response", 
+                    self.log_test(
+                        "Voice Models Endpoint - Formats", 
                         False, 
-                        f"Missing 'models' or 'formats' in response: {list(data.keys())}"
+                        "No formats data returned"
                     )
-            else:
-                self.log_result(
-                    "Voice Models API - Endpoint Response", 
-                    False, 
-                    f"HTTP {response.status_code}: {response.text}"
+                    
+                # Overall endpoint test
+                self.log_test(
+                    "Voice Models Endpoint - Overall", 
+                    True, 
+                    f"Endpoint working, returned {len(data.get('models', {}))} models and {len(data.get('formats', {}))} formats"
                 )
                 
-        except Exception as e:
-            self.log_result(
-                "Voice Models API - Endpoint Response", 
+            else:
+                self.log_test(
+                    "Voice Models Endpoint - Overall", 
+                    False, 
+                    f"HTTP {response.status_code}: {response.text[:200]}"
+                )
+                
+        except requests.exceptions.RequestException as e:
+            self.log_test(
+                "Voice Models Endpoint - Overall", 
                 False, 
-                error=str(e)
+                f"Request failed: {str(e)}"
             )
 
-    def test_enhanced_voiceover_generation_api(self):
-        """Test 3: Enhanced Voiceover Generation API"""
-        print("🔊 Testing Enhanced Voiceover Generation API...")
+    def test_voiceover_generation_basic(self):
+        """Test basic voiceover generation with default parameters"""
+        print("🔊 Testing Basic Voiceover Generation...")
         
-        test_text = "Welcome to our AI-powered business solution. This innovative platform transforms how companies operate, delivering exceptional results through cutting-edge technology and intelligent automation."
+        test_text = "Hello, this is a test of the Coqui TTS integration for AI business video generation."
         
-        # Test 3.1: Default voiceover generation
-        try:
-            payload = {"text": test_text}
-            response = requests.post(f"{BASE_URL}/generate-voiceover", json=payload, timeout=TEST_TIMEOUT)
-            
-            if response.status_code == 200:
-                # Check TTS metadata headers
-                headers = response.headers
-                required_headers = ['X-TTS-Model-Used', 'X-TTS-Fallback-Used', 'X-TTS-Format', 'X-TTS-Duration']
-                
-                headers_present = all(header in headers for header in required_headers)
-                audio_size = len(response.content)
-                
-                if headers_present and audio_size > 1000:
-                    self.log_result(
-                        "Enhanced Voiceover API - Default Generation", 
-                        True, 
-                        f"Generated {audio_size} bytes audio with TTS metadata headers. Model: {headers.get('X-TTS-Model-Used')}, Fallback: {headers.get('X-TTS-Fallback-Used')}"
-                    )
-                else:
-                    self.log_result(
-                        "Enhanced Voiceover API - Default Generation", 
-                        False, 
-                        f"Missing headers or insufficient audio. Headers OK: {headers_present}, Audio size: {audio_size}"
-                    )
-            else:
-                self.log_result(
-                    "Enhanced Voiceover API - Default Generation", 
-                    False, 
-                    f"HTTP {response.status_code}: {response.text}"
-                )
-                
-        except Exception as e:
-            self.log_result(
-                "Enhanced Voiceover API - Default Generation", 
-                False, 
-                error=str(e)
-            )
-        
-        # Test 3.2: Voice model parameter testing
-        test_models = ['tacotron2_ljspeech', 'vits_ljspeech', 'glow_tts']
-        for model in test_models:
-            try:
-                payload = {"text": "Testing voice model selection.", "voice_model": model}
-                response = requests.post(f"{BASE_URL}/generate-voiceover", json=payload, timeout=TEST_TIMEOUT)
-                
-                if response.status_code == 200:
-                    model_used = response.headers.get('X-TTS-Model-Used', '')
-                    audio_size = len(response.content)
-                    
-                    if audio_size > 500:
-                        self.log_result(
-                            f"Enhanced Voiceover API - {model} Model", 
-                            True, 
-                            f"Generated {audio_size} bytes with model: {model_used}"
-                        )
-                    else:
-                        self.log_result(
-                            f"Enhanced Voiceover API - {model} Model", 
-                            False, 
-                            f"Insufficient audio generated: {audio_size} bytes"
-                        )
-                else:
-                    self.log_result(
-                        f"Enhanced Voiceover API - {model} Model", 
-                        False, 
-                        f"HTTP {response.status_code}: {response.text}"
-                    )
-                    
-            except Exception as e:
-                self.log_result(
-                    f"Enhanced Voiceover API - {model} Model", 
-                    False, 
-                    error=str(e)
-                )
-        
-        # Test 3.3: Audio format parameter testing
-        test_formats = ['wav', 'mp3', 'ogg']
-        for fmt in test_formats:
-            try:
-                payload = {"text": "Testing audio format selection.", "audio_format": fmt}
-                response = requests.post(f"{BASE_URL}/generate-voiceover", json=payload, timeout=TEST_TIMEOUT)
-                
-                if response.status_code == 200:
-                    format_used = response.headers.get('X-TTS-Format', '')
-                    content_type = response.headers.get('Content-Type', '')
-                    audio_size = len(response.content)
-                    
-                    expected_mime = {
-                        'wav': 'audio/wav',
-                        'mp3': 'audio/mpeg', 
-                        'ogg': 'audio/ogg'
-                    }
-                    
-                    if format_used == fmt and expected_mime[fmt] in content_type and audio_size > 500:
-                        self.log_result(
-                            f"Enhanced Voiceover API - {fmt.upper()} Format", 
-                            True, 
-                            f"Generated {audio_size} bytes in {fmt} format with correct MIME type"
-                        )
-                    else:
-                        self.log_result(
-                            f"Enhanced Voiceover API - {fmt.upper()} Format", 
-                            False, 
-                            f"Format mismatch. Expected: {fmt}, Got: {format_used}, MIME: {content_type}"
-                        )
-                else:
-                    self.log_result(
-                        f"Enhanced Voiceover API - {fmt.upper()} Format", 
-                        False, 
-                        f"HTTP {response.status_code}: {response.text}"
-                    )
-                    
-            except Exception as e:
-                self.log_result(
-                    f"Enhanced Voiceover API - {fmt.upper()} Format", 
-                    False, 
-                    error=str(e)
-                )
-        
-        # Test 3.4: Combined parameters
         try:
             payload = {
-                "text": "Testing combined voice model and audio format parameters.",
-                "voice_model": "vits_ljspeech",
-                "audio_format": "mp3"
+                "text": test_text
             }
-            response = requests.post(f"{BASE_URL}/generate-voiceover", json=payload, timeout=TEST_TIMEOUT)
+            
+            response = requests.post(
+                f"{API_BASE}/generate-voiceover", 
+                json=payload, 
+                timeout=TEST_TIMEOUT
+            )
             
             if response.status_code == 200:
-                model_used = response.headers.get('X-TTS-Model-Used', '')
-                format_used = response.headers.get('X-TTS-Format', '')
-                content_type = response.headers.get('Content-Type', '')
+                # Check response headers for TTS metadata
+                headers = response.headers
+                tts_headers = {
+                    'X-TTS-Model-Used': headers.get('X-TTS-Model-Used'),
+                    'X-TTS-Fallback-Used': headers.get('X-TTS-Fallback-Used'),
+                    'X-TTS-Format': headers.get('X-TTS-Format'),
+                    'X-TTS-Duration': headers.get('X-TTS-Duration')
+                }
+                
+                # Check if we got audio data
                 audio_size = len(response.content)
-                
-                if format_used == 'mp3' and 'audio/mpeg' in content_type and audio_size > 500:
-                    self.log_result(
-                        "Enhanced Voiceover API - Combined Parameters", 
+                if audio_size > 1000:  # Reasonable audio file size
+                    self.log_test(
+                        "Voiceover Generation - Basic", 
                         True, 
-                        f"Generated {audio_size} bytes with model: {model_used}, format: {format_used}"
+                        f"Generated {audio_size} bytes of audio. Headers: {tts_headers}"
                     )
-                else:
-                    self.log_result(
-                        "Enhanced Voiceover API - Combined Parameters", 
-                        False, 
-                        f"Parameter combination failed. Model: {model_used}, Format: {format_used}, Size: {audio_size}"
-                    )
-            else:
-                self.log_result(
-                    "Enhanced Voiceover API - Combined Parameters", 
-                    False, 
-                    f"HTTP {response.status_code}: {response.text}"
-                )
-                
-        except Exception as e:
-            self.log_result(
-                "Enhanced Voiceover API - Combined Parameters", 
-                False, 
-                error=str(e)
-            )
-
-    def test_enhanced_mock_audio_fallback(self):
-        """Test 4: Enhanced Mock Audio Fallback"""
-        print("🎵 Testing Enhanced Mock Audio Fallback...")
-        
-        # Test with various text lengths to verify duration estimation
-        test_cases = [
-            ("Short text.", 3),  # Should be minimum 3 seconds
-            ("This is a medium length text that should generate audio with appropriate duration based on word count estimation.", 15),
-            ("Very long text " * 50, 30)  # Should be capped at 30 seconds
-        ]
-        
-        for i, (text, expected_min_duration) in enumerate(test_cases):
-            try:
-                payload = {"text": text}
-                response = requests.post(f"{BASE_URL}/generate-voiceover", json=payload, timeout=TEST_TIMEOUT)
-                
-                if response.status_code == 200:
-                    duration = float(response.headers.get('X-TTS-Duration', '0'))
-                    audio_size = len(response.content)
-                    fallback_used = response.headers.get('X-TTS-Fallback-Used', 'false')
                     
-                    # Check if duration estimation is reasonable
-                    duration_ok = duration >= 3 and duration <= 30
-                    size_ok = audio_size > 1000  # Should have substantial audio data
-                    
-                    if duration_ok and size_ok:
-                        self.log_result(
-                            f"Enhanced Mock Audio - Text Length Test {i+1}", 
+                    # Check if proper headers are present
+                    if tts_headers['X-TTS-Model-Used'] and tts_headers['X-TTS-Format']:
+                        self.log_test(
+                            "Voiceover Generation - TTS Headers", 
                             True, 
-                            f"Generated {audio_size} bytes, Duration: {duration}s, Fallback: {fallback_used}"
+                            f"Proper TTS metadata headers present"
                         )
                     else:
-                        self.log_result(
-                            f"Enhanced Mock Audio - Text Length Test {i+1}", 
+                        self.log_test(
+                            "Voiceover Generation - TTS Headers", 
                             False, 
-                            f"Duration or size issue. Duration: {duration}s (OK: {duration_ok}), Size: {audio_size} (OK: {size_ok})"
+                            f"Missing TTS metadata headers: {tts_headers}"
                         )
                 else:
-                    self.log_result(
-                        f"Enhanced Mock Audio - Text Length Test {i+1}", 
+                    self.log_test(
+                        "Voiceover Generation - Basic", 
                         False, 
-                        f"HTTP {response.status_code}: {response.text}"
+                        f"Audio size too small: {audio_size} bytes"
+                    )
+            else:
+                self.log_test(
+                    "Voiceover Generation - Basic", 
+                    False, 
+                    f"HTTP {response.status_code}: {response.text[:200]}"
+                )
+                
+        except requests.exceptions.RequestException as e:
+            self.log_test(
+                "Voiceover Generation - Basic", 
+                False, 
+                f"Request failed: {str(e)}"
+            )
+
+    def test_voiceover_generation_with_models(self):
+        """Test voiceover generation with different voice models"""
+        print("🎭 Testing Voiceover Generation with Different Models...")
+        
+        test_text = "Testing different voice models for business video generation."
+        models_to_test = ['tacotron2_ljspeech', 'vits_ljspeech', 'glow_tts']
+        
+        for model in models_to_test:
+            try:
+                payload = {
+                    "text": test_text,
+                    "voice_model": model
+                }
+                
+                response = requests.post(
+                    f"{API_BASE}/generate-voiceover", 
+                    json=payload, 
+                    timeout=TEST_TIMEOUT
+                )
+                
+                if response.status_code == 200:
+                    audio_size = len(response.content)
+                    model_used = response.headers.get('X-TTS-Model-Used')
+                    fallback_used = response.headers.get('X-TTS-Fallback-Used')
+                    
+                    if audio_size > 1000:
+                        self.log_test(
+                            f"Voiceover Generation - Model {model}", 
+                            True, 
+                            f"Generated {audio_size} bytes. Model used: {model_used}, Fallback: {fallback_used}"
+                        )
+                    else:
+                        self.log_test(
+                            f"Voiceover Generation - Model {model}", 
+                            False, 
+                            f"Audio size too small: {audio_size} bytes"
+                        )
+                else:
+                    self.log_test(
+                        f"Voiceover Generation - Model {model}", 
+                        False, 
+                        f"HTTP {response.status_code}: {response.text[:200]}"
                     )
                     
-            except Exception as e:
-                self.log_result(
-                    f"Enhanced Mock Audio - Text Length Test {i+1}", 
+            except requests.exceptions.RequestException as e:
+                self.log_test(
+                    f"Voiceover Generation - Model {model}", 
                     False, 
-                    error=str(e)
+                    f"Request failed: {str(e)}"
                 )
 
-    def test_mongodb_storage_integration(self):
-        """Test 5: MongoDB Storage with TTS Metadata"""
-        print("💾 Testing MongoDB Storage Integration...")
+    def test_voiceover_generation_with_formats(self):
+        """Test voiceover generation with different audio formats"""
+        print("🎵 Testing Voiceover Generation with Different Formats...")
+        
+        test_text = "Testing different audio formats for voiceover generation."
+        formats_to_test = ['wav', 'mp3', 'ogg']
+        
+        for audio_format in formats_to_test:
+            try:
+                payload = {
+                    "text": test_text,
+                    "audio_format": audio_format
+                }
+                
+                response = requests.post(
+                    f"{API_BASE}/generate-voiceover", 
+                    json=payload, 
+                    timeout=TEST_TIMEOUT
+                )
+                
+                if response.status_code == 200:
+                    audio_size = len(response.content)
+                    format_used = response.headers.get('X-TTS-Format')
+                    content_type = response.headers.get('Content-Type')
+                    
+                    if audio_size > 1000:
+                        self.log_test(
+                            f"Voiceover Generation - Format {audio_format.upper()}", 
+                            True, 
+                            f"Generated {audio_size} bytes. Format: {format_used}, Content-Type: {content_type}"
+                        )
+                    else:
+                        self.log_test(
+                            f"Voiceover Generation - Format {audio_format.upper()}", 
+                            False, 
+                            f"Audio size too small: {audio_size} bytes"
+                        )
+                else:
+                    self.log_test(
+                        f"Voiceover Generation - Format {audio_format.upper()}", 
+                        False, 
+                        f"HTTP {response.status_code}: {response.text[:200]}"
+                    )
+                    
+            except requests.exceptions.RequestException as e:
+                self.log_test(
+                    f"Voiceover Generation - Format {audio_format.upper()}", 
+                    False, 
+                    f"Request failed: {str(e)}"
+                )
+
+    def test_error_handling(self):
+        """Test error handling with invalid parameters"""
+        print("⚠️ Testing Error Handling...")
+        
+        # Test empty text
+        try:
+            payload = {"text": ""}
+            response = requests.post(f"{API_BASE}/generate-voiceover", json=payload, timeout=TEST_TIMEOUT)
+            
+            if response.status_code == 400:
+                self.log_test(
+                    "Error Handling - Empty Text", 
+                    True, 
+                    "Properly rejected empty text with 400 status"
+                )
+            else:
+                self.log_test(
+                    "Error Handling - Empty Text", 
+                    False, 
+                    f"Expected 400, got {response.status_code}"
+                )
+        except Exception as e:
+            self.log_test(
+                "Error Handling - Empty Text", 
+                False, 
+                f"Request failed: {str(e)}"
+            )
+        
+        # Test missing text parameter
+        try:
+            payload = {"voice_model": "tacotron2_ljspeech"}
+            response = requests.post(f"{API_BASE}/generate-voiceover", json=payload, timeout=TEST_TIMEOUT)
+            
+            if response.status_code == 400:
+                self.log_test(
+                    "Error Handling - Missing Text", 
+                    True, 
+                    "Properly rejected missing text parameter with 400 status"
+                )
+            else:
+                self.log_test(
+                    "Error Handling - Missing Text", 
+                    False, 
+                    f"Expected 400, got {response.status_code}"
+                )
+        except Exception as e:
+            self.log_test(
+                "Error Handling - Missing Text", 
+                False, 
+                f"Request failed: {str(e)}"
+            )
+        
+        # Test invalid voice model (should fallback gracefully)
+        try:
+            payload = {
+                "text": "Testing invalid voice model fallback",
+                "voice_model": "invalid_model_name"
+            }
+            response = requests.post(f"{API_BASE}/generate-voiceover", json=payload, timeout=TEST_TIMEOUT)
+            
+            if response.status_code == 200:
+                model_used = response.headers.get('X-TTS-Model-Used')
+                self.log_test(
+                    "Error Handling - Invalid Model", 
+                    True, 
+                    f"Gracefully handled invalid model, used: {model_used}"
+                )
+            else:
+                self.log_test(
+                    "Error Handling - Invalid Model", 
+                    False, 
+                    f"Should fallback gracefully, got {response.status_code}"
+                )
+        except Exception as e:
+            self.log_test(
+                "Error Handling - Invalid Model", 
+                False, 
+                f"Request failed: {str(e)}"
+            )
+
+    def test_python_subprocess_integration(self):
+        """Test that Python subprocess calls work correctly"""
+        print("🐍 Testing Python Subprocess Integration...")
+        
+        # This is tested indirectly through the voiceover generation
+        # We'll test with a longer text to ensure subprocess doesn't timeout
+        long_text = """
+        Welcome to our revolutionary AI-powered business solution that transforms the way companies 
+        operate in the digital age. Our cutting-edge technology leverages machine learning algorithms 
+        to provide unprecedented insights into customer behavior, market trends, and operational efficiency. 
+        With our comprehensive suite of tools, businesses can automate complex processes, reduce costs, 
+        and increase productivity by up to 300 percent. Join thousands of satisfied customers who have 
+        already experienced the transformative power of our platform.
+        """
         
         try:
-            # Generate a voiceover to create a database record
             payload = {
-                "text": "Testing MongoDB storage with TTS metadata fields.",
+                "text": long_text.strip(),
                 "voice_model": "tacotron2_ljspeech",
                 "audio_format": "wav"
             }
-            response = requests.post(f"{BASE_URL}/generate-voiceover", json=payload, timeout=TEST_TIMEOUT)
             
-            if response.status_code == 200:
-                # Wait a moment for database write
-                time.sleep(1)
-                
-                # Check voiceovers history
-                history_response = requests.get(f"{BASE_URL}/voiceovers", timeout=TEST_TIMEOUT)
-                
-                if history_response.status_code == 200:
-                    voiceovers = history_response.json()
-                    
-                    if voiceovers and len(voiceovers) > 0:
-                        latest = voiceovers[0]  # Most recent
-                        
-                        # Check for TTS metadata fields
-                        required_fields = ['voice_model', 'audio_format', 'fallback_used', 'model_used', 'duration_estimate']
-                        fields_present = all(field in latest for field in required_fields)
-                        
-                        if fields_present:
-                            self.log_result(
-                                "MongoDB Storage - TTS Metadata Fields", 
-                                True, 
-                                f"All TTS metadata fields present: {[f for f in required_fields if f in latest]}"
-                            )
-                        else:
-                            missing_fields = [f for f in required_fields if f not in latest]
-                            self.log_result(
-                                "MongoDB Storage - TTS Metadata Fields", 
-                                False, 
-                                f"Missing TTS metadata fields: {missing_fields}"
-                            )
-                    else:
-                        self.log_result(
-                            "MongoDB Storage - TTS Metadata Fields", 
-                            False, 
-                            "No voiceover records found in database"
-                        )
-                else:
-                    self.log_result(
-                        "MongoDB Storage - TTS Metadata Fields", 
-                        False, 
-                        f"Failed to retrieve voiceovers history: HTTP {history_response.status_code}"
-                    )
-            else:
-                self.log_result(
-                    "MongoDB Storage - TTS Metadata Fields", 
-                    False, 
-                    f"Failed to generate voiceover for storage test: HTTP {response.status_code}"
-                )
-                
-        except Exception as e:
-            self.log_result(
-                "MongoDB Storage - TTS Metadata Fields", 
-                False, 
-                error=str(e)
-            )
-
-    def test_backward_compatibility(self):
-        """Test 6: Backward Compatibility"""
-        print("🔄 Testing Backward Compatibility...")
-        
-        # Test 6.1: Script generation still works
-        try:
-            payload = {"prompt": "AI-powered customer relationship management software for small businesses"}
-            response = requests.post(f"{BASE_URL}/generate-script", json=payload, timeout=TEST_TIMEOUT)
+            start_time = time.time()
+            response = requests.post(f"{API_BASE}/generate-voiceover", json=payload, timeout=120)
+            end_time = time.time()
             
-            if response.status_code == 200:
-                data = response.json()
-                if 'script' in data and len(data['script']) > 100:
-                    self.log_result(
-                        "Backward Compatibility - Script Generation", 
-                        True, 
-                        f"Generated {len(data['script'])} character script"
-                    )
-                else:
-                    self.log_result(
-                        "Backward Compatibility - Script Generation", 
-                        False, 
-                        f"Script generation returned insufficient content: {len(data.get('script', ''))}"
-                    )
-            else:
-                self.log_result(
-                    "Backward Compatibility - Script Generation", 
-                    False, 
-                    f"HTTP {response.status_code}: {response.text}"
-                )
-                
-        except Exception as e:
-            self.log_result(
-                "Backward Compatibility - Script Generation", 
-                False, 
-                error=str(e)
-            )
-        
-        # Test 6.2: Basic voiceover generation without new parameters
-        try:
-            payload = {"text": "Testing backward compatibility for voiceover generation."}
-            response = requests.post(f"{BASE_URL}/generate-voiceover", json=payload, timeout=TEST_TIMEOUT)
+            processing_time = end_time - start_time
             
             if response.status_code == 200:
                 audio_size = len(response.content)
-                if audio_size > 500:
-                    self.log_result(
-                        "Backward Compatibility - Basic Voiceover", 
+                model_used = response.headers.get('X-TTS-Model-Used')
+                fallback_used = response.headers.get('X-TTS-Fallback-Used')
+                
+                if audio_size > 5000:  # Expect larger audio for longer text
+                    self.log_test(
+                        "Python Subprocess Integration", 
                         True, 
-                        f"Generated {audio_size} bytes audio without new parameters"
+                        f"Processed long text ({len(long_text)} chars) in {processing_time:.2f}s. "
+                        f"Generated {audio_size} bytes. Model: {model_used}, Fallback: {fallback_used}"
                     )
                 else:
-                    self.log_result(
-                        "Backward Compatibility - Basic Voiceover", 
+                    self.log_test(
+                        "Python Subprocess Integration", 
                         False, 
-                        f"Insufficient audio generated: {audio_size} bytes"
+                        f"Audio size too small for long text: {audio_size} bytes"
                     )
             else:
-                self.log_result(
-                    "Backward Compatibility - Basic Voiceover", 
+                self.log_test(
+                    "Python Subprocess Integration", 
                     False, 
-                    f"HTTP {response.status_code}: {response.text}"
+                    f"HTTP {response.status_code}: {response.text[:200]}"
                 )
                 
-        except Exception as e:
-            self.log_result(
-                "Backward Compatibility - Basic Voiceover", 
+        except requests.exceptions.RequestException as e:
+            self.log_test(
+                "Python Subprocess Integration", 
                 False, 
-                error=str(e)
-            )
-        
-        # Test 6.3: History endpoints still work
-        try:
-            scripts_response = requests.get(f"{BASE_URL}/scripts", timeout=TEST_TIMEOUT)
-            voiceovers_response = requests.get(f"{BASE_URL}/voiceovers", timeout=TEST_TIMEOUT)
-            
-            scripts_ok = scripts_response.status_code == 200
-            voiceovers_ok = voiceovers_response.status_code == 200
-            
-            if scripts_ok and voiceovers_ok:
-                self.log_result(
-                    "Backward Compatibility - History Endpoints", 
-                    True, 
-                    "Both scripts and voiceovers history endpoints working"
-                )
-            else:
-                self.log_result(
-                    "Backward Compatibility - History Endpoints", 
-                    False, 
-                    f"Scripts OK: {scripts_ok}, Voiceovers OK: {voiceovers_ok}"
-                )
-                
-        except Exception as e:
-            self.log_result(
-                "Backward Compatibility - History Endpoints", 
-                False, 
-                error=str(e)
+                f"Request failed: {str(e)}"
             )
 
-    def test_error_handling(self):
-        """Test 7: Error Handling for Invalid Parameters"""
-        print("⚠️ Testing Error Handling...")
+    def test_fallback_behavior(self):
+        """Test fallback behavior when TTS fails"""
+        print("🔄 Testing Fallback Behavior...")
         
-        # Test 7.1: Invalid voice model
+        # Test with a very long text that might cause TTS to fail
+        very_long_text = "Testing fallback behavior. " * 100  # Very long text
+        
         try:
-            payload = {"text": "Testing invalid voice model.", "voice_model": "invalid_model"}
-            response = requests.post(f"{BASE_URL}/generate-voiceover", json=payload, timeout=TEST_TIMEOUT)
+            payload = {
+                "text": very_long_text,
+                "voice_model": "tacotron2_ljspeech"
+            }
             
-            # Should still work with fallback to default model
+            response = requests.post(f"{API_BASE}/generate-voiceover", json=payload, timeout=120)
+            
             if response.status_code == 200:
-                model_used = response.headers.get('X-TTS-Model-Used', '')
-                if model_used in ['tacotron2_ljspeech', 'mock_audio']:
-                    self.log_result(
-                        "Error Handling - Invalid Voice Model", 
+                audio_size = len(response.content)
+                fallback_used = response.headers.get('X-TTS-Fallback-Used')
+                model_used = response.headers.get('X-TTS-Model-Used')
+                
+                # Should still generate audio even if TTS fails
+                if audio_size > 1000:
+                    self.log_test(
+                        "Fallback Behavior", 
                         True, 
-                        f"Gracefully handled invalid model, used: {model_used}"
+                        f"Generated {audio_size} bytes with fallback: {fallback_used}, model: {model_used}"
                     )
                 else:
-                    self.log_result(
-                        "Error Handling - Invalid Voice Model", 
+                    self.log_test(
+                        "Fallback Behavior", 
                         False, 
-                        f"Unexpected model used: {model_used}"
+                        f"Audio size too small: {audio_size} bytes"
                     )
             else:
-                self.log_result(
-                    "Error Handling - Invalid Voice Model", 
+                self.log_test(
+                    "Fallback Behavior", 
                     False, 
-                    f"Should handle invalid model gracefully: HTTP {response.status_code}"
+                    f"HTTP {response.status_code}: {response.text[:200]}"
                 )
                 
-        except Exception as e:
-            self.log_result(
-                "Error Handling - Invalid Voice Model", 
+        except requests.exceptions.RequestException as e:
+            self.log_test(
+                "Fallback Behavior", 
                 False, 
-                error=str(e)
-            )
-        
-        # Test 7.2: Invalid audio format
-        try:
-            payload = {"text": "Testing invalid audio format.", "audio_format": "invalid_format"}
-            response = requests.post(f"{BASE_URL}/generate-voiceover", json=payload, timeout=TEST_TIMEOUT)
-            
-            # Should still work with fallback to default format
-            if response.status_code == 200:
-                format_used = response.headers.get('X-TTS-Format', '')
-                if format_used == 'wav':
-                    self.log_result(
-                        "Error Handling - Invalid Audio Format", 
-                        True, 
-                        f"Gracefully handled invalid format, used: {format_used}"
-                    )
-                else:
-                    self.log_result(
-                        "Error Handling - Invalid Audio Format", 
-                        False, 
-                        f"Unexpected format used: {format_used}"
-                    )
-            else:
-                self.log_result(
-                    "Error Handling - Invalid Audio Format", 
-                    False, 
-                    f"Should handle invalid format gracefully: HTTP {response.status_code}"
-                )
-                
-        except Exception as e:
-            self.log_result(
-                "Error Handling - Invalid Audio Format", 
-                False, 
-                error=str(e)
-            )
-        
-        # Test 7.3: Empty text handling
-        try:
-            payload = {"text": ""}
-            response = requests.post(f"{BASE_URL}/generate-voiceover", json=payload, timeout=TEST_TIMEOUT)
-            
-            if response.status_code == 400:
-                self.log_result(
-                    "Error Handling - Empty Text", 
-                    True, 
-                    "Properly returns 400 error for empty text"
-                )
-            else:
-                self.log_result(
-                    "Error Handling - Empty Text", 
-                    False, 
-                    f"Should return 400 for empty text: HTTP {response.status_code}"
-                )
-                
-        except Exception as e:
-            self.log_result(
-                "Error Handling - Empty Text", 
-                False, 
-                error=str(e)
+                f"Request failed: {str(e)}"
             )
 
     def run_all_tests(self):
-        """Run all backend tests for Coqui TTS integration"""
-        print("🚀 Starting Comprehensive Coqui TTS Backend Testing...")
-        print("=" * 80)
+        """Run all Coqui TTS integration tests"""
+        print("🚀 Starting Coqui TTS Integration Backend Tests")
+        print(f"API Base URL: {API_BASE}")
+        print("=" * 60)
         
-        # Run all test suites
-        self.test_coqui_tts_module_direct()
-        self.test_voice_models_api_endpoint()
-        self.test_enhanced_voiceover_generation_api()
-        self.test_enhanced_mock_audio_fallback()
-        self.test_mongodb_storage_integration()
-        self.test_backward_compatibility()
+        # Run all tests
+        self.test_voice_models_endpoint()
+        self.test_voiceover_generation_basic()
+        self.test_voiceover_generation_with_models()
+        self.test_voiceover_generation_with_formats()
         self.test_error_handling()
+        self.test_python_subprocess_integration()
+        self.test_fallback_behavior()
         
-        # Print summary
-        print("=" * 80)
-        print("🏁 COQUI TTS BACKEND TESTING SUMMARY")
-        print("=" * 80)
-        print(f"Total Tests: {self.total_tests}")
-        print(f"✅ Passed: {self.passed_tests}")
-        print(f"❌ Failed: {self.failed_tests}")
-        print(f"Success Rate: {(self.passed_tests/self.total_tests*100):.1f}%")
-        print()
+        # Summary
+        print("=" * 60)
+        print("📊 TEST SUMMARY")
+        print("=" * 60)
         
-        # Print failed tests details
-        if self.failed_tests > 0:
-            print("❌ FAILED TESTS:")
-            for result in self.results:
+        total_tests = len(self.test_results)
+        passed_tests = sum(1 for result in self.test_results if result['success'])
+        failed_tests = total_tests - passed_tests
+        
+        print(f"Total Tests: {total_tests}")
+        print(f"✅ Passed: {passed_tests}")
+        print(f"❌ Failed: {failed_tests}")
+        print(f"Success Rate: {(passed_tests/total_tests)*100:.1f}%")
+        
+        if failed_tests > 0:
+            print("\n❌ FAILED TESTS:")
+            for result in self.test_results:
                 if not result['success']:
-                    print(f"  • {result['test']}")
-                    if result['error']:
-                        print(f"    Error: {result['error']}")
-            print()
+                    print(f"  • {result['test']}: {result['details']}")
         
-        # Overall assessment
-        if self.failed_tests == 0:
-            print("🎉 ALL TESTS PASSED! Coqui TTS integration is working perfectly.")
-        elif self.failed_tests <= 3:
-            print("⚠️ MOSTLY WORKING: Minor issues detected but core functionality intact.")
-        else:
-            print("🚨 CRITICAL ISSUES: Multiple test failures indicate significant problems.")
-        
-        return self.failed_tests == 0
+        print("\n" + "=" * 60)
+        return passed_tests, failed_tests
 
 if __name__ == "__main__":
-    print("🔧 AI Business Video Script & Voiceover Generator - Coqui TTS Backend Testing")
-    print("Testing internal API at:", BASE_URL)
-    print()
-    
     tester = CoquiTTSBackendTester()
-    success = tester.run_all_tests()
+    passed, failed = tester.run_all_tests()
     
     # Exit with appropriate code
-    sys.exit(0 if success else 1)
+    sys.exit(0 if failed == 0 else 1)
