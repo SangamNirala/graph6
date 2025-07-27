@@ -17,7 +17,7 @@ from typing import Dict, Any
 from datetime import datetime
 
 # Get base URL from environment - use internal localhost for testing
-BASE_URL = os.getenv('NEXT_PUBLIC_BASE_URL', 'https://b08fb6a0-2723-451c-8ea2-f188bed36c6d.preview.emergentagent.com')
+BASE_URL = os.getenv('NEXT_PUBLIC_BASE_URL', 'https://f3903a6f-9607-44c1-bb73-67c9a5ad43be.preview.emergentagent.com')
 # Use internal localhost for backend testing to avoid ingress issues
 API_BASE = "http://localhost:3000/api"
 TEST_TIMEOUT = 60
