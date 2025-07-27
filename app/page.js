@@ -295,7 +295,12 @@ Guidelines:
     if (audioUrl) {
       const a = document.createElement('a')
       a.href = audioUrl
-      a.download = 'business-voiceover.wav'
+      
+      // Generate a more descriptive filename
+      const timestamp = new Date().toISOString().split('T')[0]
+      const wordCount = generatedScript.split(' ').length
+      a.download = `business-voiceover-${wordCount}words-${timestamp}.wav`
+      
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
