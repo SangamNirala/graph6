@@ -23,35 +23,23 @@ TEST_TIMEOUT = 60
 
 class CoquiTTSBackendTester:
     def __init__(self):
-        self.results = []
-        self.total_tests = 0
-        self.passed_tests = 0
-        self.failed_tests = 0
+        self.test_results = []
         
-    def log_result(self, test_name: str, success: bool, details: str = "", error: str = ""):
-        """Log test result"""
-        self.total_tests += 1
-        if success:
-            self.passed_tests += 1
-            status = "✅ PASSED"
-        else:
-            self.failed_tests += 1
-            status = "❌ FAILED"
-            
+    def log_test(self, test_name: str, success: bool, details: str = "", response_data: Any = None):
+        """Log test results"""
         result = {
             'test': test_name,
-            'status': status,
             'success': success,
             'details': details,
-            'error': error,
-            'timestamp': datetime.now().isoformat()
+            'response_data': response_data
         }
-        self.results.append(result)
+        self.test_results.append(result)
+        status = "✅ PASS" if success else "❌ FAIL"
         print(f"{status}: {test_name}")
         if details:
-            print(f"  Details: {details}")
-        if error:
-            print(f"  Error: {error}")
+            print(f"   Details: {details}")
+        if not success and response_data:
+            print(f"   Response: {response_data}")
         print()
 
     def test_coqui_tts_module_direct(self):
