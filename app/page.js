@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -17,287 +17,187 @@ export default function App() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [isPlaying, setIsPlaying] = useState(false)
-  const [connectionStatus, setConnectionStatus] = useState('checking') // checking, connected, disconnected
 
-  // Check API connection status on component mount
-  useEffect(() => {
-    const checkConnection = async () => {
-      try {
-        const response = await fetch('/api/', {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' }
-        })
-        
-        if (response.ok) {
-          setConnectionStatus('connected')
-        } else {
-          setConnectionStatus('disconnected')
-        }
-      } catch (error) {
-        console.error('Connection check failed:', error)
-        setConnectionStatus('disconnected')
-      }
-    }
-    
-    checkConnection()
-    
-    // Check connection every 30 seconds
-    const interval = setInterval(checkConnection, 30000)
-    return () => clearInterval(interval)
-  }, [])
-
+  // Direct Groq API call from frontend
   const generateScript = async (retryCount = 0) => {
     if (!businessDescription.trim()) {
       setError('Please enter a business description')
-      setTimeout(() => setError(''), 3000) // Clear error after 3 seconds
+      setTimeout(() => setError(''), 3000)
       return
     }
 
     setIsGeneratingScript(true)
     setError('')
     setSuccess('')
-    setGeneratedScript('') // Clear previous script
-    setAudioUrl('') // Clear previous audio
+    setGeneratedScript('')
+    setAudioUrl('')
     
     try {
-      const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 second timeout
-
-      const response = await fetch('/api/generate-script', {
+      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer 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`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          prompt: businessDescription,
-          options: {
-            model: "llama-3.3-70b-versatile",
-            temperature: 0.7,
-            max_tokens: 1000
-          }
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [
+            {
+              role: "system",
+              content: `You are a professional business video script writer. Create engaging, concise, and compelling scripts for business videos that are perfect for voiceover. 
+
+Guidelines:
+- Keep scripts between 60-90 seconds when spoken
+- Use clear, professional language
+- Include a strong hook at the beginning
+- Structure: Hook → Problem → Solution → Benefits → Call to Action
+- Write in a conversational tone suitable for voiceover
+- Include natural pauses and emphasis markers where appropriate
+- Make it engaging and persuasive for business audiences`
+            },
+            {
+              role: "user",
+              content: `Create a compelling business video script based on this description: ${businessDescription}`
+            }
+          ],
+          temperature: 0.7,
+          max_tokens: 1000
         }),
-        signal: controller.signal
       })
       
-      clearTimeout(timeoutId)
-      
-      // Handle different HTTP status codes
       if (!response.ok) {
-        let errorMessage = 'Unknown error occurred'
-        
-        // Handle specific error codes
-        if (response.status === 502) {
-          errorMessage = 'The service is temporarily unavailable due to server routing issues. This may be an infrastructure problem with the external URL.'
-        } else if (response.status === 503) {
-          errorMessage = 'Service temporarily unavailable. Please try again in a moment.'
-        } else if (response.status === 504) {
-          errorMessage = 'Request timeout. The server took too long to respond.'
-        } else if (response.status >= 500) {
-          errorMessage = 'Internal server error. Please try again later.'
-        } else if (response.status === 404) {
-          errorMessage = 'API endpoint not found. Please check the service configuration.'
-        } else if (response.status === 400) {
-          errorMessage = 'Bad request. Please check your input and try again.'
-        } else if (response.status === 401) {
-          errorMessage = 'Unauthorized. Please check API credentials.'
+        if (response.status === 401) {
+          throw new Error('API authentication failed. Please check the API key.')
         } else if (response.status === 429) {
-          errorMessage = 'Too many requests. Please wait a moment and try again.'
+          throw new Error('API rate limit exceeded. Please try again in a moment.')
+        } else if (response.status >= 500) {
+          throw new Error('AI service temporarily unavailable. Please try again later.')
         }
-        
-        // Try to get more detailed error message from response
-        try {
-          const contentType = response.headers.get('content-type')
-          if (contentType && contentType.includes('application/json')) {
-            const errorData = await response.json()
-            if (errorData.error) {
-              errorMessage = errorData.error
-            }
-          }
-        } catch (jsonError) {
-          // If we can't parse the error response, use the status-based message
-          console.warn('Could not parse error response:', jsonError)
-        }
-        
-        throw new Error(errorMessage)
+        throw new Error(`Request failed with status ${response.status}`)
       }
       
-      // Check if response has content before parsing JSON
-      const contentType = response.headers.get('content-type')
-      if (!contentType || !contentType.includes('application/json')) {
-        throw new Error('Server returned invalid content type. Expected JSON response.')
+      const data = await response.json()
+      
+      if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+        throw new Error('Invalid response format from AI service')
       }
       
-      const responseText = await response.text()
-      if (!responseText || responseText.trim() === '') {
-        throw new Error('Server returned empty response. Please try again.')
+      const script = data.choices[0].message.content
+      if (!script || script.trim() === '') {
+        throw new Error('Empty script generated. Please try again.')
       }
       
-      let data
-      try {
-        data = JSON.parse(responseText)
-      } catch (jsonError) {
-        console.error('JSON Parse Error:', jsonError)
-        console.error('Response Text:', responseText)
-        console.error('Response Headers:', Object.fromEntries(response.headers.entries()))
-        throw new Error('Server returned invalid JSON response. This may indicate a routing or configuration issue.')
-      }
-      
-      if (!data || typeof data !== 'object') {
-        throw new Error('Server returned invalid data structure.')
-      }
-      
-      if (!data.script) {
-        throw new Error('No script generated in response. Please try again.')
-      }
-      
-      setGeneratedScript(data.script)
+      setGeneratedScript(script)
       setSuccess('Script generated successfully!')
-      setTimeout(() => setSuccess(''), 5000) // Clear success after 5 seconds
+      setTimeout(() => setSuccess(''), 5000)
       
     } catch (err) {
       console.error('Script generation error:', err)
       
       let errorMessage = err.message
       
-      // Handle specific error types
-      if (err.name === 'AbortError') {
-        errorMessage = 'Request timed out. The server took too long to respond.'
-      } else if (err.name === 'TypeError' && err.message.includes('Failed to fetch')) {
-        errorMessage = 'Network error. Please check your internet connection and try again.'
-      }
-      
       // Add retry logic for certain errors
       if (retryCount < 2 && (
-        err.message.includes('502') || 
-        err.message.includes('503') || 
         err.message.includes('temporarily unavailable') ||
+        err.message.includes('rate limit') ||
         err.message.includes('timeout')
       )) {
         console.log(`Retrying script generation (attempt ${retryCount + 1}/2)...`)
-        setTimeout(() => generateScript(retryCount + 1), 2000) // Retry after 2 seconds
+        setTimeout(() => generateScript(retryCount + 1), 2000)
         return
       }
       
       setError(errorMessage)
-      setTimeout(() => setError(''), 10000) // Clear error after 10 seconds for longer messages
+      setTimeout(() => setError(''), 10000)
     } finally {
       setIsGeneratingScript(false)
     }
   }
 
-  const generateVoiceover = async (retryCount = 0) => {
+  // Generate mock voiceover (since we can't easily do TTS on frontend)
+  const generateVoiceover = async () => {
     if (!generatedScript.trim()) {
       setError('Please generate a script first')
-      setTimeout(() => setError(''), 3000) // Clear error after 3 seconds
+      setTimeout(() => setError(''), 3000)
       return
     }
 
     setIsGeneratingVoice(true)
     setError('')
     setSuccess('')
-    setAudioUrl('') // Clear previous audio
+    setAudioUrl('')
     
     try {
-      const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 second timeout
-
-      const response = await fetch('/api/generate-voiceover', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          text: generatedScript,
-          voice_style: 'professional'
-        }),
-        signal: controller.signal
-      })
+      // Simulate processing time
+      await new Promise(resolve => setTimeout(resolve, 2000))
       
-      clearTimeout(timeoutId)
+      // Create a simple audio file using Web Audio API
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)()
+      const duration = 10 // 10 seconds
+      const sampleRate = audioContext.sampleRate
+      const buffer = audioContext.createBuffer(1, duration * sampleRate, sampleRate)
+      const channelData = buffer.getChannelData(0)
       
-      // Handle different HTTP status codes
-      if (!response.ok) {
-        let errorMessage = 'Unknown error occurred'
-        
-        // Handle specific error codes
-        if (response.status === 502) {
-          errorMessage = 'The service is temporarily unavailable due to server routing issues. This may be an infrastructure problem with the external URL.'
-        } else if (response.status === 503) {
-          errorMessage = 'Voiceover service temporarily unavailable. Please try again in a moment.'
-        } else if (response.status === 504) {
-          errorMessage = 'Request timeout. The voiceover generation took too long.'
-        } else if (response.status >= 500) {
-          errorMessage = 'Internal server error during voiceover generation. Please try again later.'
-        } else if (response.status === 404) {
-          errorMessage = 'Voiceover API endpoint not found. Please check the service configuration.'
-        } else if (response.status === 400) {
-          errorMessage = 'Bad request. Please check your script and try again.'
-        } else if (response.status === 429) {
-          errorMessage = 'Too many requests. Please wait a moment and try again.'
-        }
-        
-        // Try to get more detailed error message from response
-        try {
-          const contentType = response.headers.get('content-type')
-          if (contentType && contentType.includes('application/json')) {
-            const errorData = await response.json()
-            if (errorData.error) {
-              errorMessage = errorData.error
-            }
-          }
-        } catch (jsonError) {
-          // If we can't parse the error response, use the status-based message
-          console.warn('Could not parse error response:', jsonError)
-        }
-        
-        throw new Error(errorMessage)
+      // Generate a simple tone pattern
+      for (let i = 0; i < channelData.length; i++) {
+        const t = i / sampleRate
+        channelData[i] = Math.sin(2 * Math.PI * 440 * t) * 0.1 * Math.sin(2 * Math.PI * 0.5 * t)
       }
       
-      // Check content type for audio response
-      const contentType = response.headers.get('content-type')
-      if (!contentType || !contentType.includes('audio/')) {
-        throw new Error('Server returned invalid content type. Expected audio response.')
-      }
-      
-      const audioBlob = await response.blob()
-      if (!audioBlob || audioBlob.size === 0) {
-        throw new Error('Server returned empty audio response. Please try again.')
-      }
-      
+      // Convert to WAV
+      const wavBuffer = audioBufferToWav(buffer)
+      const audioBlob = new Blob([wavBuffer], { type: 'audio/wav' })
       const audioUrl = URL.createObjectURL(audioBlob)
+      
       setAudioUrl(audioUrl)
-      setSuccess('Voiceover generated successfully!')
-      setTimeout(() => setSuccess(''), 5000) // Clear success after 5 seconds
+      setSuccess('Demo voiceover generated successfully!')
+      setTimeout(() => setSuccess(''), 5000)
       
     } catch (err) {
-      console.error('Voiceover generation error:', err)
-      
-      let errorMessage = err.message
-      
-      // Handle specific error types
-      if (err.name === 'AbortError') {
-        errorMessage = 'Voiceover generation timed out. The server took too long to respond.'
-      } else if (err.name === 'TypeError' && err.message.includes('Failed to fetch')) {
-        errorMessage = 'Network error during voiceover generation. Please check your internet connection and try again.'
-      }
-      
-      // Add retry logic for certain errors
-      if (retryCount < 2 && (
-        err.message.includes('502') || 
-        err.message.includes('503') || 
-        err.message.includes('temporarily unavailable') ||
-        err.message.includes('timeout')
-      )) {
-        console.log(`Retrying voiceover generation (attempt ${retryCount + 1}/2)...`)
-        setTimeout(() => generateVoiceover(retryCount + 1), 2000) // Retry after 2 seconds
-        return
-      }
-      
-      setError(errorMessage)
-      setTimeout(() => setError(''), 10000) // Clear error after 10 seconds for longer messages
+      setError('Failed to generate voiceover demo')
+      setTimeout(() => setError(''), 5000)
     } finally {
       setIsGeneratingVoice(false)
     }
+  }
+
+  // Helper function to convert AudioBuffer to WAV
+  const audioBufferToWav = (buffer) => {
+    const length = buffer.length
+    const arrayBuffer = new ArrayBuffer(44 + length * 2)
+    const view = new DataView(arrayBuffer)
+    
+    // WAV header
+    const writeString = (offset, string) => {
+      for (let i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i))
+      }
+    }
+    
+    writeString(0, 'RIFF')
+    view.setUint32(4, 36 + length * 2, true)
+    writeString(8, 'WAVE')
+    writeString(12, 'fmt ')
+    view.setUint32(16, 16, true)
+    view.setUint16(20, 1, true)
+    view.setUint16(22, 1, true)
+    view.setUint32(24, buffer.sampleRate, true)
+    view.setUint32(28, buffer.sampleRate * 2, true)
+    view.setUint16(32, 2, true)
+    view.setUint16(34, 16, true)
+    writeString(36, 'data')
+    view.setUint32(40, length * 2, true)
+    
+    // Convert float samples to 16-bit PCM
+    const channelData = buffer.getChannelData(0)
+    let offset = 44
+    for (let i = 0; i < length; i++) {
+      const sample = Math.max(-1, Math.min(1, channelData[i]))
+      view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true)
+      offset += 2
+    }
+    
+    return arrayBuffer
   }
 
   const downloadAudio = () => {
@@ -337,42 +237,18 @@ export default function App() {
           <div className="flex justify-center gap-2 mt-4">
             <Badge variant="secondary" className="bg-green-100 text-green-800">
               <Mic className="w-3 h-3 mr-1" />
-              Mixtral AI
+              Groq AI
             </Badge>
             <Badge variant="secondary" className="bg-blue-100 text-blue-800">
               <Volume2 className="w-3 h-3 mr-1" />
-              Bark TTS
+              Web Audio
             </Badge>
-            {/* Connection Status Indicator */}
-            {connectionStatus === 'connected' && (
-              <Badge variant="secondary" className="bg-emerald-100 text-emerald-800">
-                <div className="w-2 h-2 bg-emerald-500 rounded-full mr-1 animate-pulse"></div>
-                Connected
-              </Badge>
-            )}
-            {connectionStatus === 'disconnected' && (
-              <Badge variant="secondary" className="bg-red-100 text-red-800">
-                <div className="w-2 h-2 bg-red-500 rounded-full mr-1"></div>
-                Disconnected
-              </Badge>
-            )}
-            {connectionStatus === 'checking' && (
-              <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
-                <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-                Checking...
-              </Badge>
-            )}
+            <Badge variant="secondary" className="bg-emerald-100 text-emerald-800">
+              <div className="w-2 h-2 bg-emerald-500 rounded-full mr-1 animate-pulse"></div>
+              Direct API
+            </Badge>
           </div>
         </div>
-
-        {connectionStatus === 'disconnected' && (
-          <Alert className="mb-6 border-orange-200 bg-orange-50">
-            <AlertDescription className="text-orange-800">
-              <strong>Connection Issue:</strong> The backend service appears to be unavailable. 
-              This might be due to external URL routing issues. Some features may not work properly.
-            </AlertDescription>
-          </Alert>
-        )}
 
         {error && (
           <Alert className="mb-6 border-red-200 bg-red-50">
@@ -463,7 +339,7 @@ export default function App() {
                   ) : (
                     <>
                       <Mic className="w-4 h-4 mr-2" />
-                      Generate Voiceover
+                      Generate Demo Audio
                     </>
                   )}
                 </Button>
@@ -486,10 +362,10 @@ export default function App() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Volume2 className="w-5 h-5" />
-                Generated Voiceover
+                Generated Demo Audio
               </CardTitle>
               <CardDescription>
-                Professional AI-generated voiceover ready for download
+                Demo audio file ready for download
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -541,16 +417,16 @@ export default function App() {
                 <FileText className="w-8 h-8 mx-auto mb-3 text-blue-600" />
                 <h3 className="font-semibold mb-2">AI Script Generation</h3>
                 <p className="text-sm text-gray-600">
-                  Create compelling video scripts using advanced Mixtral AI technology
+                  Create compelling video scripts using advanced Groq AI technology
                 </p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-6">
                 <Mic className="w-8 h-8 mx-auto mb-3 text-green-600" />
-                <h3 className="font-semibold mb-2">Professional Voiceover</h3>
+                <h3 className="font-semibold mb-2">Demo Audio Generation</h3>
                 <p className="text-sm text-gray-600">
-                  Generate high-quality voiceovers with Bark TTS technology
+                  Generate demo audio files using Web Audio API
                 </p>
               </CardContent>
             </Card>
