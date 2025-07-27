@@ -142,14 +142,30 @@ Guidelines:
       })
       
       if (!response.ok) {
+        // Enhanced error handling for different status codes
         let errorMessage = `HTTP error! status: ${response.status}`
-        try {
-          const errorData = await response.json()
-          errorMessage = errorData.error || errorMessage
-        } catch (parseError) {
-          // If we can't parse JSON, use the status text or generic message
-          errorMessage = response.statusText || `Server error (${response.status})`
+        
+        if (response.status === 502) {
+          errorMessage = 'Backend service temporarily unavailable. This appears to be a network routing issue. Please try again in a moment.'
+        } else if (response.status === 500) {
+          errorMessage = 'Internal server error. Please try again.'
+        } else if (response.status === 400) {
+          try {
+            const errorData = await response.json()
+            errorMessage = errorData.error || 'Invalid request. Please check your input.'
+          } catch (parseError) {
+            errorMessage = 'Invalid request. Please check your input.'
+          }
+        } else {
+          try {
+            const errorData = await response.json()
+            errorMessage = errorData.error || errorMessage
+          } catch (parseError) {
+            // If we can't parse JSON, use the status text or generic message
+            errorMessage = response.statusText || `Server error (${response.status})`
+          }
         }
+        
         throw new Error(errorMessage)
       }
       
@@ -175,7 +191,7 @@ Guidelines:
     } catch (err) {
       console.error('Voiceover generation error:', err)
       setError(`Failed to generate voiceover: ${err.message}`)
-      setTimeout(() => setError(''), 8000)
+      setTimeout(() => setError(''), 10000)
     } finally {
       setIsGeneratingVoice(false)
     }
