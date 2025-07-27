@@ -96,9 +96,9 @@ class CoquiTTSGenerator:
         """Get information about supported audio formats."""
         return cls.AUDIO_FORMATS
     
-    def _load_tts_model(self, model_key: str) -> Optional[TTS]:
+    def _load_tts_model(self, model_key: str):
         """Load and cache a TTS model."""
-        if not TTS_AVAILABLE:
+        if not TTS_AVAILABLE or TTS is None:
             logger.warning("TTS not available, cannot load models")
             return None
             
