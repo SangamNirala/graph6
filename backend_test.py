@@ -237,7 +237,8 @@ class CoquiTTSBackendTester:
         print("🎤 Testing Voice Models API Endpoint...")
         
         try:
-            response = requests.get(f"{BASE_URL}/voice-models", timeout=TEST_TIMEOUT)
+            # Test with trailing slash (Next.js redirects to this)
+            response = requests.get(f"{BASE_URL}/voice-models/", timeout=TEST_TIMEOUT)
             
             if response.status_code == 200:
                 data = response.json()
