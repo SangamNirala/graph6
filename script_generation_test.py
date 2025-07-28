@@ -170,7 +170,7 @@ def test_environment_variables():
     # Test a simple endpoint that would fail if env vars are missing
     try:
         # Make a request that would trigger env var usage
-        response = requests.get(f"{API_BASE}/", timeout=10)
+        response = requests.get(f"{API_BASE}", timeout=10)
         
         if response.status_code == 200:
             print_success("API server can access environment variables")
