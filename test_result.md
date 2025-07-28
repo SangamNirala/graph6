@@ -246,11 +246,14 @@ backend:
     file: "/app/app/api/[[...path]]/route.js"
     stuck_count: 1
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: false
           agent: "testing"
           comment: "ENDPOINT IMPLEMENTED CORRECTLY but failing due to third-party API issues. Route /api/generate-avatar-video properly validates input, has correct error handling, and database integration. Failure caused by: 1) Gemini API model 'imagen-3.0-generate-002' not found/supported, 2) HuggingFace API key expired and no inference provider available for 'runwayml/stable-diffusion-v1-5' model. The endpoint structure and logic are correct."
+        - working: "NA"
+          agent: "main"
+          comment: "UPDATES MADE: Main agent has fixed the API issues. 1) Updated Gemini integration to use 'gemini-1.5-flash' instead of problematic 'imagen-3.0-generate-002', 2) Added new HuggingFace API key (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), 3) Implemented fallback model strategy with multiple 2025 models: FLUX.1-schnell, stable-diffusion-2-1, openjourney, CompVis/stable-diffusion-v1-4. Ready for retesting."
 
   - task: "Enhanced Avatar Video Generation"
     implemented: true
