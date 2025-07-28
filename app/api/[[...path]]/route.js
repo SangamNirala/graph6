@@ -3,6 +3,11 @@ import { v4 as uuidv4 } from 'uuid'
 import { NextResponse } from 'next/server'
 import axios from 'axios'
 import { HfInference } from '@huggingface/inference'
+import fs from 'fs'
+import path from 'path'
+import { createCanvas } from 'canvas'
+import sharp from 'sharp'
+import ffmpeg from 'fluent-ffmpeg'
 
 // Initialize HuggingFace client
 const hf = new HfInference(process.env.HUGGINGFACE_API_KEY)
