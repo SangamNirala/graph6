@@ -158,11 +158,77 @@ export default function App() {
     }
   }
 
-  const downloadAudio = () => {
-    if (audioUrl) {
+  const generateVideo = async (videoType, quality) => {
+    if (!generatedScript.trim()) {
+      setError('Please generate a script first')
+      setTimeout(() => setError(''), 3000)
+      return
+    }
+
+    setIsGeneratingVideo(true)
+    setError('')
+    setSuccess('')
+    setVideoData(null)
+    
+    try {
+      let endpoint = ''
+      
+      if (videoType === 'without_avatar') {
+        endpoint = '/api/generate-video-without-avatar'
+      } else {
+        // with_avatar endpoints based on quality
+        switch (quality) {
+          case 'basic':
+            endpoint = '/api/generate-avatar-video'
+            break
+          case 'enhanced':
+            endpoint = '/api/generate-enhanced-avatar-video'
+            break
+          case 'ultra':
+            endpoint = '/api/generate-ultra-realistic-avatar-video'
+            break
+          default:
+            endpoint = '/api/generate-avatar-video'
+        }
+      }
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          script: generatedScript,
+          quality: quality
+        }),
+      })
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || `Request failed with status ${response.status}`)
+      }
+      
+      const data = await response.json()
+      
+      if (!data.success) {
+        throw new Error('Video generation failed')
+      }
+      
+      setVideoData(data.video)
+      setSuccess(`${videoType === 'with_avatar' ? 'Avatar' : 'Scene'} video generated successfully!`)
+      setTimeout(() => setSuccess(''), 5000)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setIsGeneratingVideo(false)
+    }
+  }
+
+  const downloadVideo = () => {
+    if (videoData && videoData.videoUrl) {
       const a = document.createElement('a')
-      a.href = audioUrl
-      a.download = 'business-voiceover.wav'
+      a.href = videoData.videoUrl
+      a.download = `business-video-${videoData.type}-${videoData.quality}.mp4`
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
