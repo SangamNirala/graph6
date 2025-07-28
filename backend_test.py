@@ -11,7 +11,7 @@ import sys
 from datetime import datetime
 
 # Get base URL from environment or use default
-BASE_URL = os.getenv('NEXT_PUBLIC_BASE_URL', 'https://26ddb12c-21e0-4a91-8856-fdf0e1bf16b5.preview.emergentagent.com')
+BASE_URL = os.getenv('NEXT_PUBLIC_BASE_URL', 'https://4657aedc-4483-4596-8e88-942d9f22dc1c.preview.emergentagent.com')
 API_BASE = f"{BASE_URL}/api"
 
 # For testing, use localhost if external URL fails
