@@ -31,71 +31,78 @@ function handleCORS(response) {
   return response
 }
 
-// Generate images using Gemini Imagen 3.0
-async function generateImageWithGemini(prompt, aspectRatio = '16:9') {
+// Generate images using HuggingFace models (updated for 2025)
+async function generateImageWithHuggingFace(prompt, aspectRatio = '16:9') {
   try {
-    const model = genai.getGenerativeModel({ model: 'imagen-3.0-generate-002' })
+    // List of available models to try (in order of preference)
+    const models = [
+      'black-forest-labs/FLUX.1-schnell',  // Fast, high-quality model
+      'stabilityai/stable-diffusion-2-1',  // Reliable fallback
+      'prompthero/openjourney',            // Good for artistic images
+      'CompVis/stable-diffusion-v1-4'      // Final fallback
+    ]
     
-    const result = await model.generateContent({
-      contents: [{
-        role: 'user',
-        parts: [{
-          text: `Generate a high-quality, professional image: ${prompt}`
-        }]
-      }],
-      generationConfig: {
-        temperature: 0.7,
-        topK: 40,
-        topP: 0.95,
+    const width = aspectRatio === '16:9' ? 1024 : 512
+    const height = aspectRatio === '16:9' ? 576 : 512
+    
+    // Enhance prompt for better results
+    const enhancedPrompt = `High quality, professional, detailed: ${prompt}. Best quality, masterpiece, ultra-detailed.`
+    
+    for (const model of models) {
+      try {
+        console.log(`Trying image generation with model: ${model}`)
+        
+        const response = await hf.textToImage({
+          model: model,
+          inputs: enhancedPrompt,
+          parameters: {
+            width: width,
+            height: height,
+            guidance_scale: 7.5,
+            num_inference_steps: model.includes('FLUX') ? 4 : 20, // FLUX needs fewer steps
+            negative_prompt: 'blurry, low quality, distorted, ugly, bad anatomy'
+          }
+        })
+        
+        const arrayBuffer = await response.arrayBuffer()
+        const buffer = Buffer.from(arrayBuffer)
+        console.log(`Successfully generated image with ${model}`)
+        return buffer.toString('base64')
+        
+      } catch (modelError) {
+        console.log(`Model ${model} failed:`, modelError.message)
+        continue // Try next model
       }
-    })
+    }
     
-    // Since Gemini text model doesn't directly generate images in this version,
-    // we'll use HuggingFace as primary and Gemini for enhanced prompts
-    const enhancedPrompt = result.response.text()
+    throw new Error('All image generation models failed')
     
-    // Generate image using HuggingFace with enhanced prompt
-    const response = await hf.textToImage({
-      model: 'runwayml/stable-diffusion-v1-5',
-      inputs: enhancedPrompt,
-      parameters: {
-        width: aspectRatio === '16:9' ? 1024 : 512,
-        height: aspectRatio === '16:9' ? 576 : 512,
-        guidance_scale: 7.5,
-        num_inference_steps: 50
-      }
-    })
-    
-    const arrayBuffer = await response.arrayBuffer()
-    const buffer = Buffer.from(arrayBuffer)
-    return buffer.toString('base64')
   } catch (error) {
-    console.error('Error generating image with Gemini:', error)
-    // Fallback to direct HuggingFace generation
-    return generateImageWithHuggingFace(prompt, aspectRatio)
+    console.error('Error generating image:', error)
+    throw new Error('Failed to generate image')
   }
 }
 
-// Fallback image generation with HuggingFace
-async function generateImageWithHuggingFace(prompt, aspectRatio = '16:9') {
+// Generate images using Gemini for prompt enhancement + HuggingFace for generation
+async function generateImageWithGemini(prompt, aspectRatio = '16:9') {
   try {
-    const response = await hf.textToImage({
-      model: 'runwayml/stable-diffusion-v1-5',
-      inputs: prompt,
-      parameters: {
-        width: aspectRatio === '16:9' ? 1024 : 512,
-        height: aspectRatio === '16:9' ? 576 : 512,
-        guidance_scale: 7.5,
-        num_inference_steps: 50
-      }
-    })
+    // Use Gemini to enhance the prompt
+    const model = genai.getGenerativeModel({ model: 'gemini-1.5-flash' }) // Use text model for prompt enhancement
     
-    const arrayBuffer = await response.arrayBuffer()
-    const buffer = Buffer.from(arrayBuffer)
-    return buffer.toString('base64')
+    const result = await model.generateContent([
+      `Enhance this image prompt to be more detailed and professional for text-to-image generation. Keep it under 200 characters: ${prompt}`
+    ])
+    
+    const enhancedPrompt = result.response.text() || prompt
+    console.log('Enhanced prompt with Gemini:', enhancedPrompt)
+    
+    // Generate image using HuggingFace with enhanced prompt
+    return await generateImageWithHuggingFace(enhancedPrompt, aspectRatio)
+    
   } catch (error) {
-    console.error('Error generating image with HuggingFace:', error)
-    throw new Error('Failed to generate image')
+    console.error('Error with Gemini enhancement, falling back to direct generation:', error)
+    // Fallback to direct HuggingFace generation
+    return await generateImageWithHuggingFace(prompt, aspectRatio)
   }
 }
 
