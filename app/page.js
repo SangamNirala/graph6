@@ -235,6 +235,17 @@ export default function App() {
     }
   }
 
+  const downloadAudio = () => {
+    if (audioUrl) {
+      const a = document.createElement('a')
+      a.href = audioUrl
+      a.download = 'business-voiceover.wav'
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+    }
+  }
+
   const togglePlayback = () => {
     const audio = document.getElementById('audio-player')
     if (audio) {
