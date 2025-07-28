@@ -442,6 +442,128 @@ export default function App() {
           </Card>
         )}
 
+        {/* Video Generation Section */}
+        {(generatedScript && audioUrl) && (
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Video className="w-5 h-5" />
+                AI Video Generation
+              </CardTitle>
+              <CardDescription>
+                Transform your script and voiceover into a complete AI-powered video with avatar and backgrounds
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Button 
+                onClick={generateVideo}
+                disabled={isGeneratingVideo || !generatedScript}
+                className="w-full"
+                size="lg"
+              >
+                {isGeneratingVideo ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    {videoStep}
+                  </>
+                ) : (
+                  <>
+                    <Clapperboard className="w-4 h-4 mr-2" />
+                    Generate AI Video
+                  </>
+                )}
+              </Button>
+              
+              {isGeneratingVideo && (
+                <div className="space-y-2">
+                  <Progress value={videoProgress} className="w-full" />
+                  <p className="text-sm text-gray-600 text-center">
+                    {videoStep} ({videoProgress}%)
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Generated Video Display */}
+        {generatedVideo && (
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Video className="w-5 h-5" />
+                Generated AI Video
+              </CardTitle>
+              <CardDescription>
+                Your complete AI-generated business video with avatar, backgrounds, and voiceover
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {/* Video Preview */}
+                <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300">
+                  <div className="text-center space-y-2">
+                    <Video className="w-12 h-12 mx-auto text-gray-500" />
+                    <p className="text-sm text-gray-600">Video Preview</p>
+                    <p className="text-xs text-gray-500">Duration: {generatedVideo.duration}s</p>
+                  </div>
+                </div>
+
+                {/* Video Metadata */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                  <div className="text-center p-3 bg-blue-50 rounded-lg">
+                    <Camera className="w-6 h-6 mx-auto mb-1 text-blue-600" />
+                    <p className="font-medium">Avatar</p>
+                    <p className="text-gray-600">AI Generated</p>
+                  </div>
+                  <div className="text-center p-3 bg-green-50 rounded-lg">
+                    <Image className="w-6 h-6 mx-auto mb-1 text-green-600" />
+                    <p className="font-medium">Backgrounds</p>
+                    <p className="text-gray-600">{generatedVideo.backgrounds?.length || 0} scenes</p>
+                  </div>
+                  <div className="text-center p-3 bg-purple-50 rounded-lg">
+                    <Volume2 className="w-6 h-6 mx-auto mb-1 text-purple-600" />
+                    <p className="font-medium">Audio</p>
+                    <p className="text-gray-600">Included</p>
+                  </div>
+                  <div className="text-center p-3 bg-orange-50 rounded-lg">
+                    <Clapperboard className="w-6 h-6 mx-auto mb-1 text-orange-600" />
+                    <p className="font-medium">Format</p>
+                    <p className="text-gray-600">MP4</p>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-2">
+                  <Button className="flex-1">
+                    <Download className="w-4 h-4 mr-2" />
+                    Download Video
+                  </Button>
+                  <Button variant="outline">
+                    <Play className="w-4 h-4 mr-2" />
+                    Preview
+                  </Button>
+                </div>
+
+                {/* Background Scenes Preview */}
+                {generatedVideo.backgrounds && generatedVideo.backgrounds.length > 0 && (
+                  <div className="space-y-2">
+                    <h4 className="font-medium text-sm">Generated Scenes:</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {generatedVideo.backgrounds.map((bg, index) => (
+                        <div key={index} className="p-3 bg-gray-50 rounded-lg text-sm">
+                          <p className="font-medium text-gray-700">{bg.timeframe}</p>
+                          <p className="text-gray-600 text-xs mt-1">{bg.prompt}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Features Section */}
         <div className="mt-12 text-center">
           <h2 className="text-2xl font-semibold mb-6">Features</h2>
