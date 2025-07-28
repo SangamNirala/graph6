@@ -261,11 +261,14 @@ backend:
     file: "/app/app/api/[[...path]]/route.js"
     stuck_count: 1
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: false
           agent: "testing"
           comment: "ENDPOINT IMPLEMENTED CORRECTLY but failing due to same third-party API issues as basic avatar video. Route /api/generate-enhanced-avatar-video has proper implementation with enhanced quality parameter. Same API key and model issues preventing image generation."
+        - working: "NA"
+          agent: "main"
+          comment: "UPDATES MADE: Same fixes as basic avatar video - updated API key and models. Ready for retesting with enhanced quality."
 
   - task: "Ultra-Realistic Avatar Video Generation"
     implemented: true
