@@ -624,7 +624,7 @@ class BackendTester:
             return False
     
     def run_all_tests(self):
-        """Run all backend tests"""
+        """Run all backend tests including new video generation functionality"""
         # Check connectivity and set API base
         self.api_base = self.check_api_connectivity()
         
@@ -633,8 +633,9 @@ class BackendTester:
             print("   (Note: Testing locally due to external URL issues)")
         print("=" * 60)
         
-        # Test in order of priority
+        # Test in order of priority - Regression tests first, then new video functionality
         tests = [
+            # REGRESSION TESTS (Existing functionality)
             ("Basic API Connectivity", self.test_root_endpoint),
             ("Script Generation (CRITICAL - Groq Integration)", self.test_script_generation),
             ("Script Generation Validation", self.test_script_generation_validation),
@@ -644,9 +645,34 @@ class BackendTester:
             ("Voiceovers History", self.test_voiceovers_history),
             ("Invalid Route Handling", self.test_invalid_route),
             ("MongoDB Storage Verification", self.test_mongodb_storage),
+            
+            # NEW VIDEO GENERATION TESTS
+            ("Avatar Video Basic (NEW)", self.test_avatar_video_basic),
+            ("Avatar Video Enhanced (NEW)", self.test_avatar_video_enhanced),
+            ("Avatar Video Ultra (NEW)", self.test_avatar_video_ultra),
+            ("Video Without Avatar (NEW)", self.test_video_without_avatar),
+            ("Videos History (NEW)", self.test_videos_history),
+            ("Video Error Handling (NEW)", self.test_video_error_handling),
         ]
         
-        for test_name, test_func in tests:
+        # Run regression tests first
+        print(f"\n📋 REGRESSION TESTING - Existing Functionality")
+        print("-" * 40)
+        regression_tests = tests[:9]  # First 9 tests are regression
+        
+        for test_name, test_func in regression_tests:
+            print(f"\n🧪 Running: {test_name}")
+            try:
+                test_func()
+            except Exception as e:
+                self.log_result(test_name, "FAIL", "Test execution error", str(e))
+        
+        # Run new video generation tests
+        print(f"\n🎬 NEW FUNCTIONALITY TESTING - Video Generation")
+        print("-" * 40)
+        video_tests = tests[9:]  # Last 6 tests are video generation
+        
+        for test_name, test_func in video_tests:
             print(f"\n🧪 Running: {test_name}")
             try:
                 test_func()
@@ -668,6 +694,18 @@ class BackendTester:
             print(f"\n🚨 CRITICAL FAILURES:")
             for failure in critical_failures:
                 print(f"   - {failure['test']}: {failure['message']}")
+        
+        # Show video generation results specifically
+        video_results = [r for r in self.results if "(NEW)" in r["test"]]
+        if video_results:
+            print(f"\n🎬 VIDEO GENERATION RESULTS:")
+            video_passed = sum(1 for r in video_results if r["status"] == "PASS")
+            video_total = len(video_results)
+            print(f"   Video Tests: {video_passed}/{video_total} passed ({(video_passed/video_total*100):.1f}%)")
+            
+            for result in video_results:
+                status_icon = "✅" if result["status"] == "PASS" else "❌"
+                print(f"   {status_icon} {result['test']}: {result['message']}")
         
         return self.passed_tests, self.failed_tests, self.results
 
