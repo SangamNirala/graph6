@@ -291,11 +291,14 @@ backend:
     file: "/app/app/api/[[...path]]/route.js"
     stuck_count: 1
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: false
           agent: "testing"
           comment: "ENDPOINT IMPLEMENTED CORRECTLY but failing due to same third-party API issues. Route /api/generate-video-without-avatar has proper implementation with quality parameter support. Same API key and model issues preventing scene image generation."
+        - working: "NA"
+          agent: "main"
+          comment: "UPDATES MADE: Same API and model fixes. Ready for retesting with configurable quality levels."
 
   - task: "Video History Endpoint"
     implemented: true
