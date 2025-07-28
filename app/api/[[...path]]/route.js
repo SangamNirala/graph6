@@ -34,12 +34,12 @@ function handleCORS(response) {
 // Generate images using HuggingFace models (updated for 2025)
 async function generateImageWithHuggingFace(prompt, aspectRatio = '16:9') {
   try {
-    // List of available models to try (in order of preference)
+    // List of available models to try (in order of preference) - Updated based on 2025 availability
     const models = [
-      'black-forest-labs/FLUX.1-schnell',  // Fast, high-quality model
-      'stabilityai/stable-diffusion-2-1',  // Reliable fallback
-      'prompthero/openjourney',            // Good for artistic images
-      'CompVis/stable-diffusion-v1-4'      // Final fallback
+      'stabilityai/stable-diffusion-xl-base-1.0',  // SDXL - most reliable
+      'stabilityai/stable-diffusion-2-1',          // SD 2.1 - good fallback
+      'runwayml/stable-diffusion-v1-5',            // SD 1.5 - classic fallback
+      'stablediffusionapi/anything-v5'             // Alternative model
     ]
     
     const width = aspectRatio === '16:9' ? 1024 : 512
