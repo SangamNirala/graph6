@@ -480,16 +480,16 @@ Guidelines:
           </Card>
         </div>
 
-        {/* Audio Player Section */}
+        {/* Text-to-Speech Player Section */}
         {audioUrl && (
           <Card className="mt-6">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Volume2 className="w-5 h-5" />
-                Generated Voiceover
+                Text-to-Speech Voiceover
               </CardTitle>
               <CardDescription>
-                AI-generated voiceover ready for download
+                Click Play to hear your script read aloud using Text-to-Speech
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -505,18 +505,16 @@ Guidelines:
                   ) : (
                     <Play className="w-4 h-4" />
                   )}
-                  {isPlaying ? 'Pause' : 'Play'}
+                  {isPlaying ? 'Stop Speaking' : 'Speak Script'}
                 </Button>
                 
-                <audio
-                  id="audio-player"
-                  src={audioUrl}
-                  onEnded={() => setIsPlaying(false)}
-                  onPlay={() => setIsPlaying(true)}
-                  onPause={() => setIsPlaying(false)}
-                  className="flex-1"
-                  controls
-                />
+                <div className="flex-1 text-sm text-gray-600">
+                  {isPlaying ? (
+                    <span className="text-green-600 font-medium">🗣️ Speaking your script...</span>
+                  ) : (
+                    <span>Ready to speak {generatedScript.split(' ').length} words</span>
+                  )}
+                </div>
                 
                 <Button
                   variant="outline"
@@ -525,8 +523,16 @@ Guidelines:
                   className="flex items-center gap-2"
                 >
                   <Download className="w-4 h-4" />
-                  Download
+                  Download Audio
                 </Button>
+              </div>
+              
+              {/* Info about Text-to-Speech */}
+              <div className="mt-3 p-3 bg-blue-50 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  💡 <strong>How it works:</strong> Click "Speak Script" to hear your generated script read aloud using your browser's built-in Text-to-Speech. 
+                  The voice and speed may vary depending on your device and browser settings.
+                </p>
               </div>
             </CardContent>
           </Card>
