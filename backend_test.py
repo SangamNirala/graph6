@@ -13,7 +13,7 @@ import base64
 from datetime import datetime
 
 # Get base URL from environment or use default
-BASE_URL = os.getenv('NEXT_PUBLIC_BASE_URL', 'https://6fbd1faf-9f91-4d07-9e37-98dd27d391af.preview.emergentagent.com')
+BASE_URL = os.getenv('NEXT_PUBLIC_BASE_URL', 'https://71015afe-fb68-4796-8ab4-4fea82501013.preview.emergentagent.com')
 API_BASE = f"{BASE_URL}/api"
 
 # For testing, use localhost if external URL fails
