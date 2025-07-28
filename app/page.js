@@ -169,6 +169,86 @@ export default function App() {
     }
   }
 
+  const generateVideo = async () => {
+    if (!generatedScript.trim()) {
+      setError('Please generate a script first before creating video')
+      setTimeout(() => setError(''), 3000)
+      return
+    }
+
+    setIsGeneratingVideo(true)
+    setError('')
+    setSuccess('')
+    setGeneratedVideo(null) // Clear previous video
+    setVideoProgress(0)
+    setVideoStep('Initializing...')
+    
+    try {
+      setVideoStep('Starting video generation...')
+      setVideoProgress(5)
+      
+      const response = await fetch('/api/generate-video', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          script: generatedScript,
+          options: {
+            avatar_description: 'professional business person',
+            avatar_style: 'realistic'
+          }
+        }),
+      })
+      
+      // Handle response errors
+      if (!response.ok) {
+        if (response.status === 502) {
+          throw new Error('Server temporarily unavailable. Please try again in a moment.')
+        } else if (response.status >= 500) {
+          throw new Error('Server error. Please try again later.')
+        }
+        
+        try {
+          const errorData = await response.json()
+          throw new Error(errorData.error || `Request failed with status ${response.status}`)
+        } catch (jsonError) {
+          throw new Error(`Request failed with status ${response.status}`)
+        }
+      }
+      
+      // Parse response
+      const responseText = await response.text()
+      if (!responseText) {
+        throw new Error('Empty response from server')
+      }
+      
+      let data
+      try {
+        data = JSON.parse(responseText)
+      } catch (jsonError) {
+        console.error('JSON Parse Error:', jsonError)
+        console.error('Response Text:', responseText)
+        throw new Error('Invalid response format from server')
+      }
+      
+      if (!data.success || !data.video) {
+        throw new Error('No video generated. Please try again.')
+      }
+      
+      setGeneratedVideo(data.video)
+      setVideoProgress(100)
+      setVideoStep('Video generation completed!')
+      setSuccess('Video generated successfully! Your AI-powered business video is ready.')
+      setTimeout(() => setSuccess(''), 5000)
+    } catch (err) {
+      setError(err.message)
+      setVideoStep('Failed to generate video')
+    } finally {
+      setIsGeneratingVideo(false)
+    }
+  }
+
   const togglePlayback = () => {
     const audio = document.getElementById('audio-player')
     if (audio) {
