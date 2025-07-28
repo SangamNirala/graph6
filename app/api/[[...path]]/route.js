@@ -71,6 +71,7 @@ async function generateImageWithHuggingFace(prompt, aspectRatio = '16:9') {
         
       } catch (modelError) {
         console.log(`Model ${model} failed:`, modelError.message)
+        console.log(`Full error details:`, modelError)
         continue // Try next model
       }
     }
