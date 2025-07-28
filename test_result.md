@@ -449,12 +449,12 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: 
+  current_focus: []
+  stuck_tasks: 
     - "Basic Avatar Video Generation"
     - "Enhanced Avatar Video Generation" 
     - "Ultra-Realistic Avatar Video Generation"
     - "Video Without Avatar Generation"
-  stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
