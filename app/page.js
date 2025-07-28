@@ -253,6 +253,61 @@ Guidelines:
     }
   }
 
+  // Clean script text for Text-to-Speech (remove formatting, time markers, etc.)
+  const cleanScriptForSpeech = (scriptText) => {
+    if (!scriptText) return ''
+    
+    let cleanedText = scriptText
+    
+    // Remove the introductory line
+    cleanedText = cleanedText.replace(/^Here's a compelling script for your.*?:\s*/i, '')
+    
+    // Remove time markers like [Hook: 0s-5s], [Benefits], [Call to Action], etc.
+    cleanedText = cleanedText.replace(/\[.*?\]/g, '')
+    
+    // Remove section headers in parentheses like (0s-5s), (Hook), (Benefits), etc.
+    cleanedText = cleanedText.replace(/\(.*?\)/g, '')
+    
+    // Remove asterisks and emphasis markers
+    cleanedText = cleanedText.replace(/\*\*/g, '') // Remove **text**
+    cleanedText = cleanedText.replace(/\*/g, '') // Remove *text*
+    
+    // Remove "emphasis" and "pause" instructions
+    cleanedText = cleanedText.replace(/\(emphasis\)/gi, '')
+    cleanedText = cleanedText.replace(/\(pause\)/gi, '')
+    
+    // Remove extra quotation marks that are formatting
+    cleanedText = cleanedText.replace(/^["']|["']$/g, '')
+    
+    // Remove multiple spaces and clean up
+    cleanedText = cleanedText.replace(/\s+/g, ' ')
+    cleanedText = cleanedText.replace(/\s+\./g, '.')
+    cleanedText = cleanedText.replace(/\s+,/g, ',')
+    
+    // Remove any remaining formatting artifacts
+    cleanedText = cleanedText.replace(/\s*-\s*/g, ' ') // Remove standalone dashes
+    cleanedText = cleanedText.replace(/^\s+|\s+$/g, '') // Trim whitespace
+    
+    // Remove any lines that are just formatting instructions
+    const lines = cleanedText.split('\n')
+    const contentLines = lines.filter(line => {
+      const trimmedLine = line.trim()
+      // Skip lines that are just formatting instructions
+      if (trimmedLine.match(/^(hook|problem|solution|benefits|call to action)$/i)) return false
+      if (trimmedLine.match(/^\d+s-\d+s$/)) return false
+      if (trimmedLine.length < 3) return false
+      return true
+    })
+    
+    cleanedText = contentLines.join(' ')
+    
+    // Final cleanup
+    cleanedText = cleanedText.replace(/\s+/g, ' ').trim()
+    
+    console.log(`🧹 Cleaned script for speech: "${cleanedText.substring(0, 100)}..."`)
+    return cleanedText
+  }
+
   const togglePlayback = () => {
     if (!generatedScript.trim()) {
       console.log('❌ No script available for speech')
@@ -265,16 +320,26 @@ Guidelines:
       speechSynthesis.cancel()
       setIsPlaying(false)
     } else {
-      // Start speech synthesis with the actual script text
-      console.log('🗣️ Starting speech synthesis with script text...')
+      // Start speech synthesis with the cleaned script text
+      console.log('🗣️ Starting speech synthesis with cleaned script text...')
       
       // Cancel any ongoing speech
       if (speechSynthesis.speaking) {
         speechSynthesis.cancel()
       }
       
-      // Create speech utterance with the script text
-      const utterance = new SpeechSynthesisUtterance(generatedScript)
+      // Clean the script text for better speech experience
+      const cleanedScript = cleanScriptForSpeech(generatedScript)
+      
+      if (!cleanedScript.trim()) {
+        console.log('❌ No speakable content found after cleaning')
+        setError('No speakable content found in the script')
+        setTimeout(() => setError(''), 3000)
+        return
+      }
+      
+      // Create speech utterance with the cleaned script text
+      const utterance = new SpeechSynthesisUtterance(cleanedScript)
       
       // Configure speech for clear, professional delivery
       utterance.rate = 0.85   // Slightly slower for clarity
@@ -315,7 +380,7 @@ Guidelines:
       
       // Set up speech event listeners
       utterance.onstart = () => {
-        console.log('✅ Speech synthesis started - now speaking the script!')
+        console.log('✅ Speech synthesis started - now speaking the cleaned script!')
         setIsPlaying(true)
       }
       
@@ -341,8 +406,8 @@ Guidelines:
         setIsPlaying(true)
       }
       
-      // Start speaking the script text
-      console.log(`🗣️ Speaking script: "${generatedScript.substring(0, 50)}..."`)
+      // Start speaking the cleaned script text
+      console.log(`🗣️ Speaking cleaned script: "${cleanedScript.substring(0, 80)}..."`)
       speechSynthesis.speak(utterance)
     }
   }
