@@ -233,15 +233,18 @@ backend:
 
   - task: "Scene-Based Visual Prompt Extraction using Claude 3.5 Sonnet"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/app/api/[[...path]]/route.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Implemented scene extraction using Claude 3.5 Sonnet via OpenRouter API. Function extractScenePrompts() breaks scripts into 3-5 visual segments with detailed prompts for image generation."
+        - working: true
+          agent: "testing"
+          comment: "✅ PASSED: Scene extraction working perfectly using Claude 3.5 Sonnet via OpenRouter. Successfully extracted 3 scene prompts with proper timeframe and prompt structure. OpenRouter API integration functioning correctly."
 
   - task: "Background Image Generation using Stable Diffusion"
     implemented: true
