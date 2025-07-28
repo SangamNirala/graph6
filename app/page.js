@@ -12,11 +12,16 @@ export default function App() {
   const [businessDescription, setBusinessDescription] = useState('')
   const [generatedScript, setGeneratedScript] = useState('')
   const [audioUrl, setAudioUrl] = useState('')
+  const [videoData, setVideoData] = useState(null)
   const [isGeneratingScript, setIsGeneratingScript] = useState(false)
   const [isGeneratingVoice, setIsGeneratingVoice] = useState(false)
+  const [isGeneratingVideo, setIsGeneratingVideo] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [isPlaying, setIsPlaying] = useState(false)
+  const [showVideoOptions, setShowVideoOptions] = useState(false)
+  const [selectedVideoType, setSelectedVideoType] = useState('') // 'with_avatar' or 'without_avatar'
+  const [selectedQuality, setSelectedQuality] = useState('basic') // 'basic', 'enhanced', 'ultra'
 
   const generateScript = async () => {
     if (!businessDescription.trim()) {
