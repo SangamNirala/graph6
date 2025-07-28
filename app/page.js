@@ -259,14 +259,28 @@ Guidelines:
     
     let cleanedText = scriptText
     
-    // Remove the introductory line
-    cleanedText = cleanedText.replace(/^Here's a compelling script for your.*?:\s*/i, '')
+    // Remove the introductory lines
+    cleanedText = cleanedText.replace(/^Here's a compelling script.*?:\s*/i, '')
+    cleanedText = cleanedText.replace(/^Here's a compelling business video script.*?:\s*/i, '')
+    cleanedText = cleanedText.replace(/^Here's.*?script.*?:\s*/i, '')
     
-    // Remove time markers like [Hook: 0s-5s], [Benefits], [Call to Action], etc.
+    // Remove time markers and section headers
+    cleanedText = cleanedText.replace(/\[Hook.*?\]/gi, '')
+    cleanedText = cleanedText.replace(/\[Problem.*?\]/gi, '')
+    cleanedText = cleanedText.replace(/\[Solution.*?\]/gi, '')
+    cleanedText = cleanedText.replace(/\[Benefits.*?\]/gi, '')
+    cleanedText = cleanedText.replace(/\[Call to Action.*?\]/gi, '')
+    cleanedText = cleanedText.replace(/\[Closing.*?\]/gi, '')
     cleanedText = cleanedText.replace(/\[.*?\]/g, '')
     
-    // Remove section headers in parentheses like (0s-5s), (Hook), (Benefits), etc.
-    cleanedText = cleanedText.replace(/\(.*?\)/g, '')
+    // Remove time markers in brackets and parentheses
+    cleanedText = cleanedText.replace(/\(.*?to.*?\)/gi, '') // (0s to 5s)
+    cleanedText = cleanedText.replace(/\(.*?-.*?\)/gi, '') // (0s-5s)
+    cleanedText = cleanedText.replace(/\(\d+s.*?\d+s\)/gi, '') // (60s to 80s)
+    
+    // Remove section headers
+    cleanedText = cleanedText.replace(/\*\*\[.*?\]\*\*/g, '')
+    cleanedText = cleanedText.replace(/\*\*(Hook|Problem|Solution|Benefits|Call to Action|Closing).*?\*\*/gi, '')
     
     // Remove asterisks and emphasis markers
     cleanedText = cleanedText.replace(/\*\*/g, '') // Remove **text**
@@ -276,26 +290,27 @@ Guidelines:
     cleanedText = cleanedText.replace(/\(emphasis\)/gi, '')
     cleanedText = cleanedText.replace(/\(pause\)/gi, '')
     
+    // Remove note sections at the end
+    cleanedText = cleanedText.replace(/Note:.*$/gi, '')
+    cleanedText = cleanedText.replace(/This script.*$/gi, '')
+    
     // Remove extra quotation marks that are formatting
     cleanedText = cleanedText.replace(/^["']|["']$/g, '')
     
-    // Remove multiple spaces and clean up
+    // Clean up spacing and punctuation
     cleanedText = cleanedText.replace(/\s+/g, ' ')
     cleanedText = cleanedText.replace(/\s+\./g, '.')
     cleanedText = cleanedText.replace(/\s+,/g, ',')
+    cleanedText = cleanedText.replace(/\s*-\s*/g, ' ')
     
-    // Remove any remaining formatting artifacts
-    cleanedText = cleanedText.replace(/\s*-\s*/g, ' ') // Remove standalone dashes
-    cleanedText = cleanedText.replace(/^\s+|\s+$/g, '') // Trim whitespace
-    
-    // Remove any lines that are just formatting instructions
+    // Remove lines that are just section labels
     const lines = cleanedText.split('\n')
     const contentLines = lines.filter(line => {
       const trimmedLine = line.trim()
       // Skip lines that are just formatting instructions
-      if (trimmedLine.match(/^(hook|problem|solution|benefits|call to action)$/i)) return false
-      if (trimmedLine.match(/^\d+s-\d+s$/)) return false
-      if (trimmedLine.length < 3) return false
+      if (trimmedLine.match(/^(hook|problem|solution|benefits|call to action|closing)$/i)) return false
+      if (trimmedLine.match(/^\d+s.*?\d+s$/)) return false
+      if (trimmedLine.length < 10) return false // Skip very short lines that are likely formatting
       return true
     })
     
@@ -304,7 +319,8 @@ Guidelines:
     // Final cleanup
     cleanedText = cleanedText.replace(/\s+/g, ' ').trim()
     
-    console.log(`🧹 Cleaned script for speech: "${cleanedText.substring(0, 100)}..."`)
+    console.log(`🧹 Original script: "${scriptText.substring(0, 100)}..."`)
+    console.log(`🧹 Cleaned script: "${cleanedText.substring(0, 100)}..."`)
     return cleanedText
   }
 
