@@ -36,10 +36,10 @@ async function generateImageWithHuggingFace(prompt, aspectRatio = '16:9') {
   try {
     // List of available models to try (in order of preference) - Updated based on 2025 availability
     const models = [
-      'stabilityai/stable-diffusion-xl-base-1.0',  // SDXL - most reliable
-      'stabilityai/stable-diffusion-2-1',          // SD 2.1 - good fallback
-      'runwayml/stable-diffusion-v1-5',            // SD 1.5 - classic fallback
-      'stablediffusionapi/anything-v5'             // Alternative model
+      'black-forest-labs/FLUX.1-dev',                    // Most powerful current model
+      'stabilityai/stable-diffusion-xl-base-1.0',        // SDXL - reliable
+      'stabilityai/stable-diffusion-3-medium-diffusers',  // SD3 - good quality
+      'Kwai-Kolors/Kolors'                               // Alternative model
     ]
     
     const width = aspectRatio === '16:9' ? 1024 : 512
