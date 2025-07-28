@@ -266,20 +266,24 @@ export default function App() {
       <div className="container mx-auto p-6">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            AI Business Video Script & Voiceover Generator
+            AI Business Video Generator with Avatar & Voiceover
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Transform your business ideas into engaging video scripts and professional voiceovers
-            using AI-powered tools
+            Transform your business ideas into complete AI-powered videos with professional avatars,
+            dynamic backgrounds, compelling scripts, and natural voiceovers
           </p>
           <div className="flex justify-center gap-2 mt-4">
             <Badge variant="secondary" className="bg-green-100 text-green-800">
               <Mic className="w-3 h-3 mr-1" />
-              Mixtral AI
+              LLaMA AI Scripts
             </Badge>
             <Badge variant="secondary" className="bg-blue-100 text-blue-800">
               <Volume2 className="w-3 h-3 mr-1" />
-              Bark TTS
+              AI Voiceover
+            </Badge>
+            <Badge variant="secondary" className="bg-purple-100 text-purple-800">
+              <Video className="w-3 h-3 mr-1" />
+              Avatar Videos
             </Badge>
           </div>
         </div>
