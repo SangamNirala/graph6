@@ -251,8 +251,10 @@ def test_additional_endpoints():
 def run_all_tests():
     """Run all backend tests"""
     print(f"\n🚀 STARTING BACKEND API TESTS")
-    print(f"📍 API Base URL: {API_BASE}")
+    print(f"📍 External API URL: {EXTERNAL_API_BASE}")
+    print(f"📍 Local API URL: {API_BASE}")
     print(f"🕐 Test Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"ℹ️  NOTE: Testing locally due to external routing issues")
     
     tests = [
         ("Basic Connectivity", test_basic_connectivity),
