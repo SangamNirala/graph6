@@ -34,7 +34,7 @@ def test_basic_connectivity():
     print_test_header("Basic API Connectivity")
     
     try:
-        response = requests.get(f"{API_BASE}/", timeout=10)
+        response = requests.get(f"{API_BASE}", timeout=10)
         
         if response.status_code == 200:
             data = response.json()
