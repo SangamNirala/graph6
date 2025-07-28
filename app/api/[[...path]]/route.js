@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { NextResponse } from 'next/server'
 import axios from 'axios'
 import { HfInference } from '@huggingface/inference'
-import { GoogleGenerativeAI } from '@google/genai'
+import { GoogleGenerativeAI } from '@google/generative-ai'
 
 // Initialize clients
 const hf = new HfInference(process.env.HUGGINGFACE_API_KEY)
