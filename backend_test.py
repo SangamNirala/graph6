@@ -12,7 +12,7 @@ import os
 from datetime import datetime
 
 # Get base URL from environment
-BASE_URL = "https://4657aedc-4483-4596-8e88-942d9f22dc1c.preview.emergentagent.com/api"
+BASE_URL = "http://localhost:3000/api"
 
 # Test business description as specified in requirements
 TEST_BUSINESS_DESCRIPTION = "We're launching an innovative AI-powered project management software that helps remote teams collaborate more effectively and increase productivity by 50%. Our solution includes smart task automation, real-time collaboration tools, and predictive analytics for project success."
