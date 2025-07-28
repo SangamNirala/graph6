@@ -131,6 +131,9 @@ backend:
         - working: true
           agent: "testing"
           comment: "FIXED: Updated model to 'llama-3.3-70b-versatile' (current production model). Script generation now working perfectly with new Groq API key. Generated 1934 character script with 7/7 relevant keywords for business description. Script is well-structured with Hook, Problem, Solution, Benefits, and Call to Action sections."
+        - working: true
+          agent: "testing"
+          comment: "POST-RESTART VERIFICATION: ✅ CONFIRMED WORKING. After NextJS server restart, script generation fully operational. Generated 1973-character script with 6/7 business keywords found. Groq API integration with LLaMA 3.3-70b-versatile model working perfectly. User's 'server not available' issue resolved - backend API responding correctly to all script generation requests."
 
   - task: "Script Generation Validation"
     implemented: true
