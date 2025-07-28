@@ -439,6 +439,205 @@ export default function App() {
           </Card>
         )}
 
+        {/* Video Generation Section */}
+        {(generatedScript && audioUrl) && (
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Video className="w-5 h-5" />
+                Generate Professional Video
+              </CardTitle>
+              <CardDescription>
+                Create a professional business video with your script and voiceover
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {!showVideoOptions ? (
+                <Button 
+                  onClick={() => setShowVideoOptions(true)}
+                  className="w-full"
+                  size="lg"
+                >
+                  <Video className="w-4 h-4 mr-2" />
+                  Generate Video
+                </Button>
+              ) : (
+                <div className="space-y-4">
+                  {/* Video Type Selection */}
+                  <div className="space-y-3">
+                    <h4 className="font-medium">Choose Video Style:</h4>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <Button
+                        variant={selectedVideoType === 'without_avatar' ? 'default' : 'outline'}
+                        onClick={() => setSelectedVideoType('without_avatar')}
+                        className="p-4 h-auto flex-col gap-2"
+                      >
+                        <Image className="w-6 h-6" />
+                        <div className="text-center">
+                          <div className="font-medium">Scene-Based Video</div>
+                          <div className="text-xs text-muted-foreground">
+                            Images change with scenes + voiceover
+                          </div>
+                        </div>
+                      </Button>
+                      
+                      <Button
+                        variant={selectedVideoType === 'with_avatar' ? 'default' : 'outline'}
+                        onClick={() => setSelectedVideoType('with_avatar')}
+                        className="p-4 h-auto flex-col gap-2"
+                      >
+                        <User className="w-6 h-6" />
+                        <div className="text-center">
+                          <div className="font-medium">Avatar Video</div>
+                          <div className="text-xs text-muted-foreground">
+                            Talking avatar + scene images
+                          </div>
+                        </div>
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Quality Selection */}
+                  {selectedVideoType && (
+                    <div className="space-y-3">
+                      <h4 className="font-medium">Select Quality:</h4>
+                      <div className="grid gap-2 sm:grid-cols-3">
+                        <Button
+                          variant={selectedQuality === 'basic' ? 'default' : 'outline'}
+                          onClick={() => setSelectedQuality('basic')}
+                          size="sm"
+                        >
+                          Basic
+                        </Button>
+                        <Button
+                          variant={selectedQuality === 'enhanced' ? 'default' : 'outline'}
+                          onClick={() => setSelectedQuality('enhanced')}
+                          size="sm"
+                        >
+                          Enhanced
+                        </Button>
+                        <Button
+                          variant={selectedQuality === 'ultra' ? 'default' : 'outline'}
+                          onClick={() => setSelectedQuality('ultra')}
+                          size="sm"
+                        >
+                          Ultra-Realistic
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Generate Button */}
+                  {selectedVideoType && (
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={() => generateVideo(selectedVideoType, selectedQuality)}
+                        disabled={isGeneratingVideo}
+                        className="flex-1"
+                      >
+                        {isGeneratingVideo ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Generating Video...
+                          </>
+                        ) : (
+                          <>
+                            <Video className="w-4 h-4 mr-2" />
+                            Generate {selectedVideoType === 'with_avatar' ? 'Avatar' : 'Scene'} Video
+                          </>
+                        )}
+                      </Button>
+                      
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setShowVideoOptions(false)
+                          setSelectedVideoType('')
+                          setSelectedQuality('basic')
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Video Player Section */}
+        {videoData && (
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Video className="w-5 h-5" />
+                Generated Video
+              </CardTitle>
+              <CardDescription>
+                Professional {videoData.type === 'with_avatar' ? 'avatar' : 'scene-based'} video ({videoData.quality} quality)
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="w-full">
+                <video
+                  src={videoData.videoUrl}
+                  controls
+                  className="w-full rounded-lg bg-black"
+                  style={{ maxHeight: '400px' }}
+                >
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+              
+              {/* Video Details */}
+              <div className="grid gap-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Duration:</span>
+                  <span>{videoData.duration}s</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Scenes:</span>
+                  <span>{videoData.scenes?.length || 0}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Type:</span>
+                  <span className="capitalize">{videoData.type.replace('_', ' ')}</span>
+                </div>
+              </div>
+
+              {/* Scene Preview */}
+              {videoData.scenes && videoData.scenes.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="font-medium">Scene Preview:</h4>
+                  <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                    {videoData.scenes.slice(0, 6).map((scene, index) => (
+                      <div key={index} className="relative">
+                        <img
+                          src={`data:image/png;base64,${scene.imageBase64}`}
+                          alt={`Scene ${index + 1}`}
+                          className="w-full h-20 object-cover rounded"
+                        />
+                        <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 rounded-b">
+                          Scene {index + 1} ({scene.duration}s)
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <Button
+                onClick={downloadVideo}
+                className="w-full"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Download Video
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Features Section */}
         <div className="mt-12 text-center">
           <h2 className="text-2xl font-semibold mb-6">Features</h2>
