@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 """
 Backend API Testing for AI Business Video Script & Voiceover Generator
-Tests all API endpoints including Groq integration for script generation
+Tests all API endpoints including NEW VIDEO GENERATION functionality and regression testing
 """
 
 import requests
 import json
 import os
 import sys
+import time
+import base64
 from datetime import datetime
 
 # Get base URL from environment or use default
@@ -16,6 +18,25 @@ API_BASE = f"{BASE_URL}/api"
 
 # For testing, use localhost if external URL fails
 LOCALHOST_API = "http://localhost:3000/api"
+
+# Test data for video generation
+SAMPLE_BUSINESS_DESCRIPTION = """
+AI-powered CRM software that helps small businesses automate their customer relationship management. 
+Our platform uses machine learning to predict customer behavior, automate follow-ups, and increase sales conversion rates by 40%. 
+Perfect for businesses with 10-100 employees looking to scale their customer operations efficiently.
+"""
+
+SAMPLE_SCRIPT = """
+Are you tired of losing potential customers because you can't keep up with follow-ups? 
+
+Here's the problem: Small businesses lose 27% of potential sales due to poor customer relationship management. Manual processes are time-consuming and error-prone.
+
+Introducing our AI-powered CRM software - the game-changer your business needs. Our platform uses advanced machine learning to predict customer behavior, automate follow-ups, and boost your sales conversion rates by 40%.
+
+The benefits are clear: Save 10 hours per week on manual tasks, never miss a follow-up again, and watch your revenue grow. Perfect for businesses with 10-100 employees ready to scale.
+
+Ready to transform your customer relationships? Start your free trial today and see the difference AI can make for your business.
+"""
 
 class BackendTester:
     def __init__(self):
