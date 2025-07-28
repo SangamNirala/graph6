@@ -244,9 +244,9 @@ backend:
     implemented: true
     working: false
     file: "/app/app/api/[[...path]]/route.js"
-    stuck_count: 1
+    stuck_count: 2
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: false
           agent: "testing"
@@ -254,6 +254,9 @@ backend:
         - working: "NA"
           agent: "main"
           comment: "UPDATES MADE: Main agent has fixed the API issues. 1) Updated Gemini integration to use 'gemini-1.5-flash' instead of problematic 'imagen-3.0-generate-002', 2) Added new HuggingFace API key (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), 3) Implemented fallback model strategy with multiple 2025 models: FLUX.1-schnell, stable-diffusion-2-1, openjourney, CompVis/stable-diffusion-v1-4. Ready for retesting."
+        - working: false
+          agent: "testing"
+          comment: "CRITICAL ISSUE IDENTIFIED: The HuggingFace API key (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) is INVALID - returns 'Invalid username or password' error. Updated models to currently available ones (FLUX.1-dev, SDXL, SD3) but all fail due to invalid API key. Endpoint implementation is correct, but third-party API authentication is broken. Direct API test confirms: 'Failed to perform inference: Invalid username or password.'"
 
   - task: "Enhanced Avatar Video Generation"
     implemented: true
