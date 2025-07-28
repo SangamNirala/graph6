@@ -641,13 +641,13 @@ export default function App() {
         {/* Features Section */}
         <div className="mt-12 text-center">
           <h2 className="text-2xl font-semibold mb-6">Features</h2>
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-4">
             <Card>
               <CardContent className="p-6">
                 <FileText className="w-8 h-8 mx-auto mb-3 text-blue-600" />
                 <h3 className="font-semibold mb-2">AI Script Generation</h3>
                 <p className="text-sm text-gray-600">
-                  Create compelling video scripts using advanced Mixtral AI technology
+                  Create compelling video scripts using advanced AI technology
                 </p>
               </CardContent>
             </Card>
@@ -656,16 +656,25 @@ export default function App() {
                 <Mic className="w-8 h-8 mx-auto mb-3 text-green-600" />
                 <h3 className="font-semibold mb-2">Professional Voiceover</h3>
                 <p className="text-sm text-gray-600">
-                  Generate high-quality voiceovers with Bark TTS technology
+                  Generate high-quality voiceovers with AI TTS technology
                 </p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-6">
-                <Download className="w-8 h-8 mx-auto mb-3 text-purple-600" />
+                <Video className="w-8 h-8 mx-auto mb-3 text-purple-600" />
+                <h3 className="font-semibold mb-2">Video Generation</h3>
+                <p className="text-sm text-gray-600">
+                  Create professional videos with avatars and scene transitions
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-6">
+                <Download className="w-8 h-8 mx-auto mb-3 text-orange-600" />
                 <h3 className="font-semibold mb-2">Instant Download</h3>
                 <p className="text-sm text-gray-600">
-                  Download your generated audio files instantly in WAV format
+                  Download your generated content instantly in multiple formats
                 </p>
               </CardContent>
             </Card>
