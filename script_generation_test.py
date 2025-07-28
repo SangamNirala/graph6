@@ -13,10 +13,10 @@ from datetime import datetime
 
 # Get base URL from environment or use default
 BASE_URL = os.getenv('NEXT_PUBLIC_BASE_URL', 'https://797a964b-6745-4b3b-930c-fd05b6803ec5.preview.emergentagent.com')
-API_BASE = f"{BASE_URL}/api"
+EXTERNAL_API_BASE = f"{BASE_URL}/api"
 
 # For testing, use localhost since external URL has routing issues
-LOCAL_API_BASE = "http://localhost:3000/api"
+API_BASE = "http://localhost:3000/api"
 
 def print_test_header(test_name):
     print(f"\n{'='*60}")
