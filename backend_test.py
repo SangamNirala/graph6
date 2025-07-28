@@ -66,7 +66,7 @@ class BackendTester:
         except:
             pass
         
-        return self.api_base  # Return original if both fail
+        return LOCALHOST_API  # Default to localhost if both fail
         
     def log_result(self, test_name, status, message, details=None):
         """Log test result"""
