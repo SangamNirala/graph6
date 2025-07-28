@@ -265,7 +265,7 @@ backend:
     implemented: true
     working: false
     file: "/app/app/api/[[...path]]/route.js"
-    stuck_count: 2
+    stuck_count: 3
     priority: "high"
     needs_retesting: false
     status_history:
@@ -278,6 +278,9 @@ backend:
         - working: false
           agent: "testing"
           comment: "SAME CRITICAL ISSUE: HuggingFace API key (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) is invalid. Enhanced avatar video endpoint correctly implemented but fails due to invalid API authentication. All image generation attempts fail with 'Invalid username or password' error."
+        - working: false
+          agent: "testing"
+          comment: "NEW API KEY TESTED: User provided new HuggingFace API key (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). RESULT: API key is VALID but has exceeded monthly included credits for Inference Providers. All HuggingFace models return HTTP 402 'Payment Required' with message: 'You have exceeded your monthly included credits for Inference Providers. Subscribe to PRO to get 20x more monthly included credits.' Enhanced avatar video endpoint implementation remains correct."
 
   - task: "Ultra-Realistic Avatar Video Generation"
     implemented: true
