@@ -59,7 +59,7 @@ async function generateImageWithHuggingFace(prompt, aspectRatio = '16:9') {
             width: width,
             height: height,
             guidance_scale: 7.5,
-            num_inference_steps: model.includes('FLUX') ? 4 : 20, // FLUX needs fewer steps
+            num_inference_steps: 20, // Standard steps for all models
             negative_prompt: 'blurry, low quality, distorted, ugly, bad anatomy'
           }
         })
