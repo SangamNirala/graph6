@@ -565,6 +565,181 @@ async function handleRoute(request, { params }) {
       return handleCORS(NextResponse.json(cleanedVoiceovers))
     }
 
+    // Generate Avatar Video endpoint - POST /api/generate-avatar-video
+    if (route === '/generate-avatar-video' && method === 'POST') {
+      const body = await request.json()
+      
+      if (!body.script) {
+        return handleCORS(NextResponse.json(
+          { error: "Script is required" }, 
+          { status: 400 }
+        ))
+      }
+
+      try {
+        const videoData = await createVideoWithAvatar(body.script, 'basic')
+        
+        // Save to database for history
+        const videoRecord = {
+          id: uuidv4(),
+          script: body.script,
+          type: 'with_avatar',
+          quality: 'basic',
+          videoData: videoData,
+          created_at: new Date()
+        }
+        
+        await db.collection('videos').insertOne(videoRecord)
+        
+        return handleCORS(NextResponse.json({ 
+          success: true,
+          video: videoData,
+          message: 'Avatar video generated successfully'
+        }))
+      } catch (error) {
+        console.error('Avatar video generation error:', error)
+        return handleCORS(NextResponse.json(
+          { error: error.message || 'Failed to generate avatar video' }, 
+          { status: 500 }
+        ))
+      }
+    }
+
+    // Generate Enhanced Avatar Video endpoint - POST /api/generate-enhanced-avatar-video
+    if (route === '/generate-enhanced-avatar-video' && method === 'POST') {
+      const body = await request.json()
+      
+      if (!body.script) {
+        return handleCORS(NextResponse.json(
+          { error: "Script is required" }, 
+          { status: 400 }
+        ))
+      }
+
+      try {
+        const videoData = await createVideoWithAvatar(body.script, 'enhanced')
+        
+        // Save to database for history
+        const videoRecord = {
+          id: uuidv4(),
+          script: body.script,
+          type: 'with_avatar',
+          quality: 'enhanced',
+          videoData: videoData,
+          created_at: new Date()
+        }
+        
+        await db.collection('videos').insertOne(videoRecord)
+        
+        return handleCORS(NextResponse.json({ 
+          success: true,
+          video: videoData,
+          message: 'Enhanced avatar video generated successfully'
+        }))
+      } catch (error) {
+        console.error('Enhanced avatar video generation error:', error)
+        return handleCORS(NextResponse.json(
+          { error: error.message || 'Failed to generate enhanced avatar video' }, 
+          { status: 500 }
+        ))
+      }
+    }
+
+    // Generate Ultra-Realistic Avatar Video endpoint - POST /api/generate-ultra-realistic-avatar-video
+    if (route === '/generate-ultra-realistic-avatar-video' && method === 'POST') {
+      const body = await request.json()
+      
+      if (!body.script) {
+        return handleCORS(NextResponse.json(
+          { error: "Script is required" }, 
+          { status: 400 }
+        ))
+      }
+
+      try {
+        const videoData = await createVideoWithAvatar(body.script, 'ultra')
+        
+        // Save to database for history
+        const videoRecord = {
+          id: uuidv4(),
+          script: body.script,
+          type: 'with_avatar',
+          quality: 'ultra',
+          videoData: videoData,
+          created_at: new Date()
+        }
+        
+        await db.collection('videos').insertOne(videoRecord)
+        
+        return handleCORS(NextResponse.json({ 
+          success: true,
+          video: videoData,
+          message: 'Ultra-realistic avatar video generated successfully'
+        }))
+      } catch (error) {
+        console.error('Ultra-realistic avatar video generation error:', error)
+        return handleCORS(NextResponse.json(
+          { error: error.message || 'Failed to generate ultra-realistic avatar video' }, 
+          { status: 500 }
+        ))
+      }
+    }
+
+    // Generate Video Without Avatar endpoint - POST /api/generate-video-without-avatar
+    if (route === '/generate-video-without-avatar' && method === 'POST') {
+      const body = await request.json()
+      
+      if (!body.script) {
+        return handleCORS(NextResponse.json(
+          { error: "Script is required" }, 
+          { status: 400 }
+        ))
+      }
+
+      try {
+        const quality = body.quality || 'basic'
+        const videoData = await createVideoWithoutAvatar(body.script, quality)
+        
+        // Save to database for history
+        const videoRecord = {
+          id: uuidv4(),
+          script: body.script,
+          type: 'without_avatar',
+          quality: quality,
+          videoData: videoData,
+          created_at: new Date()
+        }
+        
+        await db.collection('videos').insertOne(videoRecord)
+        
+        return handleCORS(NextResponse.json({ 
+          success: true,
+          video: videoData,
+          message: 'Video without avatar generated successfully'
+        }))
+      } catch (error) {
+        console.error('Video without avatar generation error:', error)
+        return handleCORS(NextResponse.json(
+          { error: error.message || 'Failed to generate video without avatar' }, 
+          { status: 500 }
+        ))
+      }
+    }
+
+    // Get Videos History endpoint - GET /api/videos
+    if (route === '/videos' && method === 'GET') {
+      const videos = await db.collection('videos')
+        .find({})
+        .sort({ created_at: -1 })
+        .limit(50)
+        .toArray()
+
+      // Remove MongoDB's _id field from response
+      const cleanedVideos = videos.map(({ _id, ...rest }) => rest)
+      
+      return handleCORS(NextResponse.json(cleanedVideos))
+    }
+
     // Status endpoints - POST /api/status (keeping existing functionality)
     if (route === '/status' && method === 'POST') {
       const body = await request.json()
