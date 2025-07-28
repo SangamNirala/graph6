@@ -298,9 +298,9 @@ backend:
     implemented: true
     working: false
     file: "/app/app/api/[[...path]]/route.js"
-    stuck_count: 1
+    stuck_count: 2
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: false
           agent: "testing"
@@ -308,6 +308,9 @@ backend:
         - working: "NA"
           agent: "main"
           comment: "UPDATES MADE: Same API and model fixes. Ready for retesting with configurable quality levels."
+        - working: false
+          agent: "testing"
+          comment: "SAME CRITICAL ISSUE: HuggingFace API key (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) is invalid. Video without avatar endpoint correctly implemented but fails due to invalid API authentication. Scene image generation fails with 'Invalid username or password' error."
 
   - task: "Video History Endpoint"
     implemented: true
