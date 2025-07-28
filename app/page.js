@@ -15,9 +15,13 @@ export default function App() {
   const [audioUrl, setAudioUrl] = useState('')
   const [isGeneratingScript, setIsGeneratingScript] = useState(false)
   const [isGeneratingVoice, setIsGeneratingVoice] = useState(false)
+  const [isGeneratingVideo, setIsGeneratingVideo] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [isPlaying, setIsPlaying] = useState(false)
+  const [generatedVideo, setGeneratedVideo] = useState(null)
+  const [videoProgress, setVideoProgress] = useState(0)
+  const [videoStep, setVideoStep] = useState('')
 
   const generateScript = async () => {
     if (!businessDescription.trim()) {
