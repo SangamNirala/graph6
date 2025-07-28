@@ -413,7 +413,11 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Avatar Image Generation using Stable Diffusion SDXL"
+    - "Scene-Based Visual Prompt Extraction using Claude 3.5 Sonnet"
+    - "Background Image Generation using Stable Diffusion"
+    - "Video Generation API Endpoint"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -424,4 +428,6 @@ agent_communication:
     - agent: "testing"
       message: "FRONTEND TESTING INITIATED: Found complete frontend implementation with comprehensive UI. Fixed deprecated Groq model in frontend to match backend. Added 7 frontend testing tasks covering core user flows, UI/UX, integration, and audio functionality. Ready to execute comprehensive frontend testing as requested."
     - agent: "testing"
-      message: "COMPREHENSIVE FRONTEND TESTING COMPLETED: ✅ ALL CRITICAL FUNCTIONALITY WORKING PERFECTLY. Successfully tested complete user journey: Business description → Script generation (1671 chars) → Voiceover generation → Audio playback → Download. Frontend-backend integration solid. Responsive design working. UI renders professionally. Real Groq API producing relevant business content. 6/7 tasks fully working, 1 task working with minor validation issues that don't affect core functionality."
+      message: "COMPREHENSIVE FRONTEND TESTING COMPLETED: ✅ ALL CRITICAL FUNCTIONALITY WORKING PERFECTLY. Successfully tested complete user journey: Business description → Script generation (1671 chars) → Voiceover generation → Audio playbook → Download. Frontend-backend integration solid. Responsive design working. UI renders professionally. Real Groq API producing relevant business content. 6/7 tasks fully working, 1 task working with minor validation issues that don't affect core functionality."
+    - agent: "main"
+      message: "MAJOR FEATURE EXPANSION: Implemented comprehensive AI video generation pipeline with 5-step process: 1) Avatar generation using HuggingFace SDXL, 2) Scene extraction using Claude 3.5 Sonnet via OpenRouter, 3) Background generation using Stable Diffusion, 4) Talking head video creation, 5) Final video composition. Added new /api/generate-video endpoint with progress tracking and MongoDB storage. Updated frontend with complete video generation workflow including progress indicators and video preview."
