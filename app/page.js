@@ -254,51 +254,96 @@ Guidelines:
   }
 
   const togglePlayback = () => {
-    // For speech synthesis, we need to handle it differently than regular audio
-    if (audioUrl) {
-      if (isPlaying) {
-        // Stop speech synthesis
+    if (!generatedScript.trim()) {
+      console.log('❌ No script available for speech')
+      return
+    }
+
+    if (isPlaying) {
+      // Stop speech synthesis
+      console.log('🛑 Stopping speech synthesis...')
+      speechSynthesis.cancel()
+      setIsPlaying(false)
+    } else {
+      // Start speech synthesis with the actual script text
+      console.log('🗣️ Starting speech synthesis with script text...')
+      
+      // Cancel any ongoing speech
+      if (speechSynthesis.speaking) {
         speechSynthesis.cancel()
-        setIsPlaying(false)
-        console.log('🛑 Speech synthesis stopped')
-      } else {
-        // Start speech synthesis with the script text
-        if (speechSynthesis.speaking) {
-          speechSynthesis.cancel()
-        }
-        
-        const utterance = new SpeechSynthesisUtterance(generatedScript)
-        utterance.rate = 0.85
-        utterance.pitch = 1.0
-        utterance.volume = 0.9
-        
-        // Try to use the best available voice
-        const voices = speechSynthesis.getVoices()
-        const bestVoice = voices.find(voice => 
-          voice.lang.startsWith('en') && voice.name.toLowerCase().includes('female')
-        ) || voices.find(voice => voice.lang.startsWith('en'))
-        
-        if (bestVoice) {
-          utterance.voice = bestVoice
-        }
-        
-        utterance.onstart = () => {
-          setIsPlaying(true)
-          console.log('🗣️ Started speaking the script')
-        }
-        
-        utterance.onend = () => {
-          setIsPlaying(false)
-          console.log('✅ Finished speaking the script')
-        }
-        
-        utterance.onerror = (error) => {
-          setIsPlaying(false)
-          console.error('❌ Speech error:', error)
-        }
-        
-        speechSynthesis.speak(utterance)
       }
+      
+      // Create speech utterance with the script text
+      const utterance = new SpeechSynthesisUtterance(generatedScript)
+      
+      // Configure speech for clear, professional delivery
+      utterance.rate = 0.85   // Slightly slower for clarity
+      utterance.pitch = 1.0   // Normal pitch
+      utterance.volume = 0.9  // High volume
+      
+      // Try to select the best available voice
+      const voices = speechSynthesis.getVoices()
+      console.log(`🎤 Available voices: ${voices.length}`)
+      
+      // Find the best English voice
+      let bestVoice = null
+      
+      // Prefer high-quality voices
+      const voicePreferences = [
+        voice => voice.lang.includes('en-US') && voice.name.toLowerCase().includes('neural'),
+        voice => voice.lang.includes('en-US') && voice.name.toLowerCase().includes('enhanced'),
+        voice => voice.lang.includes('en-US') && voice.name.toLowerCase().includes('premium'),
+        voice => voice.lang.includes('en-US') && voice.name.toLowerCase().includes('female'),
+        voice => voice.lang.includes('en-GB') && voice.name.toLowerCase().includes('female'),
+        voice => voice.lang.includes('en-US') && voice.name.toLowerCase().includes('male'),
+        voice => voice.lang.includes('en-US'),
+        voice => voice.lang.startsWith('en'),
+        voice => voice.default
+      ]
+      
+      for (const preference of voicePreferences) {
+        bestVoice = voices.find(preference)
+        if (bestVoice) break
+      }
+      
+      if (bestVoice) {
+        utterance.voice = bestVoice
+        console.log(`🎤 Selected voice: ${bestVoice.name} (${bestVoice.lang})`)
+      } else {
+        console.log('🎤 Using default system voice')
+      }
+      
+      // Set up speech event listeners
+      utterance.onstart = () => {
+        console.log('✅ Speech synthesis started - now speaking the script!')
+        setIsPlaying(true)
+      }
+      
+      utterance.onend = () => {
+        console.log('✅ Speech synthesis completed')
+        setIsPlaying(false)
+      }
+      
+      utterance.onerror = (error) => {
+        console.error('❌ Speech synthesis error:', error)
+        setIsPlaying(false)
+        setError(`Speech error: ${error.error}. Try refreshing the page.`)
+        setTimeout(() => setError(''), 5000)
+      }
+      
+      utterance.onpause = () => {
+        console.log('⏸️ Speech synthesis paused')
+        setIsPlaying(false)
+      }
+      
+      utterance.onresume = () => {
+        console.log('▶️ Speech synthesis resumed')
+        setIsPlaying(true)
+      }
+      
+      // Start speaking the script text
+      console.log(`🗣️ Speaking script: "${generatedScript.substring(0, 50)}..."`)
+      speechSynthesis.speak(utterance)
     }
   }
 
