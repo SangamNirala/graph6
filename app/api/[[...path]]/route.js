@@ -582,6 +582,160 @@ async function handleRoute(request, { params }) {
       return handleCORS(NextResponse.json(cleanedVoiceovers))
     }
 
+    // Generate Video endpoint - POST /api/generate-video
+    if (route === '/generate-video' && method === 'POST') {
+      const body = await request.json()
+      
+      if (!body.script) {
+        return handleCORS(NextResponse.json(
+          { error: "Script is required for video generation" }, 
+          { status: 400 }
+        ))
+      }
+
+      try {
+        console.log('Starting comprehensive video generation...')
+        
+        const videoGenerationProcess = {
+          id: uuidv4(),
+          script: body.script,
+          options: body.options || {},
+          status: 'processing',
+          progress: 0,
+          steps: [],
+          created_at: new Date()
+        }
+
+        // Store initial record
+        await db.collection('videos').insertOne(videoGenerationProcess)
+
+        // Step 1: Generate Avatar Image
+        console.log('Step 1: Generating avatar image...')
+        const avatarDescription = body.options?.avatar_description || 'professional business person'
+        const avatarStyle = body.options?.avatar_style || 'realistic'
+        const avatarImage = await generateAvatarImage(avatarDescription, avatarStyle)
+        
+        videoGenerationProcess.steps.push({
+          step: 1,
+          name: 'avatar_generation',
+          status: 'completed',
+          result: 'Avatar image generated successfully'
+        })
+        videoGenerationProcess.progress = 20
+
+        // Step 2: Extract Scene-Based Visual Prompts
+        console.log('Step 2: Extracting scene prompts...')
+        const scenePrompts = await extractScenePrompts(body.script)
+        
+        videoGenerationProcess.steps.push({
+          step: 2,
+          name: 'scene_extraction',
+          status: 'completed',
+          result: `Extracted ${scenePrompts.length} scene prompts`
+        })
+        videoGenerationProcess.progress = 40
+
+        // Step 3: Generate Background Images
+        console.log('Step 3: Generating background images...')
+        const backgroundImages = await generateBackgroundImages(scenePrompts)
+        
+        videoGenerationProcess.steps.push({
+          step: 3,
+          name: 'background_generation',
+          status: 'completed',
+          result: `Generated ${backgroundImages.length} background images`
+        })
+        videoGenerationProcess.progress = 60
+
+        // Step 4: Create Talking Head Video
+        console.log('Step 4: Creating talking head video...')
+        // Estimate duration from script (approximately 150 words per minute)
+        const wordCount = body.script.split(' ').length
+        const estimatedDuration = Math.ceil(wordCount / 150 * 60) // Convert to seconds
+        
+        const talkingHeadVideo = await createTalkingHeadVideo(avatarImage, null, estimatedDuration)
+        
+        videoGenerationProcess.steps.push({
+          step: 4,
+          name: 'talking_head_creation',
+          status: 'completed',
+          result: 'Talking head video created successfully'
+        })
+        videoGenerationProcess.progress = 80
+
+        // Step 5: Compose Final Video
+        console.log('Step 5: Composing final video...')
+        const finalVideo = await composeFinalVideo(talkingHeadVideo, backgroundImages, null, body.script)
+        
+        videoGenerationProcess.steps.push({
+          step: 5,
+          name: 'final_composition',
+          status: 'completed',
+          result: 'Final video composed successfully'
+        })
+        videoGenerationProcess.progress = 100
+        videoGenerationProcess.status = 'completed'
+        videoGenerationProcess.completed_at = new Date()
+
+        // Update final record
+        await db.collection('videos').updateOne(
+          { id: videoGenerationProcess.id },
+          { $set: videoGenerationProcess }
+        )
+
+        console.log('Video generation completed successfully!')
+
+        // Return the complete video data
+        return handleCORS(NextResponse.json({
+          success: true,
+          video: {
+            id: finalVideo.id,
+            avatar: finalVideo.avatar,
+            backgrounds: finalVideo.backgrounds,
+            scenes: scenePrompts,
+            duration: finalVideo.duration,
+            script: body.script,
+            videoBase64: finalVideo.videoBase64,
+            metadata: finalVideo.metadata,
+            processing_steps: videoGenerationProcess.steps
+          }
+        }))
+      } catch (error) {
+        console.error('Video generation error:', error)
+        
+        // Update record with error status
+        await db.collection('videos').updateOne(
+          { id: videoGenerationProcess.id },
+          { 
+            $set: { 
+              status: 'failed', 
+              error: error.message,
+              failed_at: new Date()
+            }
+          }
+        )
+        
+        return handleCORS(NextResponse.json(
+          { error: error.message || 'Failed to generate video' }, 
+          { status: 500 }
+        ))
+      }
+    }
+
+    // Get Videos History endpoint - GET /api/videos
+    if (route === '/videos' && method === 'GET') {
+      const videos = await db.collection('videos')
+        .find({})
+        .sort({ created_at: -1 })
+        .limit(20)
+        .toArray()
+
+      // Remove MongoDB's _id field from response
+      const cleanedVideos = videos.map(({ _id, ...rest }) => rest)
+      
+      return handleCORS(NextResponse.json(cleanedVideos))
+    }
+
     // Status endpoints - POST /api/status (keeping existing functionality)
     if (route === '/status' && method === 'POST') {
       const body = await request.json()
