@@ -2,6 +2,10 @@ import { MongoClient } from 'mongodb'
 import { v4 as uuidv4 } from 'uuid'
 import { NextResponse } from 'next/server'
 import axios from 'axios'
+import { HfInference } from '@huggingface/inference'
+
+// Initialize HuggingFace client
+const hf = new HfInference(process.env.HUGGINGFACE_API_KEY)
 
 // MongoDB connection
 let client
@@ -23,6 +27,148 @@ function handleCORS(response) {
   response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
   response.headers.set('Access-Control-Allow-Credentials', 'true')
   return response
+}
+
+// Generate avatar image using HuggingFace
+async function generateAvatarImage(description, style = 'realistic') {
+  try {
+    const prompt = `A ${style} portrait of ${description}, professional headshot, high quality, detailed face, looking at camera, neutral background`
+    
+    const response = await hf.textToImage({
+      model: 'runwayml/stable-diffusion-v1-5',
+      inputs: prompt,
+      parameters: {
+        width: 512,
+        height: 512,
+        guidance_scale: 7.5,
+        num_inference_steps: 50
+      }
+    })
+    
+    // Convert blob to buffer
+    const arrayBuffer = await response.arrayBuffer()
+    const buffer = Buffer.from(arrayBuffer)
+    
+    // Convert to base64 for storage
+    const base64Image = buffer.toString('base64')
+    
+    return base64Image
+  } catch (error) {
+    console.error('Error generating avatar image:', error)
+    throw new Error('Failed to generate avatar image')
+  }
+}
+
+// Generate talking head video using HuggingFace SadTalker
+async function generateTalkingVideo(imageBase64, audioText, quality = 'basic') {
+  try {
+    // For basic quality, we'll use a simpler approach with HuggingFace Spaces
+    let modelEndpoint
+    
+    switch (quality) {
+      case 'basic':
+        // Use free SadTalker model
+        modelEndpoint = 'vinthony/SadTalker'
+        break
+      case 'enhanced':
+        // Use Wav2Lip model for better lip sync
+        modelEndpoint = 'freddyaboulton/wav2lip-GFPGAN'
+        break
+      case 'ultra':
+        // Use combination of models for best quality
+        modelEndpoint = 'KwaiVGI/LivePortrait'
+        break
+      default:
+        modelEndpoint = 'vinthony/SadTalker'
+    }
+    
+    // First generate audio from text using a TTS model
+    const audioResponse = await hf.textToSpeech({
+      model: 'microsoft/speecht5_tts',
+      inputs: audioText
+    })
+    
+    const audioBuffer = await audioResponse.arrayBuffer()
+    const audioBase64 = Buffer.from(audioBuffer).toString('base64')
+    
+    // For now, we'll return a mock video response as HuggingFace Spaces integration
+    // requires more complex setup. In a production environment, you would:
+    // 1. Upload image and audio to HuggingFace Space
+    // 2. Process through the SadTalker/Wav2Lip pipeline
+    // 3. Retrieve the generated video
+    
+    // Mock video data (in production, this would be the actual generated video)
+    const mockVideoData = {
+      videoUrl: `data:video/mp4;base64,${generateMockVideoBase64()}`,
+      duration: Math.floor(audioText.length / 10), // Estimate duration
+      quality: quality,
+      audioBase64: audioBase64
+    }
+    
+    return mockVideoData
+  } catch (error) {
+    console.error('Error generating talking video:', error)
+    throw new Error('Failed to generate talking video')
+  }
+}
+
+// Generate background image using OpenRouter API
+async function generateBackground(description, style = 'professional') {
+  try {
+    const response = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
+      model: 'meta-llama/llama-3.1-8b-instruct:free', // Free model
+      messages: [
+        {
+          role: 'system',
+          content: 'You are an expert at creating detailed prompts for image generation. Create a detailed prompt for generating a background image.'
+        },
+        {
+          role: 'user',
+          content: `Create a detailed prompt for generating a ${style} background for ${description}`
+        }
+      ],
+      max_tokens: 200
+    }, {
+      headers: {
+        'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        'Content-Type': 'application/json'
+      }
+    })
+    
+    const backgroundPrompt = response.data.choices[0]?.message?.content || `${style} background for ${description}`
+    
+    // Generate background image using HuggingFace
+    const backgroundResponse = await hf.textToImage({
+      model: 'runwayml/stable-diffusion-v1-5',
+      inputs: backgroundPrompt,
+      parameters: {
+        width: 1024,
+        height: 576,
+        guidance_scale: 7.5
+      }
+    })
+    
+    const arrayBuffer = await backgroundResponse.arrayBuffer()
+    const buffer = Buffer.from(arrayBuffer)
+    return buffer.toString('base64')
+  } catch (error) {
+    console.error('Error generating background:', error)
+    // Return a simple gradient background as fallback
+    return generateSimpleBackground()
+  }
+}
+
+// Generate simple gradient background as fallback  
+function generateSimpleBackground() {
+  // This would generate a simple gradient background
+  // For now, returning a placeholder
+  return 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='
+}
+
+// Generate mock video base64 (placeholder)
+function generateMockVideoBase64() {
+  // This is a placeholder. In production, this would be the actual video data
+  return 'UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSmIn/vr5ZIYCRxxtdbjqHsQC0yfzt+2lxgKF2mxzty1rJ2wlzP8ek='
 }
 
 // Groq API client
