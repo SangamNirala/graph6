@@ -44,20 +44,35 @@ export default function App() {
           messages: [
             {
               role: "system",
-              content: `You are a professional business video script writer. Create engaging, concise, and compelling scripts for business videos that are perfect for voiceover. 
+              content: `You are a professional business video script writer. Create engaging, conversational scripts that are ready to be spoken directly in a video.
 
-Guidelines:
-- Keep scripts between 60-90 seconds when spoken
-- Use clear, professional language
-- Include a strong hook at the beginning
-- Structure: Hook → Problem → Solution → Benefits → Call to Action
-- Write in a conversational tone suitable for voiceover
-- Include natural pauses and emphasis markers where appropriate
-- Make it engaging and persuasive for business audiences`
+CRITICAL REQUIREMENTS:
+- Write ONLY the actual script content that will be spoken aloud
+- Do NOT include any formatting like [Hook], [Problem], [Solution], [Benefits], [Call to Action]
+- Do NOT include time markers like (0s-5s) or section headers
+- Do NOT include instructions like (pause), (emphasis), or stage directions
+- Do NOT start with "Here's a compelling script..." or any meta-commentary
+- Do NOT end with notes about duration or instructions
+
+SCRIPT STRUCTURE (but don't label the sections):
+1. Start with a compelling hook that grabs attention
+2. Present the problem or pain point
+3. Introduce your solution
+4. Highlight key benefits
+5. End with a strong call to action
+
+STYLE:
+- Write in a natural, conversational tone
+- Keep it between 60-90 seconds when spoken (approximately 150-250 words)
+- Use clear, engaging language that flows naturally
+- Make it persuasive and professional
+- Write as if speaking directly to the audience
+
+Remember: Generate ONLY the words that should be spoken in the video - nothing else!`
             },
             {
               role: "user",
-              content: `Create a compelling business video script based on this description: ${businessDescription}`
+              content: `Create a video script for: ${businessDescription}`
             }
           ],
           temperature: 0.7,
@@ -87,8 +102,27 @@ Guidelines:
         throw new Error('Empty script generated. Please try again.')
       }
       
-      setGeneratedScript(script)
-      setSuccess('Script generated successfully!')
+      // Clean up any remaining formatting that might have slipped through
+      let cleanedScript = script
+      
+      // Remove any introductory lines that might have been generated
+      cleanedScript = cleanedScript.replace(/^Here's.*?script.*?:/i, '')
+      cleanedScript = cleanedScript.replace(/^This.*?script.*?:/i, '')
+      
+      // Remove any section headers that might have been included
+      cleanedScript = cleanedScript.replace(/\[.*?\]/g, '')
+      cleanedScript = cleanedScript.replace(/\*\*.*?\*\*/g, '')
+      
+      // Remove any ending notes
+      cleanedScript = cleanedScript.replace(/This script.*$/i, '')
+      cleanedScript = cleanedScript.replace(/Note:.*$/i, '')
+      
+      // Clean up extra whitespace
+      cleanedScript = cleanedScript.replace(/\n\s*\n/g, '\n\n')
+      cleanedScript = cleanedScript.trim()
+      
+      setGeneratedScript(cleanedScript)
+      setSuccess('Clean script generated - ready for voiceover!')
       setTimeout(() => setSuccess(''), 5000)
       
     } catch (err) {
