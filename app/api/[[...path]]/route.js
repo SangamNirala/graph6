@@ -189,7 +189,7 @@ async function extractScenePrompts(script) {
   }
 }
 
-// Generate background images for each scene
+// Generate background images for each scene using OpenRouter with DALL-E 3
 async function generateBackgroundImages(scenePrompts) {
   const backgrounds = []
   
@@ -198,31 +198,56 @@ async function generateBackgroundImages(scenePrompts) {
     try {
       console.log(`Generating background ${i + 1}/${scenePrompts.length}:`, scene.prompt)
       
-      const response = await hf.textToImage({
-        model: 'stabilityai/stable-diffusion-xl-base-1.0',
-        inputs: `${scene.prompt}, professional, high quality, detailed, cinematic lighting, 8k`,
-        parameters: {
-          width: 1024,
-          height: 576,
-          guidance_scale: 7.5,
-          num_inference_steps: 25
+      // Try OpenRouter DALL-E 3 first
+      try {
+        const response = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
+          model: 'openai/dall-e-3',
+          messages: [
+            {
+              role: 'user',
+              content: `Generate a professional background image: ${scene.prompt}, professional, high quality, detailed, cinematic lighting, 8k`
+            }
+          ],
+          max_tokens: 1000
+        }, {
+          headers: {
+            'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+            'Content-Type': 'application/json'
+          }
+        })
+        
+        const imageUrl = response.data?.choices?.[0]?.message?.content
+        
+        if (imageUrl && imageUrl.includes('http')) {
+          // Download and convert to base64
+          const imageResponse = await axios.get(imageUrl, { responseType: 'arraybuffer' })
+          const base64Image = Buffer.from(imageResponse.data).toString('base64')
+          
+          backgrounds.push({
+            timeframe: scene.timeframe,
+            prompt: scene.prompt,
+            image: base64Image
+          })
+          
+          console.log(`Background ${i + 1} generated successfully with OpenRouter`)
+          continue
         }
-      })
+      } catch (openRouterError) {
+        console.log(`OpenRouter failed for background ${i + 1}, using fallback...`)
+      }
       
-      const arrayBuffer = await response.arrayBuffer()
-      const buffer = Buffer.from(arrayBuffer)
-      const base64Image = buffer.toString('base64')
-      
+      // Fallback: Generate a themed background placeholder
+      const themedBackground = generateThemedBackground(scene.prompt, i)
       backgrounds.push({
         timeframe: scene.timeframe,
         prompt: scene.prompt,
-        image: base64Image
+        image: themedBackground
       })
       
-      console.log(`Background ${i + 1} generated successfully`)
+      console.log(`Background ${i + 1} generated with themed fallback`)
     } catch (error) {
       console.error(`Error generating background ${i + 1}:`, error)
-      // Add a fallback background
+      // Add a simple fallback background
       backgrounds.push({
         timeframe: scene.timeframe,
         prompt: scene.prompt,
@@ -232,6 +257,51 @@ async function generateBackgroundImages(scenePrompts) {
   }
   
   return backgrounds
+}
+
+// Generate themed background based on scene prompt
+function generateThemedBackground(prompt, index) {
+  // Create themed SVG backgrounds based on prompt content
+  const themes = {
+    office: { color1: '#2C3E50', color2: '#3498DB', icon: '🏢' },
+    technology: { color1: '#8E44AD', color2: '#3498DB', icon: '💻' },
+    meeting: { color1: '#27AE60', color2: '#2ECC71', icon: '👥' },
+    business: { color1: '#E74C3C', color2: '#C0392B', icon: '💼' },
+    default: { color1: '#34495E', color2: '#95A5A6', icon: '🎯' }
+  }
+  
+  // Determine theme based on prompt keywords
+  let theme = themes.default
+  if (prompt.toLowerCase().includes('office')) theme = themes.office
+  else if (prompt.toLowerCase().includes('technology') || prompt.toLowerCase().includes('computer')) theme = themes.technology
+  else if (prompt.toLowerCase().includes('meeting') || prompt.toLowerCase().includes('presentation')) theme = themes.meeting
+  else if (prompt.toLowerCase().includes('business')) theme = themes.business
+  
+  const svgBackground = `
+    <svg width="1024" height="576" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="bg${index}" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:${theme.color1};stop-opacity:1" />
+          <stop offset="100%" style="stop-color:${theme.color2};stop-opacity:1" />
+        </linearGradient>
+        <filter id="blur">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="2"/>
+        </filter>
+      </defs>
+      <rect width="1024" height="576" fill="url(#bg${index})"/>
+      <circle cx="200" cy="150" r="60" fill="rgba(255,255,255,0.1)" filter="url(#blur)"/>
+      <circle cx="800" cy="400" r="80" fill="rgba(255,255,255,0.1)" filter="url(#blur)"/>
+      <rect x="100" y="450" width="824" height="80" rx="10" fill="rgba(0,0,0,0.2)"/>
+      <text x="512" y="490" text-anchor="middle" fill="white" font-family="Arial" font-size="18" font-weight="bold">
+        ${theme.icon} Professional Background
+      </text>
+      <text x="512" y="520" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-family="Arial" font-size="14">
+        Scene ${index + 1}
+      </text>
+    </svg>
+  `
+  
+  return Buffer.from(svgBackground).toString('base64')
 }
 
 // Create a simple talking head video simulation
