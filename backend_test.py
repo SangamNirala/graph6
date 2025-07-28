@@ -382,6 +382,246 @@ class BackendTester:
         except Exception as e:
             self.log_result("MongoDB Storage", "FAIL", "Storage verification error", str(e))
             return False
+
+    # NEW VIDEO GENERATION TESTS
+    def test_avatar_video_basic(self):
+        """Test basic avatar video generation"""
+        try:
+            payload = {"script": SAMPLE_SCRIPT}
+            
+            response = requests.post(
+                f"{self.api_base}/generate-avatar-video",
+                json=payload,
+                headers={"Content-Type": "application/json"},
+                timeout=120  # Video generation takes longer
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check response structure
+                if (data.get('success') and 
+                    data.get('video') and 
+                    data.get('message')):
+                    
+                    video = data['video']
+                    
+                    # Validate video structure
+                    required_fields = ['type', 'quality', 'scenes', 'audioBase64', 'duration', 'videoUrl', 'metadata']
+                    missing_fields = [field for field in required_fields if field not in video]
+                    
+                    if not missing_fields:
+                        # Check specific values
+                        if (video['type'] == 'with_avatar' and 
+                            video['quality'] == 'basic' and 
+                            isinstance(video['scenes'], list) and 
+                            len(video['scenes']) > 0 and
+                            video['audioBase64'] and
+                            video['duration'] > 0):
+                            
+                            self.log_result("Avatar Video Basic", "PASS", 
+                                          f"Generated video with {len(video['scenes'])} scenes, duration: {video['duration']}s")
+                            return True
+                        else:
+                            self.log_result("Avatar Video Basic", "FAIL", 
+                                          "Invalid video data values", str(video))
+                            return False
+                    else:
+                        self.log_result("Avatar Video Basic", "FAIL", 
+                                      f"Missing required fields: {missing_fields}")
+                        return False
+                else:
+                    self.log_result("Avatar Video Basic", "FAIL", 
+                                  "Invalid response structure", data)
+                    return False
+            else:
+                self.log_result("Avatar Video Basic", "FAIL", 
+                              f"HTTP {response.status_code}", response.text)
+                return False
+                
+        except Exception as e:
+            self.log_result("Avatar Video Basic", "FAIL", "Request error", str(e))
+            return False
+
+    def test_avatar_video_enhanced(self):
+        """Test enhanced avatar video generation"""
+        try:
+            payload = {"script": SAMPLE_SCRIPT}
+            
+            response = requests.post(
+                f"{self.api_base}/generate-enhanced-avatar-video",
+                json=payload,
+                headers={"Content-Type": "application/json"},
+                timeout=120
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if (data.get('success') and 
+                    data.get('video') and 
+                    data['video'].get('quality') == 'enhanced'):
+                    
+                    video = data['video']
+                    self.log_result("Avatar Video Enhanced", "PASS", 
+                                  f"Generated enhanced video with {len(video['scenes'])} scenes, duration: {video['duration']}s")
+                    return True
+                else:
+                    self.log_result("Avatar Video Enhanced", "FAIL", 
+                                  "Invalid response structure", data)
+                    return False
+            else:
+                self.log_result("Avatar Video Enhanced", "FAIL", 
+                              f"HTTP {response.status_code}", response.text)
+                return False
+                
+        except Exception as e:
+            self.log_result("Avatar Video Enhanced", "FAIL", "Request error", str(e))
+            return False
+
+    def test_avatar_video_ultra(self):
+        """Test ultra-realistic avatar video generation"""
+        try:
+            payload = {"script": SAMPLE_SCRIPT}
+            
+            response = requests.post(
+                f"{self.api_base}/generate-ultra-realistic-avatar-video",
+                json=payload,
+                headers={"Content-Type": "application/json"},
+                timeout=120
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if (data.get('success') and 
+                    data.get('video') and 
+                    data['video'].get('quality') == 'ultra'):
+                    
+                    video = data['video']
+                    self.log_result("Avatar Video Ultra", "PASS", 
+                                  f"Generated ultra video with {len(video['scenes'])} scenes, duration: {video['duration']}s")
+                    return True
+                else:
+                    self.log_result("Avatar Video Ultra", "FAIL", 
+                                  "Invalid response structure", data)
+                    return False
+            else:
+                self.log_result("Avatar Video Ultra", "FAIL", 
+                              f"HTTP {response.status_code}", response.text)
+                return False
+                
+        except Exception as e:
+            self.log_result("Avatar Video Ultra", "FAIL", "Request error", str(e))
+            return False
+
+    def test_video_without_avatar(self):
+        """Test video generation without avatar"""
+        try:
+            payload = {
+                "script": SAMPLE_SCRIPT,
+                "quality": "enhanced"
+            }
+            
+            response = requests.post(
+                f"{self.api_base}/generate-video-without-avatar",
+                json=payload,
+                headers={"Content-Type": "application/json"},
+                timeout=120
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if (data.get('success') and 
+                    data.get('video') and 
+                    data['video'].get('type') == 'without_avatar'):
+                    
+                    video = data['video']
+                    self.log_result("Video Without Avatar", "PASS", 
+                                  f"Generated video with {len(video['scenes'])} scenes, duration: {video['duration']}s, quality: {video['quality']}")
+                    return True
+                else:
+                    self.log_result("Video Without Avatar", "FAIL", 
+                                  "Invalid response structure", data)
+                    return False
+            else:
+                self.log_result("Video Without Avatar", "FAIL", 
+                              f"HTTP {response.status_code}", response.text)
+                return False
+                
+        except Exception as e:
+            self.log_result("Video Without Avatar", "FAIL", "Request error", str(e))
+            return False
+
+    def test_videos_history(self):
+        """Test video history endpoint"""
+        try:
+            response = requests.get(f"{self.api_base}/videos", timeout=30)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if isinstance(data, list):
+                    self.log_result("Videos History", "PASS", 
+                                  f"Retrieved {len(data)} video records")
+                    
+                    # Check structure of first record if available
+                    if len(data) > 0:
+                        first_record = data[0]
+                        required_fields = ['id', 'script', 'type', 'quality', 'videoData', 'created_at']
+                        missing_fields = [field for field in required_fields if field not in first_record]
+                        
+                        if not missing_fields:
+                            print(f"   ✓ Video record structure is valid")
+                        else:
+                            print(f"   ⚠ Missing fields in video record: {missing_fields}")
+                    
+                    return True
+                else:
+                    self.log_result("Videos History", "FAIL", 
+                                  f"Expected list, got: {type(data)}")
+                    return False
+            else:
+                self.log_result("Videos History", "FAIL", 
+                              f"HTTP {response.status_code}", response.text)
+                return False
+                
+        except Exception as e:
+            self.log_result("Videos History", "FAIL", "Request error", str(e))
+            return False
+
+    def test_video_error_handling(self):
+        """Test error handling for missing script parameter in video generation"""
+        try:
+            # Test missing script for avatar video
+            payload = {}  # Missing script
+            
+            response = requests.post(
+                f"{self.api_base}/generate-avatar-video",
+                json=payload,
+                headers={"Content-Type": "application/json"},
+                timeout=30
+            )
+            
+            if response.status_code == 400:
+                data = response.json()
+                if 'error' in data and 'Script is required' in data['error']:
+                    self.log_result("Video Error Handling", "PASS", 
+                                  f"Proper validation error: {data['error']}")
+                    return True
+                else:
+                    self.log_result("Video Error Handling", "FAIL", 
+                                  "Unexpected error message", data)
+                    return False
+            else:
+                self.log_result("Video Error Handling", "FAIL", 
+                              f"Expected 400, got {response.status_code}", response.text)
+                return False
+                
+        except Exception as e:
+            self.log_result("Video Error Handling", "FAIL", "Request error", str(e))
+            return False
     
     def run_all_tests(self):
         """Run all backend tests"""
