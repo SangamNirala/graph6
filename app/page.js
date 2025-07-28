@@ -5,8 +5,9 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Loader2, Download, Play, Pause, Volume2, FileText, Mic } from 'lucide-react'
+import { Loader2, Download, Play, Pause, Volume2, FileText, Mic, Video, Camera, Image, Clapperboard } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Progress } from '@/components/ui/progress'
 
 export default function App() {
   const [businessDescription, setBusinessDescription] = useState('')
