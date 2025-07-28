@@ -308,15 +308,18 @@ backend:
 
   - task: "Videos History Endpoint"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/app/api/[[...path]]/route.js"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Implemented /api/videos GET endpoint to retrieve video generation history from MongoDB with proper data cleaning and sorting."
+        - working: true
+          agent: "testing"
+          comment: "✅ PASSED: Videos history endpoint working correctly. Successfully retrieved 4 video records from MongoDB with proper data cleaning and sorting. Endpoint returns proper JSON array structure."
 
 frontend:
   - task: "Frontend UI Rendering and Layout"
