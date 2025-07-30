@@ -380,6 +380,43 @@ Enhanced: "POV: You're told you'll 'never make it' in {industry_focus}... 6 mont
     
     return examples
 
+async def _get_advanced_few_shot_examples(industry_focus: str, video_type: str) -> dict:
+    """Generate advanced few-shot learning examples for each enhancement strategy with 2025 cutting-edge techniques"""
+    
+    examples = {
+        "emotional": f"""
+ADVANCED EXAMPLE 1 - {industry_focus.title()} Neuroscience-Based Emotional Enhancement:
+Original: "Create a video about our new product features"
+Enhanced: "🧠 NEUROLOGICAL TRIGGER SEQUENCE: [MIRROR NEURON ACTIVATION] Imagine watching your future self, 6 months from now, experiencing the profound relief and confidence that comes from never having to worry about [CORE FEAR] again. [DOPAMINE ANTICIPATION LOOP] Our breakthrough doesn't just solve problems—it rewires your daily experience from stress-inducing chaos to flow-state mastery. [OXYTOCIN BONDING] Join 50,000+ people who've discovered this isn't just about features—it's about reclaiming the peace of mind you thought was lost forever. [CORTISOL REDUCTION] Feel the weight lift off your shoulders as you realize the solution you've been searching for has been waiting for you."
+
+ADVANCED EXAMPLE 2 - {industry_focus.title()} Emotional Journey Architecture:
+Original: "Explain the benefits of our service"
+Enhanced: "🎭 EMOTIONAL TRANSFORMATION PATHWAY: [BASELINE: Frustration] Picture the 3 AM moment when everything feels impossible... [TRIGGER: Hope] But what if I told you that feeling is actually your breakthrough trying to emerge? [ESCALATION: Anticipation] Here's the moment everything changes—when you discover the one thing that transforms overwhelm into unstoppable momentum. [PEAK: Euphoria] Watch as obstacles become opportunities, fear becomes fuel, and your biggest challenges become your greatest victories. [RESOLUTION: Fulfillment] This is your invitation to step into the version of yourself who has already succeeded."
+""",
+        
+        "technical": f"""
+ADVANCED EXAMPLE 1 - {industry_focus.title()} Chain-of-Thought Technical Excellence:
+Original: "Show how our software works"
+Enhanced: "🔬 SYSTEMATIC TECHNICAL DEMONSTRATION PROTOCOL: [STEP 1: ARCHITECTURE ANALYSIS] Begin with comprehensive system overview using industry-standard documentation frameworks (0:00-0:20). [STEP 2: FUNCTIONAL VALIDATION] Demonstrate core capabilities through real-world use case scenarios with measurable outcomes (0:20-0:50). [STEP 3: INTEGRATION VERIFICATION] Showcase API connectivity, data flow patterns, and scalability benchmarks using professional testing methodologies (0:50-1:20). [STEP 4: PERFORMANCE METRICS] Present quantitative results including latency measurements, throughput analysis, and reliability statistics (1:20-1:40). [STEP 5: IMPLEMENTATION ROADMAP] Provide step-by-step deployment guide with quality assurance checkpoints and troubleshooting protocols (1:40-2:00). Include technical specifications, compliance documentation, and professional support resources throughout."
+
+ADVANCED EXAMPLE 2 - {industry_focus.title()} Professional Methodology Framework:
+Original: "Explain our methodology"
+Enhanced: "🏗️ COMPREHENSIVE METHODOLOGY BREAKDOWN: [PHASE 1: REQUIREMENTS ENGINEERING] Systematic analysis using SMART criteria, stakeholder mapping matrices, and risk assessment frameworks with quantifiable deliverables. [PHASE 2: IMPLEMENTATION ARCHITECTURE] Detailed workflow construction with quality gates, performance indicators, and continuous integration protocols. [PHASE 3: VALIDATION & VERIFICATION] Multi-tier testing procedures including unit testing, integration testing, user acceptance testing, and compliance verification. [PHASE 4: OPTIMIZATION CYCLES] Performance tuning using Six Sigma methodologies, A/B testing frameworks, and continuous improvement protocols. Each phase includes specific deliverables, timeline estimates, resource allocation guidelines, and success metrics."
+""",
+        
+        "viral": f"""
+ADVANCED EXAMPLE 1 - {industry_focus.title()} 2025 Algorithm Optimization:
+Original: "Promote our latest update"
+Enhanced: "🚨 VIRAL TRIGGER SEQUENCE: [PATTERN INTERRUPT] STOP scrolling—what you're about to see will change everything you thought you knew about {industry_focus}... [SOCIAL PROOF CASCADE] 2.3M people have already discovered this secret, but here's what the 'experts' don't want you to know... [CURIOSITY GAP] This 47-second reveal exposes the ONE thing that's been holding you back (and why your competitors are terrified you'll find out). [FOMO AMPLIFICATION] Only available for the next 24 hours before it goes mainstream. [SHAREABILITY HOOK] Tag someone who NEEDS to see this before it's too late! 👀 #GameChanger #{industry_focus.title()}Revolution #ViralMoment"
+
+ADVANCED EXAMPLE 2 - {industry_focus.title()} Social Currency Maximization:
+Original: "Share customer success story"
+Enhanced: "🔥 VIRAL STORYTELLING FRAMEWORK: [STATUS ELEVATION] POV: Everyone said you'd 'never make it' in {industry_focus}... [TRANSFORMATION ARC] 6 months later, you're the case study everyone's talking about 💪 [INSIDER KNOWLEDGE] Here's the strategy they don't teach in business school... [SOCIAL VALIDATION] This isn't just another success story—it's proof that the 'impossible' is just Tuesday when you have the right system. [EMOTIONAL CONTAGION] Watch what happens when someone refuses to accept limitations... [SHAREABILITY TRIGGER] The ending will give you chills AND make you want to share this with everyone you know! 🔥 Who else needs to see this transformation?"
+"""
+    }
+    
+    return examples
+
 async def _generate_enhancement_variations(request: PromptEnhancementRequest, audience_analysis: AudienceAnalysis, industry_context: dict) -> List[EnhancementVariation]:
     """Generate comprehensive script framework variations using advanced prompt engineering"""
     
