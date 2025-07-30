@@ -675,18 +675,18 @@ PLATFORM_ADAPTATIONS:
         platform_adaptations = sections.get('platform_adaptations', 'Multi-platform optimization included')
         
         # Combine all elements into a comprehensive enhanced prompt
-        comprehensive_prompt = f"""🎬 COMPREHENSIVE SCRIPT FRAMEWORK - {strategy['title'].upper()}
+        comprehensive_prompt = f"""COMPREHENSIVE SCRIPT FRAMEWORK - {strategy['title'].upper()}
 
-📋 SCRIPT FRAMEWORK:
+SCRIPT FRAMEWORK:
 {script_framework}
 
-🎯 PRODUCTION GUIDELINES:
+PRODUCTION GUIDELINES:
 {production_guidelines}
 
-🧠 PSYCHOLOGICAL TRIGGERS INTEGRATED:
+PSYCHOLOGICAL TRIGGERS INTEGRATED:
 {psychological_triggers}
 
-📱 PLATFORM ADAPTATIONS:
+PLATFORM ADAPTATIONS:
 {platform_adaptations}
 
 This framework serves as a complete blueprint for generating high-quality, {strategy['focus']}-optimized video content that maximizes engagement and achieves professional results."""
