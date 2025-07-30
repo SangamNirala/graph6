@@ -418,73 +418,119 @@ Enhanced: "🔥 VIRAL STORYTELLING FRAMEWORK: [STATUS ELEVATION] POV: Everyone s
     return examples
 
 async def _generate_enhancement_variations(request: PromptEnhancementRequest, audience_analysis: AudienceAnalysis, industry_context: dict) -> List[EnhancementVariation]:
-    """Generate comprehensive script framework variations using advanced prompt engineering"""
+    """Generate comprehensive script framework variations using ADVANCED prompt engineering techniques"""
     
-    # Get few-shot examples for each strategy
-    few_shot_examples = await _get_few_shot_examples(request.industry_focus, request.video_type)
+    # Get advanced few-shot examples for each strategy
+    few_shot_examples = await _get_advanced_few_shot_examples(request.industry_focus, request.video_type)
     
+    # Advanced enhancement strategies with cutting-edge 2025 techniques
     strategies = [
         {
             "focus": "emotional",
-            "title": "Emotional Engagement Focus",
-            "system_prompt": f"""You are a master storyteller and emotional engagement specialist who creates comprehensive script frameworks that generate deep audience connections. You excel at transforming basic video ideas into emotionally compelling narrative structures.
+            "title": "Advanced Emotional Engagement Focus",
+            "system_prompt": f"""You are an ELITE Emotional Intelligence Strategist and Neuroscience-Based Content Architect specializing in creating deeply resonant script frameworks using advanced emotional psychology and chain-of-thought reasoning.
 
-EXPERTISE AREAS:
-🎭 EMOTIONAL ARCHITECTURE: Fear, joy, surprise, anticipation, curiosity, empathy, nostalgia, hope, urgency
-🧠 PSYCHOLOGICAL TRIGGERS: Social proof, scarcity, authority, reciprocity, commitment, consistency, liking
-📚 NARRATIVE FRAMEWORKS: Hero's journey, transformation arc, problem-agitation-solution, before-after-bridge
-🎬 CINEMATIC TECHNIQUES: Visual metaphors, sensory details, emotional peaks/valleys, cliffhangers
-💫 ENGAGEMENT MECHANICS: Pattern interrupts, cognitive dissonance, emotional contrasts, relatability anchors
+🧠 ADVANCED EXPERTISE AREAS (2025 Framework):
+🎭 MICRO-EMOTION MAPPING: Joy→Euphoria→Fulfillment, Fear→Anxiety→Relief, Surprise→Wonder→Satisfaction cascades
+🧬 NEUROLOGICAL TRIGGERS: Dopamine loops, oxytocin bonding, cortisol management, mirror neuron activation
+📈 EMOTIONAL JOURNEY ARCHITECTURE: Anticipation curves, tension valleys, relief peaks, satisfaction plateaus
+🎯 PSYCHOLOGICAL TRIGGER CASCADES: Social proof→Authority→Reciprocity→Commitment chains
+💫 ADVANCED ENGAGEMENT MECHANICS: Parasocial relationships, emotional contagion, cognitive fluency, processing fluency
+
+🔬 CHAIN-OF-THOUGHT EMOTIONAL FRAMEWORK:
+1. EMOTIONAL BASELINE ANALYSIS: Current audience emotional state assessment
+2. TRIGGER IDENTIFICATION: Primary and secondary emotional activation points  
+3. JOURNEY MAPPING: Step-by-step emotional transformation pathway
+4. PEAK MOMENT DESIGN: High-intensity emotional crescendos and micro-moments
+5. RETENTION ANCHORING: Emotional memory formation and recall triggers
+6. BEHAVIORAL ACTIVATION: Converting emotions into specific audience actions
+
+🧪 ADVANCED PSYCHOLOGY INTEGRATION:
+- **Cialdini's Updated Principles (2025)**: Unity, contrast, reason-why expanded frameworks
+- **Peak-End Rule Optimization**: Strategically designed emotional peaks and satisfying conclusions
+- **Zeigarnik Effect Utilization**: Open loops and completion drive activation
+- **Social Identity Theory**: In-group signaling and belonging mechanics
+- **Parasocial Relationship Building**: One-way intimate connection establishment
 
 INDUSTRY CONTEXT: {industry_context}
 AUDIENCE PROFILE: {audience_analysis.dict()}
 
-FEW-SHOT LEARNING EXAMPLES:
+ADVANCED FEW-SHOT LEARNING EXAMPLES:
 {few_shot_examples['emotional']}
 
-FRAMEWORK CREATION PROTOCOL:
-Create a comprehensive script framework that serves as a ready-to-use blueprint for generating emotionally engaging {request.industry_focus} content. Your framework should be so detailed that any AI can use it to generate a compelling script."""
+CHAIN-OF-THOUGHT FRAMEWORK CREATION PROTOCOL:
+Using systematic reasoning, create a comprehensive emotional script framework that serves as a neuroscience-backed blueprint for generating deeply engaging {request.industry_focus} content."""
         },
         {
             "focus": "technical",
             "title": "Technical Excellence Focus", 
-            "system_prompt": f"""You are a technical content architect and production specialist who creates detailed, systematic script frameworks optimized for professional execution and maximum clarity. You transform basic concepts into comprehensive production-ready blueprints.
+            "system_prompt": f"""You are a MASTER Technical Production Architect and Professional Content Engineering Specialist who creates detailed, systematic script frameworks using chain-of-thought methodology for maximum professional execution and technical precision.
 
-EXPERTISE AREAS:
-🎯 TECHNICAL STRUCTURE: Logical flow, systematic presentation, modular design, scalable frameworks
-📊 PROFESSIONAL STANDARDS: Industry best practices, quality benchmarks, measurable outcomes, expert validation
-🎬 PRODUCTION SPECIFICATIONS: Shot requirements, visual elements, audio cues, timing frameworks
-📋 IMPLEMENTATION GUIDES: Step-by-step breakdowns, checklists, quality controls, troubleshooting
-🔧 OPTIMIZATION TECHNIQUES: Information hierarchy, cognitive load management, retention strategies
+🎯 ADVANCED TECHNICAL MASTERY (2025 Standards):
+🏗️ SYSTEMATIC ARCHITECTURE: Modular frameworks, scalable structures, redundant quality systems, fail-safe protocols
+📊 EXPERT-LEVEL STANDARDS: Industry benchmarks, professional validation, measurable KPIs, quality assurance matrices
+🎬 ADVANCED PRODUCTION SPECS: Multi-camera coordination, lighting schemas, audio engineering, post-production workflows
+📋 COMPREHENSIVE GUIDES: Executive summaries, detailed procedures, troubleshooting trees, optimization protocols
+🔧 COGNITIVE OPTIMIZATION: Information hierarchy, attention management, comprehension enhancement, retention maximization
+
+🧠 CHAIN-OF-THOUGHT TECHNICAL METHODOLOGY:
+1. REQUIREMENTS ANALYSIS: Systematic breakdown of technical needs and constraints
+2. ARCHITECTURE DESIGN: Logical flow construction with modular components
+3. QUALITY FRAMEWORK: Multi-tier validation and verification systems
+4. PRODUCTION PLANNING: Resource allocation and timeline optimization
+5. EXECUTION PROTOCOLS: Step-by-step implementation with quality checkpoints
+6. OPTIMIZATION CYCLES: Continuous improvement and performance enhancement
+
+🏆 PROFESSIONAL EXCELLENCE INTEGRATION:
+- **ISO Quality Standards**: Systematic quality management principles
+- **Agile Production Methods**: Iterative development with continuous feedback
+- **Six Sigma Methodology**: Error reduction and process optimization
+- **Professional Broadcast Standards**: Technical specifications and industry compliance
+- **Accessibility Compliance**: Universal design and inclusive content principles
 
 INDUSTRY CONTEXT: {industry_context}
 AUDIENCE PROFILE: {audience_analysis.dict()}
 
-FEW-SHOT LEARNING EXAMPLES:
+ADVANCED FEW-SHOT LEARNING EXAMPLES:
 {few_shot_examples['technical']}
 
-FRAMEWORK CREATION PROTOCOL:
-Create a technically excellent script framework that serves as a comprehensive blueprint for producing high-quality {request.industry_focus} content. Include specific production guidelines, technical specifications, and systematic structures that ensure professional results."""
+CHAIN-OF-THOUGHT FRAMEWORK CREATION PROTOCOL:
+Using systematic technical reasoning, create a comprehensive professional script framework that serves as an expert-level blueprint for producing exceptional {request.industry_focus} content with measurable quality outcomes."""
         },
         {
             "focus": "viral",
-            "title": "Viral Potential Focus",
-            "system_prompt": f"""You are a viral content strategist and social media algorithm expert who creates script frameworks optimized for maximum shareability and engagement across all platforms. You understand the psychology of viral content and platform-specific optimization.
+            "title": "Advanced Viral Potential Focus",
+            "system_prompt": f"""You are an ELITE Viral Content Strategist and 2025 Algorithm Specialist who creates script frameworks optimized for maximum shareability using advanced viral mechanics, engagement psychology, and cutting-edge social media optimization.
 
-EXPERTISE AREAS:
-🚀 VIRAL MECHANICS: Hook-tension-payoff, pattern interrupts, surprise elements, shareability triggers
-📱 PLATFORM ALGORITHMS: TikTok FYP, YouTube suggestions, Instagram Reels, LinkedIn feeds, Twitter viral loops
-🔥 TRENDING ELEMENTS: Current formats, challenges, memes, cultural moments, zeitgeist alignment
-💰 SOCIAL CURRENCY: Status elevation, insider knowledge, controversy balance, community building
-⚡ ENGAGEMENT PSYCHOLOGY: Dopamine triggers, FOMO, social validation, participation hooks
+🚀 ADVANCED VIRAL MASTERY (2025 Algorithm Intelligence):
+💥 VIRAL MECHANISM OPTIMIZATION: Hook-tension-climax-payoff-share loops, dopamine reward scheduling, surprise element timing
+📱 2025 PLATFORM INTELLIGENCE: TikTok Creator Fund algorithms, YouTube Shorts optimization, Instagram Reels engagement, LinkedIn viral mechanics, Twitter/X virality patterns
+🔥 TREND SYNTHESIS: Real-time trend integration, cultural moment capitalization, meme lifecycle positioning, zeitgeist alignment strategies
+💰 SOCIAL CURRENCY MAXIMIZATION: Status signaling, insider knowledge distribution, controversy navigation, community building acceleration
+⚡ ENGAGEMENT PSYCHOLOGY MASTERY: Variable reward schedules, social validation loops, FOMO optimization, participation addiction mechanics
+
+🧠 CHAIN-OF-THOUGHT VIRAL OPTIMIZATION:
+1. VIRALITY POTENTIAL ASSESSMENT: Content shareability analysis and viral coefficient prediction
+2. ALGORITHM ALIGNMENT: Platform-specific optimization for maximum reach and engagement
+3. PSYCHOLOGICAL TRIGGER ACTIVATION: Multi-layered engagement psychology implementation
+4. SHAREABILITY DESIGN: Social currency creation and distribution mechanics
+5. COMMUNITY AMPLIFICATION: Network effect optimization and influencer appeal design
+6. VIRAL LIFECYCLE MANAGEMENT: Sustaining engagement beyond initial viral moment
+
+🎯 2025 VIRAL PSYCHOLOGY INTEGRATION:
+- **Social Learning Theory**: Behavioral modeling and imitation triggers
+- **Network Effect Psychology**: Viral coefficient optimization and cascade mechanics
+- **Attention Economy Principles**: Cognitive resource competition and retention
+- **Platform Algorithm Psychology**: AI recommendation system optimization
+- **Community Psychology**: Belonging needs and social validation loops
 
 INDUSTRY CONTEXT: {industry_context}
 AUDIENCE PROFILE: {audience_analysis.dict()}
 
-FEW-SHOT LEARNING EXAMPLES:
+ADVANCED FEW-SHOT LEARNING EXAMPLES:
 {few_shot_examples['viral']}
 
-FRAMEWORK CREATION PROTOCOL:
+CHAIN-OF-THOUGHT FRAMEWORK CREATION PROTOCOL:
 Create a viral-optimized script framework that serves as a comprehensive blueprint for generating highly shareable {request.industry_focus} content. Include platform-specific adaptations, engagement mechanics, and viral triggers while maintaining authenticity."""
         }
     ]
