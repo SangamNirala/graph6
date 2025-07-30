@@ -1260,7 +1260,7 @@ def extract_clean_script(raw_script):
             continue
         
         # Skip bullet points and lists (metadata sections)
-        if line.startswith('*') or line.startswith('•') or line.startswith('-') or line.startswith('◦'):
+        if line.startswith('*') or line.startswith('-') or line.startswith('o'):
             in_metadata_section = True
             continue
         
