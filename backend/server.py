@@ -787,21 +787,21 @@ async def _generate_recommendation(variations: List[EnhancementVariation], quali
     recommendation = f"""RECOMMENDED VARIATION: "{best_variation.title}"
 
 WHY THIS CHOICE:
-• Highest performance score ({best_variation.estimated_performance_score:.1f}/10.0)
-• Optimized for {audience_analysis.recommended_tone} tone matching your audience
-• {best_variation.focus_strategy.title()} approach aligns with {audience_analysis.complexity_level} complexity level
-• Incorporates {len(best_variation.industry_specific_elements)} industry-specific elements
-• Expected engagement: {best_variation.target_engagement}
+- Highest performance score ({best_variation.estimated_performance_score:.1f}/10.0)
+- Optimized for {audience_analysis.recommended_tone} tone matching your audience
+- {best_variation.focus_strategy.title()} approach aligns with {audience_analysis.complexity_level} complexity level
+- Incorporates {len(best_variation.industry_specific_elements)} industry-specific elements
+- Expected engagement: {best_variation.target_engagement}
 
 ALTERNATIVE CONSIDERATIONS:
-• Try the "Emotional Engagement Focus" if audience connection is priority
-• Consider "Technical Excellence Focus" for professional/expert audiences  
-• Use "Viral Potential Focus" for maximum reach and shareability
+- Try the "Emotional Engagement Focus" if audience connection is priority
+- Consider "Technical Excellence Focus" for professional/expert audiences  
+- Use "Viral Potential Focus" for maximum reach and shareability
 
 IMPLEMENTATION TIPS:
-• Test multiple variations with A/B testing if possible
-• Adapt the tone slightly based on platform-specific audience behavior
-• Monitor engagement metrics to refine future enhancements"""
+- Test multiple variations with A/B testing if possible
+- Adapt the tone slightly based on platform-specific audience behavior
+- Monitor engagement metrics to refine future enhancements"""
     
     return recommendation
 
