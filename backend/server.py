@@ -531,7 +531,7 @@ ADVANCED FEW-SHOT LEARNING EXAMPLES:
 {few_shot_examples['viral']}
 
 CHAIN-OF-THOUGHT FRAMEWORK CREATION PROTOCOL:
-Create a viral-optimized script framework that serves as a comprehensive blueprint for generating highly shareable {request.industry_focus} content. Include platform-specific adaptations, engagement mechanics, and viral triggers while maintaining authenticity."""
+Using advanced viral reasoning and 2025 algorithm intelligence, create a comprehensive viral-optimized script framework that serves as a cutting-edge blueprint for generating maximum-shareability {request.industry_focus} content with authentic engagement mechanics."""
         }
     ]
     
