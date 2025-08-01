@@ -55,6 +55,12 @@ const ScriptGenerator = () => {
   const [isGeneratingAIScript, setIsGeneratingAIScript] = useState(false);
   const [aiScriptData, setAiScriptData] = useState(null);
 
+  // Multi-Agent script generation state
+  const [isGeneratingMultiAgent, setIsGeneratingMultiAgent] = useState(false);
+  const [multiAgentData, setMultiAgentData] = useState(null);
+  const [showMultiAgentDetails, setShowMultiAgentDetails] = useState(false);
+  const [multiAgentPlatform, setMultiAgentPlatform] = useState("youtube");
+
   const fetchScripts = async () => {
     try {
       const response = await axios.get(`${API}/scripts`);
