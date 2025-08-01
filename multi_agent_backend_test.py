@@ -44,7 +44,7 @@ class MultiAgentTester:
                 data = response.json()
                 
                 # Verify response structure
-                required_fields = ["status", "system_info", "agents_available", "capabilities"]
+                required_fields = ["status", "system_info", "agents"]
                 missing_fields = [field for field in required_fields if field not in data]
                 
                 if missing_fields:
