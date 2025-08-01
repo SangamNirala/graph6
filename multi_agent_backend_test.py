@@ -58,11 +58,13 @@ class MultiAgentTester:
                                 f"System operational with {len(data.get('agents_available', []))} agents available")
                     
                     # Log system capabilities
-                    capabilities = data.get("capabilities", [])
-                    print(f"   System Capabilities: {', '.join(capabilities)}")
+                    agents = data.get("agents", {})
+                    pipeline_sequence = data.get("pipeline_sequence", [])
+                    supported_platforms = data.get("supported_platforms", [])
                     
-                    agents = data.get("agents_available", [])
-                    print(f"   Available Agents: {', '.join(agents)}")
+                    print(f"   Available Agents: {', '.join(agents.keys())}")
+                    print(f"   Pipeline Sequence: {' → '.join(pipeline_sequence)}")
+                    print(f"   Supported Platforms: {', '.join(supported_platforms)}")
                     
                     return True
                 else:
