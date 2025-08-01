@@ -108,16 +108,19 @@ Focus on ARCHITECTURE and STRUCTURE. Other agents will handle content creation, 
             response = await narrative_chat.send_message(UserMessage(text=narrative_prompt))
             
             # Parse and structure the narrative output
+            narrative_architecture = {
+                "story_structure": self._extract_story_structure(response),
+                "emotional_arc": self._extract_emotional_arc(response),
+                "pacing_blueprint": self._extract_pacing_blueprint(response),
+                "engagement_checkpoints": self._extract_engagement_checkpoints(response),
+                "narrative_flow": self._extract_narrative_flow(response)
+            }
+            
             narrative_output = {
                 "agent_name": self.agent_name,
                 "processing_time": datetime.utcnow().isoformat(),
-                "narrative_architecture": {
-                    "story_structure": self._extract_story_structure(response),
-                    "emotional_arc": self._extract_emotional_arc(response),
-                    "pacing_blueprint": self._extract_pacing_blueprint(response),
-                    "engagement_checkpoints": self._extract_engagement_checkpoints(response),
-                    "narrative_flow": self._extract_narrative_flow(response)
-                },
+                "specialized_output": narrative_architecture,
+                "narrative_architecture": narrative_architecture,  # Keep for backward compatibility
                 "raw_output": response,
                 "recommendations_for_next_agents": {
                     "engagement_agent": "Focus on hook placement at identified checkpoints",
