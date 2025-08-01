@@ -822,21 +822,33 @@ const ScriptGenerator = () => {
               <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
                 <div className="flex justify-between items-center mb-6">
                   <h2 className="text-2xl font-bold text-white">
-                    🎬 Generated Script 
+                    {generatedWithPrompt === "multi-agent" ? "🤖 Multi-Agent Generated Script" : "🎬 Generated Script"}
                     <span className="text-sm font-normal text-gray-300 ml-2">
                       ({generatedWithPrompt} prompt)
                     </span>
                   </h2>
-                  <button
-                    onClick={handlePlayScript}
-                    disabled={isGeneratingAudio}
-                    className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 ${
-                      isPlaying 
-                        ? 'bg-red-500/20 text-red-300 hover:bg-red-500/30' 
-                        : isGeneratingAudio
-                        ? 'bg-yellow-500/20 text-yellow-300'
-                        : 'bg-green-500/20 text-green-300 hover:bg-green-500/30'
-                    } ${isGeneratingAudio ? 'cursor-not-allowed opacity-75' : ''}`}
+                  <div className="flex items-center space-x-3">
+                    {/* Multi-Agent Details Toggle */}
+                    {generatedWithPrompt === "multi-agent" && multiAgentData && (
+                      <button
+                        onClick={() => setShowMultiAgentDetails(!showMultiAgentDetails)}
+                        className="px-3 py-2 bg-blue-500/20 text-blue-300 rounded-lg hover:bg-blue-500/30 transition-all duration-200 text-sm font-medium"
+                      >
+                        {showMultiAgentDetails ? "Hide Details" : "View Agent Details"}
+                      </button>
+                    )}
+                    
+                    <button
+                      onClick={handlePlayScript}
+                      disabled={isGeneratingAudio}
+                      className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 ${
+                        isPlaying 
+                          ? 'bg-red-500/20 text-red-300 hover:bg-red-500/30' 
+                          : isGeneratingAudio
+                          ? 'bg-yellow-500/20 text-yellow-300'
+                          : 'bg-green-500/20 text-green-300 hover:bg-green-500/30'
+                      } ${isGeneratingAudio ? 'cursor-not-allowed opacity-75' : ''}`}
+                    >
                   >
                     {isGeneratingAudio ? (
                       <>
