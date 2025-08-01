@@ -1415,6 +1415,329 @@ const ScriptGenerator = () => {
                         }`}
                       >
                         <div className="text-center">
+                          <div className="text-xl mb-1">#{index}</div>
+                          <div className="text-sm font-medium text-white">Variation {index}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={() => setShowUltraRealisticOptions(false)}
+                  className="flex-1 py-3 px-4 bg-gray-600 text-white font-semibold rounded-lg shadow-lg hover:bg-gray-700 transition-all duration-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleGenerateUltraRealisticAvatarVideo}
+                  disabled={isGeneratingVideo}
+                  className="flex-1 py-3 px-4 bg-gradient-to-r from-pink-600 to-red-600 text-white font-semibold rounded-lg shadow-lg hover:from-pink-700 hover:to-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                >
+                  {isGeneratingVideo ? (
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Generating...
+                    </div>
+                  ) : (
+                    "🎬 Generate Ultra-Realistic Video"
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+    </>
+  );
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 max-w-md w-full max-h-[80vh] overflow-y-auto">
+              <h3 className="text-2xl font-bold text-white mb-4">🎤 Choose Voice</h3>
+              
+              <div className="space-y-3 mb-6">
+                {voices.map((voice) => (
+                  <button
+                    key={voice.name}
+                    onClick={() => handleVoiceSelect(voice)}
+                    className={`w-full p-3 rounded-lg text-left transition-all duration-200 ${
+                      selectedVoice?.name === voice.name
+                        ? 'bg-purple-500/30 border-purple-400 border-2 text-white'
+                        : 'bg-white/5 border border-white/20 text-gray-300 hover:bg-white/10'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-medium">{voice.display_name}</div>
+                        <div className="text-sm text-gray-400">{voice.language}</div>
+                      </div>
+                      <div className={`px-2 py-1 rounded text-xs ${
+                        voice.gender === 'Female' 
+                          ? 'bg-pink-500/20 text-pink-300' 
+                          : 'bg-blue-500/20 text-blue-300'
+                      }`}>
+                        {voice.gender}
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => setShowVoiceSelection(false)}
+                  className="flex-1 py-3 px-4 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleGenerateAndPlayAudio}
+                  disabled={!selectedVoice || isGeneratingAudio}
+                  className="flex-1 py-3 px-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-lg shadow-lg hover:from-purple-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                >
+                  {isGeneratingAudio ? (
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Generating...
+                    </div>
+                  ) : (
+                    "🎵 Generate Audio"
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Avatar Options Modal */}
+        {showAvatarOptions && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 max-w-md w-full max-h-[80vh] overflow-y-auto">
+              <h3 className="text-2xl font-bold text-white mb-4">✨ Avatar Options</h3>
+              
+              <div className="space-y-4 mb-6">
+                {/* Default Avatar Option */}
+                <div
+                  onClick={() => setAvatarOption("default")}
+                  className={`p-4 rounded-lg cursor-pointer transition-all duration-200 ${
+                    avatarOption === "default"
+                      ? 'bg-purple-500/30 border-purple-400 border-2'
+                      : 'bg-white/5 border border-white/20 hover:bg-white/10'
+                  }`}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="text-2xl">🤖</div>
+                    <div>
+                      <div className="font-medium text-white">Default AI Avatar</div>
+                      <div className="text-sm text-gray-400">Use our built-in professional avatar</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Upload Your Photo Option */}
+                <div
+                  onClick={() => setAvatarOption("upload")}
+                  className={`p-4 rounded-lg cursor-pointer transition-all duration-200 ${
+                    avatarOption === "upload"
+                      ? 'bg-purple-500/30 border-purple-400 border-2'
+                      : 'bg-white/5 border border-white/20 hover:bg-white/10'
+                  }`}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="text-2xl">📸</div>
+                    <div>
+                      <div className="font-medium text-white">Upload Your Photo</div>
+                      <div className="text-sm text-gray-400">Use your own image as the avatar</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* AI Generated Avatar Option */}
+                <div
+                  onClick={() => setAvatarOption("ai_generated")}
+                  className={`p-4 rounded-lg cursor-pointer transition-all duration-200 ${
+                    avatarOption === "ai_generated"
+                      ? 'bg-purple-500/30 border-purple-400 border-2'
+                      : 'bg-white/5 border border-white/20 hover:bg-white/10'
+                  }`}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="text-2xl">🎭</div>
+                    <div>
+                      <div className="font-medium text-white">AI Generated Avatar</div>
+                      <div className="text-sm text-gray-400">Create a unique AI-generated human face</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* File Upload for Upload Option */}
+                {avatarOption === "upload" && (
+                  <div className="mt-4 p-4 bg-white/5 rounded-lg border border-white/20">
+                    <label className="block text-white text-sm font-medium mb-2">
+                      Upload your photo:
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="w-full p-2 bg-white/10 border border-white/20 rounded-lg text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-purple-500/20 file:text-purple-300 hover:file:bg-purple-500/30"
+                    />
+                    {userImageFile && (
+                      <div className="mt-2 text-sm text-green-400">
+                        ✓ Image uploaded: {userImageFile.name}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowAvatarOptions(false)}
+                  className="flex-1 py-3 px-4 bg-gray-600 text-white font-semibold rounded-lg shadow-lg hover:bg-gray-700 transition-all duration-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleGenerateEnhancedAvatarVideo}
+                  disabled={isGeneratingVideo || (avatarOption === "upload" && !userImageBase64)}
+                  className="flex-1 py-3 px-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg shadow-lg hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                >
+                  {isGeneratingVideo ? (
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Generating...
+                    </div>
+                  ) : (
+                    "✨ Generate Enhanced Video"
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Ultra-Realistic Avatar Options Modal */}
+        {showUltraRealisticOptions && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 max-w-lg w-full max-h-[90vh] overflow-y-auto">
+              <h3 className="text-2xl font-bold text-white mb-6 flex items-center">
+                <span className="mr-2">🎬</span>
+                Ultra-Realistic Avatar Options
+              </h3>
+              
+              <div className="space-y-6">
+                {/* Avatar Style Selection */}
+                <div>
+                  <label className="block text-white text-sm font-medium mb-3">
+                    Avatar Style
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div
+                      onClick={() => setUltraAvatarStyle("business_professional")}
+                      className={`p-3 rounded-lg cursor-pointer transition-all duration-200 ${
+                        ultraAvatarStyle === "business_professional"
+                          ? 'bg-pink-500/30 border-pink-400 border-2'
+                          : 'bg-white/5 border border-white/20 hover:bg-white/10'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <div className="text-xl">👔</div>
+                        <div>
+                          <div className="font-medium text-white">Business Professional</div>
+                          <div className="text-xs text-gray-400">Formal, corporate style</div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div
+                      onClick={() => setUltraAvatarStyle("casual")}
+                      className={`p-3 rounded-lg cursor-pointer transition-all duration-200 ${
+                        ultraAvatarStyle === "casual"
+                          ? 'bg-pink-500/30 border-pink-400 border-2'
+                          : 'bg-white/5 border border-white/20 hover:bg-white/10'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <div className="text-xl">👕</div>
+                        <div>
+                          <div className="font-medium text-white">Casual</div>
+                          <div className="text-xs text-gray-400">Relaxed, friendly style</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Gender Selection */}
+                <div>
+                  <label className="block text-white text-sm font-medium mb-3">
+                    Avatar Gender
+                  </label>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div
+                      onClick={() => setUltraAvatarGender("female")}
+                      className={`p-3 rounded-lg cursor-pointer transition-all duration-200 ${
+                        ultraAvatarGender === "female"
+                          ? 'bg-pink-500/30 border-pink-400 border-2'
+                          : 'bg-white/5 border border-white/20 hover:bg-white/10'
+                      }`}
+                    >
+                      <div className="text-center">
+                        <div className="text-xl mb-1">👩</div>
+                        <div className="text-sm font-medium text-white">Female</div>
+                      </div>
+                    </div>
+                    
+                    <div
+                      onClick={() => setUltraAvatarGender("male")}
+                      className={`p-3 rounded-lg cursor-pointer transition-all duration-200 ${
+                        ultraAvatarGender === "male"
+                          ? 'bg-pink-500/30 border-pink-400 border-2'
+                          : 'bg-white/5 border border-white/20 hover:bg-white/10'
+                      }`}
+                    >
+                      <div className="text-center">
+                        <div className="text-xl mb-1">👨</div>
+                        <div className="text-sm font-medium text-white">Male</div>
+                      </div>
+                    </div>
+                    
+                    <div
+                      onClick={() => setUltraAvatarGender("diverse")}
+                      className={`p-3 rounded-lg cursor-pointer transition-all duration-200 ${
+                        ultraAvatarGender === "diverse"
+                          ? 'bg-pink-500/30 border-pink-400 border-2'
+                          : 'bg-white/5 border border-white/20 hover:bg-white/10'
+                      }`}
+                    >
+                      <div className="text-center">
+                        <div className="text-xl mb-1">🌍</div>
+                        <div className="text-sm font-medium text-white">Diverse</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Avatar Index Selection */}
+                <div>
+                  <label className="block text-white text-sm font-medium mb-3">
+                    Avatar Variation
+                  </label>
+                  <div className="grid grid-cols-3 gap-3">
+                    {[1, 2, 3].map((index) => (
+                      <div
+                        key={index}
+                        onClick={() => setUltraAvatarIndex(index)}
+                        className={`p-3 rounded-lg cursor-pointer transition-all duration-200 ${
+                          ultraAvatarIndex === index
+                            ? 'bg-pink-500/30 border-pink-400 border-2'
+                            : 'bg-white/5 border border-white/20 hover:bg-white/10'
+                        }`}
+                      >
+                        <div className="text-center">
                           <div className="text-xl mb-1">🎭</div>
                           <div className="text-sm font-medium text-white">Option {index}</div>
                         </div>
