@@ -868,6 +868,64 @@ const ScriptGenerator = () => {
                   dangerouslySetInnerHTML={{ __html: formatScript(generatedScript) }}
                 />
                 
+                {/* Multi-Agent Details Section */}
+                {generatedWithPrompt === "multi-agent" && multiAgentData && showMultiAgentDetails && (
+                  <div className="mt-6 p-4 bg-gradient-to-r from-blue-500/10 to-green-500/10 border border-blue-500/20 rounded-lg">
+                    <h3 className="text-lg font-bold text-white mb-4 flex items-center">
+                      <span className="mr-2">🤖</span>
+                      Multi-Agent Processing Details
+                    </h3>
+                    
+                    <div className="space-y-3">
+                      {/* Processing Summary */}
+                      <div className="bg-white/5 p-3 rounded-lg">
+                        <div className="text-sm text-gray-300 mb-2">Processing Summary:</div>
+                        <div className="grid grid-cols-2 gap-4 text-xs">
+                          <div>
+                            <span className="text-gray-400">Processing Time:</span>
+                            <span className="text-white ml-2">{multiAgentData.system_metadata?.processing_time_seconds?.toFixed(1)}s</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-400">Agents Used:</span>
+                            <span className="text-white ml-2">{multiAgentData.system_metadata?.agents_used}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-400">Platform:</span>
+                            <span className="text-white ml-2">{multiAgentData.target_platform}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-400">Quality Score:</span>
+                            <span className="text-green-300 ml-2">{multiAgentData.performance_summary?.overall_quality_score}/10</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Agent Contributions */}
+                      <div className="bg-white/5 p-3 rounded-lg">
+                        <div className="text-sm text-gray-300 mb-2">Agent Contributions:</div>
+                        <div className="space-y-2 text-xs">
+                          {Object.entries(multiAgentData.integration_summary || {}).map(([agent, contribution]) => (
+                            <div key={agent} className="flex">
+                              <span className="text-blue-300 w-24 capitalize">{agent.replace('_', ' ')}:</span>
+                              <span className="text-gray-300 flex-1">{contribution}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Performance Improvement */}
+                      {multiAgentData.performance_summary?.estimated_performance_improvement && (
+                        <div className="bg-green-500/10 border border-green-500/20 p-3 rounded-lg">
+                          <div className="text-sm text-green-300 mb-1">Expected Improvement:</div>
+                          <div className="text-xs text-green-200">
+                            {multiAgentData.performance_summary.estimated_performance_improvement}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+                
                 <div className="mt-4 pt-4 border-t border-white/20 flex flex-wrap gap-3">
                   <button
                     onClick={() => navigator.clipboard.writeText(generatedScript)}
