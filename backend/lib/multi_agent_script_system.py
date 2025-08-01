@@ -728,18 +728,21 @@ Provide comprehensive quality assurance while maintaining all previous optimizat
             
             response = await quality_chat.send_message(UserMessage(text=quality_prompt))
             
+            quality_assurance = {
+                "coherence_validation": self._extract_coherence_validation(response),
+                "quality_assessment": self._extract_quality_assessment(response),
+                "optimization_integration": self._extract_optimization_integration(response),
+                "error_detection": self._extract_error_detection(response),
+                "brand_consistency": self._extract_brand_consistency(response),
+                "final_polish": self._extract_final_polish(response),
+                "requirements_validation": self._extract_requirements_validation(response)
+            }
+            
             quality_output = {
                 "agent_name": self.agent_name,
                 "processing_time": datetime.utcnow().isoformat(),
-                "quality_assurance": {
-                    "coherence_validation": self._extract_coherence_validation(response),
-                    "quality_assessment": self._extract_quality_assessment(response),
-                    "optimization_integration": self._extract_optimization_integration(response),
-                    "error_detection": self._extract_error_detection(response),
-                    "brand_consistency": self._extract_brand_consistency(response),
-                    "final_polish": self._extract_final_polish(response),
-                    "requirements_validation": self._extract_requirements_validation(response)
-                },
+                "specialized_output": quality_assurance,
+                "quality_assurance": quality_assurance,  # Keep for backward compatibility
                 "quality_score": self._calculate_quality_score(response),
                 "raw_output": response,
                 "recommendations_for_coordinator": {
