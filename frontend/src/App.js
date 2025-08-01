@@ -1463,7 +1463,7 @@ const ScriptGenerator = () => {
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 };
 
