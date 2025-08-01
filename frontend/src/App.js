@@ -171,6 +171,36 @@ const ScriptGenerator = () => {
     }
   };
 
+  const handleGenerateMultiAgentScript = async () => {
+    if (!prompt.trim()) {
+      setError("Please enter a prompt first");
+      return;
+    }
+
+    setIsGeneratingMultiAgent(true);
+    setError("");
+
+    try {
+      const response = await axios.post(`${API}/generate-script-multi-agent`, {
+        prompt: prompt,
+        video_type: videoType,
+        duration: duration,
+        target_platform: multiAgentPlatform,
+        context: {}
+      });
+
+      setMultiAgentData(response.data);
+      setGeneratedScript(response.data.generated_script);
+      setGeneratedWithPrompt("multi-agent");
+      fetchScripts(); // Refresh the scripts list
+    } catch (err) {
+      setError("Error generating multi-agent script. Please try again.");
+      console.error("Error generating multi-agent script:", err);
+    } finally {
+      setIsGeneratingMultiAgent(false);
+    }
+  };
+
   const handleGenerateAIScript = async () => {
     if (!prompt.trim()) {
       setError("Please enter a prompt first");
