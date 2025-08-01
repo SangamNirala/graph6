@@ -632,6 +632,45 @@ const ScriptGenerator = () => {
                   )}
                 </button>
 
+                {/* Multi-Agent Generation Button */}
+                <div className="relative">
+                  <button
+                    onClick={handleGenerateMultiAgentScript}
+                    disabled={isGeneratingMultiAgent || !prompt.trim()}
+                    className="w-full py-3 px-6 bg-gradient-to-r from-green-600 to-teal-600 text-white font-semibold rounded-lg shadow-lg hover:from-green-700 hover:to-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105"
+                  >
+                    {isGeneratingMultiAgent ? (
+                      <div className="flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                        Multi-Agent Processing...
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center space-x-2">
+                        <span>🤖</span>
+                        <span>Multi-Agent Script Generation</span>
+                        <span className="text-xs bg-white/20 px-2 py-1 rounded-full">NEW</span>
+                      </div>
+                    )}
+                  </button>
+                  
+                  {/* Platform Selection for Multi-Agent */}
+                  {!isGeneratingMultiAgent && (
+                    <div className="mt-2">
+                      <label className="block text-white text-xs font-medium mb-1">Target Platform:</label>
+                      <select
+                        value={multiAgentPlatform}
+                        onChange={(e) => setMultiAgentPlatform(e.target.value)}
+                        className="w-full px-3 py-2 bg-white/5 border border-white/20 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                      >
+                        <option value="youtube">YouTube</option>
+                        <option value="tiktok">TikTok</option>
+                        <option value="instagram">Instagram</option>
+                        <option value="linkedin">LinkedIn</option>
+                      </select>
+                    </div>
+                  )}
+                </div>
+
                 {!showEnhanced && (
                   <button
                     onClick={() => handleGenerateScript(false)}
