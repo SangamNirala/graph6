@@ -199,6 +199,34 @@ class CoTScriptResponse(BaseModel):
     generation_metadata: Dict[str, Any]
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
+# Multi-Agent Script Generation Models
+class MultiAgentScriptRequest(BaseModel):
+    prompt: str
+    video_type: Optional[str] = "general"
+    duration: Optional[str] = "short"
+    target_platform: Optional[str] = "youtube"
+    context: Optional[Dict[str, Any]] = None
+
+class AgentOutput(BaseModel):
+    agent_name: str
+    processing_time: str
+    specialized_output: Dict[str, Any]
+    raw_output: str
+    recommendations_for_next_agents: Optional[Dict[str, str]] = None
+
+class MultiAgentScriptResponse(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    original_prompt: str
+    generated_script: str
+    video_type: str
+    duration: str
+    target_platform: str
+    agent_outputs: Dict[str, AgentOutput]
+    system_metadata: Dict[str, Any]
+    performance_summary: Dict[str, Any]
+    integration_summary: Dict[str, str]
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
 class TextToSpeechRequest(BaseModel):
     text: str
     voice_name: Optional[str] = "en-US-AriaNeural"
