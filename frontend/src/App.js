@@ -849,7 +849,6 @@ const ScriptGenerator = () => {
                           : 'bg-green-500/20 text-green-300 hover:bg-green-500/30'
                       } ${isGeneratingAudio ? 'cursor-not-allowed opacity-75' : ''}`}
                     >
-                  >
                     {isGeneratingAudio ? (
                       <>
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-yellow-300"></div>
