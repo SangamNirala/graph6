@@ -285,17 +285,20 @@ Build upon the narrative architecture while focusing on ENGAGEMENT PSYCHOLOGY an
             
             response = await engagement_chat.send_message(UserMessage(text=engagement_prompt))
             
+            engagement_optimization = {
+                "hook_strategy": self._extract_hook_strategy(response),
+                "retention_tactics": self._extract_retention_tactics(response),
+                "psychological_triggers": self._extract_psychological_triggers(response),
+                "interaction_plan": self._extract_interaction_plan(response),
+                "attention_management": self._extract_attention_management(response),
+                "platform_optimization": self._extract_platform_optimization(response)
+            }
+            
             engagement_output = {
                 "agent_name": self.agent_name,
                 "processing_time": datetime.utcnow().isoformat(),
-                "engagement_optimization": {
-                    "hook_strategy": self._extract_hook_strategy(response),
-                    "retention_tactics": self._extract_retention_tactics(response),
-                    "psychological_triggers": self._extract_psychological_triggers(response),
-                    "interaction_plan": self._extract_interaction_plan(response),
-                    "attention_management": self._extract_attention_management(response),
-                    "platform_optimization": self._extract_platform_optimization(response)
-                },
+                "specialized_output": engagement_optimization,
+                "engagement_optimization": engagement_optimization,  # Keep for backward compatibility
                 "raw_output": response,
                 "recommendations_for_next_agents": {
                     "technical_agent": "Optimize engagement tactics for specific platform algorithms",
