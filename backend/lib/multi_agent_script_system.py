@@ -947,9 +947,8 @@ Generate a MASTERPIECE that perfectly balances narrative excellence, engagement 
             # Extract the final script from coordinator response
             final_script = self._extract_final_script(response)
             
-            coordinator_output = {
-                "agent_name": self.agent_name,
-                "processing_time": datetime.utcnow().isoformat(),
+            # Create the specialized coordination output
+            coordination_data = {
                 "final_coordination": {
                     "integration_strategy": self._extract_integration_strategy(response),
                     "optimization_balance": self._extract_optimization_balance(response),
@@ -963,10 +962,24 @@ Generate a MASTERPIECE that perfectly balances narrative excellence, engagement 
                     "technical_agent": "Platform algorithm optimization and SEO",
                     "quality_agent": "Content polish and coherence validation"
                 },
-                "raw_output": response,
                 "system_performance": self._calculate_system_performance(
                     narrative_output, engagement_output, technical_output, quality_output
                 )
+            }
+            
+            coordinator_output = {
+                "agent_name": self.agent_name,
+                "processing_time": datetime.utcnow().isoformat(),
+                "specialized_output": coordination_data,
+                "final_coordination": coordination_data["final_coordination"],  # Keep for backward compatibility
+                "final_script": final_script,  # Keep for backward compatibility
+                "agent_contributions_summary": coordination_data["agent_contributions_summary"],  # Keep for backward compatibility
+                "raw_output": response,
+                "system_performance": coordination_data["system_performance"],  # Keep for backward compatibility
+                "recommendations_for_final_output": {
+                    "script_ready": "Final integrated script ready for production",
+                    "quality_validated": "All agent recommendations integrated and quality assured"
+                }
             }
             
             return coordinator_output
