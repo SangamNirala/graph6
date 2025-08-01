@@ -516,18 +516,21 @@ Build upon previous agents' work while focusing on TECHNICAL OPTIMIZATION and PL
             
             response = await technical_chat.send_message(UserMessage(text=technical_prompt))
             
+            technical_optimization = {
+                "algorithm_optimization": self._extract_algorithm_optimization(response),
+                "seo_discoverability": self._extract_seo_strategy(response),
+                "technical_formatting": self._extract_technical_formatting(response),
+                "metadata_optimization": self._extract_metadata_optimization(response),
+                "performance_metrics": self._extract_performance_metrics(response),
+                "cross_platform": self._extract_cross_platform(response),
+                "trending_integration": self._extract_trending_integration(response)
+            }
+            
             technical_output = {
                 "agent_name": self.agent_name,
                 "processing_time": datetime.utcnow().isoformat(),
-                "technical_optimization": {
-                    "algorithm_optimization": self._extract_algorithm_optimization(response),
-                    "seo_discoverability": self._extract_seo_strategy(response),
-                    "technical_formatting": self._extract_technical_formatting(response),
-                    "metadata_optimization": self._extract_metadata_optimization(response),
-                    "performance_metrics": self._extract_performance_metrics(response),
-                    "cross_platform": self._extract_cross_platform(response),
-                    "trending_integration": self._extract_trending_integration(response)
-                },
+                "specialized_output": technical_optimization,
+                "technical_optimization": technical_optimization,  # Keep for backward compatibility
                 "platform_specifications": platform_specs,
                 "raw_output": response,
                 "recommendations_for_next_agents": {
