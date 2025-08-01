@@ -37,6 +37,8 @@ from lib.intelligent_qa_system import IntelligentQASystem
 from lib.advanced_script_generator import ChainOfThoughtScriptGenerator
 # STEP 2: Few-Shot Learning & Pattern Recognition System
 from lib.few_shot_script_generator import FewShotScriptGenerator, ContextProfile
+# Multi-Agent Script Generation System
+from lib.multi_agent_script_system import MultiAgentScriptSystem
 
 
 ROOT_DIR = Path(__file__).parent
