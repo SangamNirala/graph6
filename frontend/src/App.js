@@ -89,6 +89,35 @@ const ScriptGenerator = () => {
     fetchVoices();
   }, []);
 
+  const handleEnhanceImagePrompts = async () => {
+    if (!generatedScript.trim()) {
+      setError("Please generate a script first before enhancing image prompts");
+      return;
+    }
+
+    setIsEnhancingImagePrompts(true);
+    setError("");
+
+    try {
+      const response = await axios.post(`${API}/enhance-image-prompts`, {
+        script: generatedScript,
+        platform: imagePromptPlatform,
+        style: "cinematic",
+        mood: "professional"
+      });
+
+      if (response.data.enhanced_script) {
+        setEnhancedImageScript(response.data.enhanced_script);
+        setGeneratedScript(response.data.enhanced_script);
+      }
+    } catch (err) {
+      console.error("Error enhancing image prompts:", err);
+      setError("Error enhancing image prompts. Please try again.");
+    } finally {
+      setIsEnhancingImagePrompts(false);
+    }
+  };
+
   const handleEnhancePrompt = async () => {
     if (!prompt.trim()) {
       setError("Please enter a prompt first");
