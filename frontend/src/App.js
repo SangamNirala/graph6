@@ -55,6 +55,11 @@ const ScriptGenerator = () => {
   const [isGeneratingAIScript, setIsGeneratingAIScript] = useState(false);
   const [aiScriptData, setAiScriptData] = useState(null);
 
+  // Enhanced image prompt enhancement state
+  const [isEnhancingImagePrompts, setIsEnhancingImagePrompts] = useState(false);
+  const [enhancedImageScript, setEnhancedImageScript] = useState("");
+  const [imagePromptPlatform, setImagePromptPlatform] = useState("universal");
+
   const fetchScripts = async () => {
     try {
       const response = await axios.get(`${API}/scripts`);
