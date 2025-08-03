@@ -1960,6 +1960,80 @@ async def get_scripts():
         logger.error(f"Error fetching scripts: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error fetching scripts: {str(e)}")
 
+@api_router.post("/enhance-image-prompts")
+async def enhance_image_prompts(request: dict):
+    """
+    Enhance existing script with ultra-detailed AI image prompts
+    Takes a script and enhances all image prompts for better AI generation
+    """
+    try:
+        script_text = request.get("script", "")
+        platform = request.get("platform", "universal")  # universal, midjourney, dalle3, stable_diffusion
+        style = request.get("style", "cinematic")
+        mood = request.get("mood", "professional")
+        
+        if not script_text:
+            raise HTTPException(status_code=400, detail="Script text is required")
+        
+        # Use the enhanced image prompt generator to improve all prompts in the script
+        enhanced_script = enhanced_image_prompt_generator.extract_and_enhance_image_prompts(script_text)
+        
+        # If no existing prompts found, analyze the script and generate suggestions
+        if enhanced_script == script_text:
+            suggestions = await _analyze_script_for_image_opportunities(script_text, style, mood, platform)
+            return {
+                "enhanced_script": enhanced_script,
+                "message": "No existing image prompts found to enhance",
+                "suggestions": suggestions
+            }
+        
+        return {
+            "enhanced_script": enhanced_script,
+            "original_script": script_text,
+            "enhancements_count": len(re.findall(r'\*\*\[[^\]]+\] ULTRA-DETAILED AI IMAGE PROMPT:', enhanced_script)),
+            "platform_optimized": platform,
+            "message": "Script enhanced with ultra-detailed AI image prompts"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error enhancing image prompts: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error enhancing image prompts: {str(e)}")
+
+async def _analyze_script_for_image_opportunities(script_text: str, style: str, mood: str, platform: str) -> List[str]:
+    """Analyze script text and suggest where image prompts could be added"""
+    
+    suggestions = []
+    
+    # Look for scene descriptions, character actions, or setting descriptions
+    scene_patterns = [
+        r'\[([^\]]+)\]',  # Existing scene descriptions in brackets
+        r'\(([^)]+)\)',   # Parenthetical descriptions
+        r'SCENE:?\s*([^\n]+)',  # Scene headers
+        r'INT\.|EXT\.',   # Traditional screenplay formats
+    ]
+    
+    for pattern in scene_patterns:
+        matches = re.finditer(pattern, script_text, re.IGNORECASE)
+        for match in matches:
+            description = match.group(1) if len(match.groups()) > 0 else match.group(0)
+            
+            # Generate enhanced prompt suggestion
+            enhanced_prompt = enhanced_image_prompt_generator.generate_enhanced_prompt(
+                base_description=description,
+                style=style,
+                mood=mood,
+                platform=platform
+            )
+            
+            suggestions.append({
+                "original_text": match.group(0),
+                "position": match.start(),
+                "enhanced_prompt": enhanced_prompt,
+                "suggestion": f"Replace '{match.group(0)}' with detailed AI image prompt"
+            })
+    
+    return suggestions[:10]  # Limit to first 10 suggestions
+
 @api_router.post("/generate-script-v2", response_model=ScriptResponse)
 async def generate_script_v2(request: ScriptRequest):
     """
