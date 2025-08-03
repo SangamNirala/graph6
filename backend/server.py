@@ -1777,23 +1777,28 @@ Each shot must contain ALL these elements for maximum AI generator compatibility
 
 **[DIALOGUE:]** (Confident, warm, engaging tone with slight pause for emphasis) "What if I told you the secret to success isn't what you think?"
 
-8. **CROSS-PLATFORM OPTIMIZATION KEYWORDS**:
-   - Include keywords that work across MidJourney, DALL-E, Stable Diffusion
-   - Use proven prompt modifiers: "professional photography", "cinematic lighting", "ultra-realistic", "commercial quality"
-   - Add technical specs: camera model, lens, lighting setup for authenticity
+🔥 **CRITICAL SUCCESS FACTORS:**
 
-9. **COPY-PASTE READY FORMAT**:
-   - Each shot description can be directly copied and pasted into any AI image generator
-   - No editing needed - complete standalone prompts
-   - Optimized length for AI processing (detailed but not excessive)
+1. **EXTREME DETAIL DENSITY**: Every prompt must contain 300+ words with specific technical, artistic, and visual details
+2. **CROSS-PLATFORM KEYWORDS**: Include optimization keywords for ALL major AI generators
+3. **PROFESSIONAL TERMINOLOGY**: Use actual photography, lighting, and camera terminology
+4. **COLOR SPECIFICATIONS**: Include specific color codes, palettes, and grading details
+5. **TECHNICAL PRECISION**: Exact camera settings, lens specifications, and lighting setups
+6. **QUALITY MULTIPLIERS**: Layer multiple quality-enhancing keywords for maximum output quality
+7. **VISUAL CONSISTENCY**: Maintain character, lighting, and style consistency across all shots
+8. **COPY-PASTE READY**: Each prompt works immediately in any AI generator without modification
 
-10. **VISUAL CONSISTENCY ELEMENTS**:
-   - Maintain character consistency across shots
-   - Consistent lighting and color palette
-   - Smooth visual progression between shots
-   - Professional production value throughout
+🎬 **ENHANCED SCRIPT STRUCTURE REQUIREMENTS:**
 
-Remember: Each shot must be a COMPLETE, STANDALONE AI IMAGE PROMPT that produces stunning results when copied directly into MidJourney, DALL-E, Stable Diffusion, or any other AI image generator. Focus on rich visual details, professional photography terminology, and cross-platform compatibility."""
+Each script must contain 15-30 shots (depending on duration) with ULTRA-DETAILED AI image prompts that:
+✓ Work flawlessly across MidJourney v6, DALL-E 3, Stable Diffusion XL, Leonardo AI, Adobe Firefly
+✓ Contain 250-400 words of specific visual detail per shot
+✓ Include professional photography terminology and technical specifications
+✓ Feature cross-platform optimization keywords for maximum compatibility  
+✓ Maintain perfect visual consistency and narrative flow
+✓ Are immediately copy-paste ready for any AI image generator
+
+Remember: Every shot must be a MASTERPIECE-QUALITY AI image prompt that produces STUNNING, PUBLICATION-READY results when copied directly into any AI image generator. Focus on extreme visual detail, professional technical specifications, and universal cross-platform compatibility."""
         ).with_model("gemini", "gemini-2.0-flash")
 
         script_message = UserMessage(
