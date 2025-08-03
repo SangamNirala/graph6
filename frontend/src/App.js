@@ -779,13 +779,60 @@ const ScriptGenerator = () => {
           <div className="space-y-6">
             {generatedScript && (
               <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-white">
-                    🎬 Generated Script 
-                    <span className="text-sm font-normal text-gray-300 ml-2">
-                      ({generatedWithPrompt} prompt)
-                    </span>
-                  </h2>
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-2xl font-bold text-white">📝 Generated Script</h2>
+                  <div className="flex space-x-3">
+                    {/* AI Image Platform Selection */}
+                    <div className="relative">
+                      <select
+                        value={imagePromptPlatform}
+                        onChange={(e) => setImagePromptPlatform(e.target.value)}
+                        className="px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      >
+                        <option value="universal">Universal AI</option>
+                        <option value="midjourney">MidJourney v6</option>
+                        <option value="dalle3">DALL-E 3</option>
+                        <option value="stable_diffusion">Stable Diffusion</option>
+                        <option value="leonardo">Leonardo AI</option>
+                      </select>
+                    </div>
+                    
+                    {/* Enhance Image Prompts Button */}
+                    <button
+                      onClick={handleEnhanceImagePrompts}
+                      disabled={isEnhancingImagePrompts || !generatedScript.trim()}
+                      className="px-4 py-2 bg-gradient-to-r from-green-600 to-teal-600 text-white font-semibold rounded-lg shadow-lg hover:from-green-700 hover:to-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center space-x-2"
+                    >
+                      {isEnhancingImagePrompts ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          <span>Enhancing...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>🎨</span>
+                          <span>Enhance Image Prompts</span>
+                        </>
+                      )}
+                    </button>
+                    
+                    <button
+                      onClick={() => navigator.clipboard.writeText(generatedScript)}
+                      className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg shadow-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 flex items-center space-x-2"
+                    >
+                      <span>📋</span>
+                      <span>Copy Script</span>
+                    </button>
+                  </div>
+                </div>
+                
+                {enhancedImageScript && (
+                  <div className="mb-4 p-3 bg-green-500/20 border border-green-500/50 rounded-lg text-green-200 text-sm">
+                    ✅ Script enhanced with ultra-detailed AI image prompts optimized for {imagePromptPlatform === 'universal' ? 'all platforms' : imagePromptPlatform}!
+                  </div>
+                )}
+                
+                <div className="mb-6">
                   <button
                     onClick={handlePlayScript}
                     disabled={isGeneratingAudio}
