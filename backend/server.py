@@ -1802,65 +1802,62 @@ Remember: Every shot must be a MASTERPIECE-QUALITY AI image prompt that produces
         ).with_model("gemini", "gemini-2.0-flash")
 
         script_message = UserMessage(
-            text=f"""Create a comprehensive script for {request.video_type} content where EACH SHOT is a standalone, copy-paste-ready AI image prompt optimized for MidJourney, DALL-E, Stable Diffusion, and other AI image generators.
+            text=f"""Create a MASTERPIECE-QUALITY video script with ULTRA-DETAILED AI image prompts optimized for ALL major AI generators (MidJourney v6, DALL-E 3, Stable Diffusion XL, Leonardo AI, Adobe Firefly).
 
 "{request.prompt}"
 
-SPECIFICATIONS:
+🎯 **PRODUCTION SPECIFICATIONS:**
 - Duration target: {request.duration}
 - Video type: {request.video_type}
-- AI IMAGE GENERATOR OPTIMIZATION: Each shot must be a complete, ready-to-use AI image prompt
+- ULTRA-DETAILED AI IMAGE PROMPTS: Each shot must contain 250-400 words of specific visual detail
 
-🎯 CRITICAL REQUIREMENTS:
+🔥 **MANDATORY DELIVERABLES:**
 
-1. **STANDALONE AI IMAGE PROMPTS** (Every 2-3 seconds):
-   Each shot MUST be formatted as a complete AI image prompt that can be directly copy-pasted into any AI image generator. Include:
-   
-   **FORMAT FOR EACH SHOT:**
-   **[0:XX-0:XX] AI IMAGE PROMPT:**
-   "[Detailed subject description], [artistic style], [composition and framing], [lighting setup], [environment/background], [technical camera specs], [color palette], [mood/atmosphere], [quality modifiers]"
-   
-   **[DIALOGUE:]** (Spoken content)
+1. **MASTERPIECE-QUALITY SHOT LIST** with extreme visual detail:
+   - Every shot must be numbered, timed precisely, and contain an ULTRA-DETAILED AI image prompt
+   - Each prompt must be 250-400 words of specific technical detail
+   - Include ALL elements: subject, style, composition, lighting, environment, camera specs, colors, quality modifiers
 
-2. **VISUAL PROMPT ELEMENTS** (Required in every shot):
-   - **Subject Details**: Precise character description, pose, expression, clothing, accessories
-   - **Artistic Style**: "photorealistic", "cinematic photography", "commercial quality", "professional studio lighting"
-   - **Composition**: Camera angle, framing, rule of thirds positioning, depth of field
-   - **Lighting**: Specific lighting setup, direction, quality, color temperature
-   - **Environment**: Detailed background, setting, atmospheric elements
-   - **Technical Specs**: Camera model/lens suggestions, aperture, quality indicators
-   - **Colors**: Specific color palette, mood, contrast levels
-   - **Quality Modifiers**: "ultra-high quality", "8K resolution", "sharp focus", "professional photography"
+2. **CROSS-PLATFORM OPTIMIZATION** for each shot:
+   ✓ MidJourney v6 keywords: "professional photography, commercial quality, ultra-realistic, 8k uhd, cinematic, award-winning"
+   ✓ DALL-E 3 keywords: "photorealistic, high resolution, detailed, professional, studio lighting, sharp focus"
+   ✓ Stable Diffusion keywords: "masterpiece, best quality, ultra detailed, professional photography, highly detailed, realistic"
+   ✓ Leonardo AI keywords: "photorealistic, ultra detailed, professional, cinematic, high quality"
 
-3. **CROSS-PLATFORM OPTIMIZATION**:
-   - Use keywords that work across MidJourney, DALL-E, Stable Diffusion
-   - Include proven modifiers: "professional photography", "cinematic lighting", "commercial quality"
-   - Balance detail with prompt length for optimal AI processing
+3. **PROFESSIONAL TECHNICAL SPECIFICATIONS** in every shot:
+   - Exact camera equipment: "Canon EOS R5, 85mm f/1.2L lens, f/2.8, ISO 200"
+   - Precise lighting setup: "Three-point lighting, key light 45° camera left, softbox modifier, 3200K"
+   - Detailed composition: "Rule of thirds, eyes at golden ratio intersection, shallow DOF f/2.8"
+   - Color specifications: Include hex codes and specific color palettes
 
-4. **COPY-PASTE READY**:
-   - Each shot description is a complete, standalone prompt
-   - No additional editing needed for AI image generation
-   - Optimized for direct use in any AI image generator
+4. **EXTREME SUBJECT DETAIL** requirements:
+   - Physical attributes: Age, hair texture/color, eye color, skin tone, facial features
+   - Clothing: Specific fabrics, colors, styles, accessories, jewelry details
+   - Expression: Micro-expressions, eye contact, posture, hand positioning
+   - Professional makeup and styling details
 
-5. **VISUAL CONSISTENCY**:
-   - Maintain character appearance across shots
-   - Consistent lighting and color schemes
-   - Smooth visual progression between scenes
-   - Professional production standards throughout
+5. **STUDIO-GRADE ENVIRONMENT DESCRIPTIONS**:
+   - Specific architectural details, furniture, lighting conditions
+   - Background elements with depth and texture descriptions  
+   - Atmospheric conditions and mood lighting
+   - Professional set design elements
 
-6. **ENGAGEMENT & NARRATIVE**:
-   - Hook within first 3 seconds with compelling visual and dialogue
-   - Visual variety every 2-3 seconds to maintain attention
-   - Strong emotional arc with visual storytelling
-   - Clear narrative progression suitable for {request.video_type} content
+📋 **REQUIRED OUTPUT FORMAT:**
 
-EXAMPLE OUTPUT FORMAT:
-**[0:00-0:03] AI IMAGE PROMPT:**
-"Professional woman in her 30s with confident warm smile, navy blue tailored blazer over white silk blouse, natural wavy auburn hair, subtle professional makeup, leaning slightly forward with hands clasped, medium shot from slightly below eye level, shallow depth of field, soft natural window light from left side with warm golden hour glow, modern glass office background with city skyline, professional commercial photography style, shot with Canon EOS R5 85mm lens, ultra-high quality 8K resolution, cinematic framing, warm color palette, confident and approachable mood, contemporary professional aesthetic"
+**[0:XX-0:XX] ULTRA-DETAILED AI IMAGE PROMPT:**
+"[250-400 word ultra-detailed prompt with all technical specifications, cross-platform keywords, and professional photography terminology]"
 
-**[DIALOGUE:]** (Confident, engaging tone) "What if I told you the secret to success isn't what you think?"
+**[DIALOGUE:]** (Tone description) "Spoken content"
 
-Create a script where every visual description is a perfect, ready-to-use AI image prompt that will generate stunning visuals when copied directly into any AI image generator."""
+🎬 **CRITICAL SUCCESS REQUIREMENTS:**
+- Each prompt must work immediately when copied into ANY AI image generator
+- Include specific technical camera settings and professional lighting setups
+- Use actual photography terminology and color science specifications
+- Layer quality-enhancing keywords for maximum output quality
+- Maintain perfect visual consistency across all shots
+- Every prompt must be publication-ready and professional-grade
+
+Create a script where every visual description is a MASTERPIECE-QUALITY AI image prompt that will generate STUNNING, PROFESSIONAL visuals when copied directly into any AI image generator."""
         )
 
         generated_script = await chat.send_message(script_message)
