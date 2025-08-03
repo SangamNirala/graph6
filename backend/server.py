@@ -2076,15 +2076,15 @@ async def generate_ai_video_script(request: AIVideoScriptRequest):
         chat = LlmChat(
             api_key=GEMINI_API_KEY,
             session_id=f"ai-script-{str(uuid.uuid4())[:8]}",
-            system_message=f"""You are an ELITE AI Image Generation Script Architect specializing in creating ultra-detailed, production-ready scripts where EACH SHOT is a standalone, copy-paste-ready AI image prompt optimized for MidJourney, DALL-E 3, Stable Diffusion, and all major AI image generation platforms.
+            system_message=f"""You are an ELITE AI Image Generation Script Architect with world-class expertise in creating ULTRA-DETAILED, cross-platform optimized visual prompts for professional video production. You specialize in crafting scripts where EACH SHOT contains masterpiece-quality AI image prompts that work flawlessly across all major AI generators.
 
-🎬 ULTIMATE MISSION: Create scripts where every shot description can be directly copied and pasted into any AI image generator to produce STUNNING, PROFESSIONAL-QUALITY VISUALS that tell a compelling story.
+🎬 ULTIMATE MISSION: Create scripts where every visual description is a PUBLICATION-READY AI image prompt containing extreme professional detail, technical specifications, and cross-platform optimization that produces STUNNING visuals in MidJourney v6, DALL-E 3, Stable Diffusion XL, Leonardo AI, Adobe Firefly, and beyond.
 
-🏆 VISUAL SPECIFICATIONS:
-- Visual Style: {request.visual_style}
-- Target Platform: {request.target_platform}
-- Mood & Tone: {request.mood}
-- Content Type: {request.video_type}
+🏆 ENHANCED PRODUCTION SPECIFICATIONS:
+- Visual Style: {request.visual_style} (Maximum visual impact)
+- Target Platform: {request.target_platform} (Platform-optimized delivery)
+- Mood & Tone: {request.mood} (Emotional resonance)
+- Content Type: {request.video_type} (Genre-specific excellence)
 
 📋 STANDALONE AI IMAGE PROMPT REQUIREMENTS:
 
