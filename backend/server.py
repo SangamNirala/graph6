@@ -1717,47 +1717,61 @@ async def generate_script(request: ScriptRequest):
 
 🏆 ENHANCED AI IMAGE PROMPT ARCHITECTURE FOR EACH SHOT:
 
-🎨 **STANDALONE AI IMAGE PROMPT FORMAT** (Every 2-3 seconds):
-Each shot must be formatted as a complete AI image prompt following this structure:
+🎨 **ULTRA-DETAILED PROMPT STRUCTURE** (Every 2-3 seconds):
+Each shot must contain ALL these elements for maximum AI generator compatibility:
 
-**SUBJECT + STYLE + COMPOSITION + LIGHTING + ENVIRONMENT + TECHNICAL SPECS + MOOD/ATMOSPHERE**
+**[ULTRA-SPECIFIC SUBJECT] + [PROFESSIONAL STYLE] + [ADVANCED COMPOSITION] + [STUDIO-GRADE LIGHTING] + [DETAILED ENVIRONMENT] + [CAMERA SPECIFICATIONS] + [COLOR SCIENCE] + [QUALITY MULTIPLIERS] + [PLATFORM KEYWORDS]**
 
-1. **SUBJECT DESCRIPTION** (Highly Detailed):
-   - Precise character details: "professional woman in her 30s, confident smile, navy blue tailored blazer, natural wavy auburn hair, subtle professional makeup, bright green eyes"
-   - Exact poses and expressions: "leaning slightly forward with hands clasped, direct eye contact with camera, warm welcoming expression"
-   - Clothing and accessories: "silk white blouse, minimal gold jewelry, black-framed glasses"
+1. **ULTRA-SPECIFIC SUBJECT DESCRIPTION** (Maximum Detail):
+   ✓ Physical attributes: "Professional woman, 32 years old, shoulder-length auburn hair with natural wave texture, bright emerald green eyes with natural catchlight, genuine confident smile showing white teeth, high cheekbones, natural healthy skin tone with professional makeup featuring rose-tinted lipstick and subtle contouring"
+   ✓ Clothing precision: "Tailored navy blue blazer with notched lapels, crisp white cotton button-up shirt, minimal gold jewelry including thin chain necklace and small stud earrings, professional manicure with clear polish"  
+   ✓ Expression & pose: "Direct confident eye contact with camera, slight forward lean conveying engagement, hands clasped naturally in lap, perfect posture, warm approachable expression with slight head tilt, relaxed shoulders"
+   ✓ Micro-expressions: "Crow's feet indicating genuine smile, eyebrows naturally positioned, relaxed forehead, authentic warmth in facial expression"
 
-2. **ARTISTIC STYLE SPECIFICATIONS**:
-   - Visual style keywords: "photorealistic, cinematic, professional photography, commercial quality"
-   - Art direction: "modern corporate aesthetic, clean minimalist design, contemporary professional"
-   - Quality modifiers: "ultra-high quality, 8K resolution, sharp focus, professional lighting"
+2. **PROFESSIONAL PHOTOGRAPHY STYLE KEYWORDS**:
+   ✓ Core style: "Professional commercial photography, editorial portrait style, high-end lifestyle photography, magazine-quality composition, award-winning photography"
+   ✓ Visual quality: "Ultra-photorealistic, hyper-detailed, masterpiece quality, museum-grade photography, flagship camera quality, professional retouching"
+   ✓ Platform optimization: "MidJourney quality, DALL-E 3 optimized, Stable Diffusion masterpiece, Leonardo AI professional grade, cross-platform compatible"
 
-3. **COMPOSITION & FRAMING**:
-   - Camera angle: "medium shot from slightly below eye level", "close-up portrait", "wide establishing shot"
-   - Rule of thirds: "subject positioned on right third line", "eyes at upper third intersection"
-   - Depth and layers: "shallow depth of field with blurred background", "subject sharp in foreground"
+3. **ADVANCED COMPOSITION & FRAMING**:
+   ✓ Camera positioning: "Medium close-up shot from slightly below eye level for authority, three-quarter angle view, subject positioned using rule of thirds with eyes at upper golden ratio intersection"
+   ✓ Framing precision: "Tight professional framing from mid-chest up, subject occupies 65% of frame, balanced negative space, perfect headroom following industry standards"
+   ✓ Depth control: "Shallow depth of field at f/2.8 equivalent, subject razor-sharp in focus, background artistically blurred with beautiful bokeh, perfect subject separation"
 
-4. **LIGHTING & COLOR PALETTE**:
-   - Specific lighting: "soft natural window light from left side, warm golden hour glow, gentle rim lighting"
-   - Color scheme: "warm color palette with orange and blue accents", "monochromatic blue tones", "high contrast black and white"
-   - Shadows and highlights: "soft shadows under chin, bright catch light in eyes"
+4. **STUDIO-GRADE LIGHTING SETUP**:
+   ✓ Key lighting: "Primary key light positioned 45 degrees camera left, large softbox modifier creating soft directional light, 3200K warm color temperature, professional studio quality"
+   ✓ Fill lighting: "Gentle fill light from camera right at 30% intensity, soft white bounce card reducing shadow contrast, maintaining skin tone detail in shadow areas"
+   ✓ Accent lighting: "Subtle hair light from above-behind creating rim separation, practical background lights adding depth, professional three-point lighting setup"
+   ✓ Light quality: "Soft professional studio lighting, minimal harsh shadows, even skin illumination, natural-looking light fall-off, color temperature balanced"
 
-5. **ENVIRONMENT & BACKGROUND**:
-   - Setting details: "modern glass office with city skyline, floor-to-ceiling windows, minimalist furniture"
-   - Background elements: "blurred urban cityscape, soft bokeh lights, clean architectural lines"
-   - Atmospheric details: "afternoon sunlight streaming through windows, warm interior ambiance"
+5. **ULTRA-DETAILED ENVIRONMENT DESCRIPTION**:
+   ✓ Setting specifics: "Contemporary professional office space with floor-to-ceiling windows, modern minimalist interior design, clean architectural lines, natural light filtering through sheer white curtains"
+   ✓ Background elements: "Soft-focus city skyline visible through windows, modern office furniture including sleek desk and ergonomic chair, green plants adding life, neutral color palette"
+   ✓ Atmospheric details: "Bright airy professional atmosphere, natural daylight mixing with warm interior lighting, clean organized workspace, inspiring corporate environment"
+   ✓ Texture details: "Smooth glass surfaces, natural wood grain accents, soft fabric textures on furniture, polished metal fixtures, creating visual interest without distraction"
 
-6. **TECHNICAL SPECIFICATIONS**:
-   - Camera specs: "shot with Canon EOS R5, 85mm lens, f/2.8 aperture"
-   - Image quality: "professional commercial photography, studio lighting setup, color graded"
-   - Format specs: "16:9 aspect ratio, cinematic framing, high dynamic range"
+6. **PROFESSIONAL CAMERA SPECIFICATIONS**:
+   ✓ Equipment: "Shot with Canon EOS R5 full-frame camera, Canon RF 85mm f/1.2L USM lens, professional studio setup with controlled lighting"
+   ✓ Technical settings: "f/2.8 aperture for optimal sharpness and shallow DOF, ISO 200 for clean image quality, 1/125s shutter speed, manual focus precision"
+   ✓ Image specs: "8K UHD resolution (7680×4320), 16:9 aspect ratio, RAW format capture, professional color space (Adobe RGB), HDR capability"
 
-7. **MOOD & ATMOSPHERE**:
-   - Emotional tone: "confident and approachable, professional warmth, trustworthy energy"
-   - Visual mood: "bright and optimistic, clean and modern, sophisticated elegance"
-   - Atmosphere: "productive business environment, inspiring workspace, contemporary professionalism"
+7. **COLOR SCIENCE & PALETTE**:
+   ✓ Color harmony: "Professional color palette featuring navy blue (#1E3A8A), crisp white (#FFFFFF), warm gold accents (#D4AF37), natural skin tones, balanced saturation"
+   ✓ Color grading: "Commercial-grade color correction, enhanced but natural skin tones, perfect white balance, professional contrast curve, magazine-quality color"
+   ✓ Mood colors: "Warm inviting atmosphere with golden hour quality light, professional corporate colors, trustworthy blue tones, optimistic brightness"
 
-🎯 **COMPLETE AI PROMPT EXAMPLE FOR SHOT:**
+8. **QUALITY MULTIPLIER KEYWORDS** (Essential for all platforms):
+   ✓ Universal quality: "Ultra-high resolution, masterpiece, best quality, award-winning, professional photography, commercial grade, editorial excellence"
+   ✓ Detail enhancers: "Hyper-detailed, razor-sharp focus, perfect clarity, ultra-realistic, photorealistic, museum-quality detail, pristine image quality"
+   ✓ Professional terms: "Professional retouching, color-graded perfection, studio-grade quality, flagship camera output, publication-ready"
+
+9. **CROSS-PLATFORM OPTIMIZATION KEYWORDS**:
+   ✓ MidJourney: "professional photography, commercial quality, ultra-realistic, 8k uhd, cinematic, award-winning composition"
+   ✓ DALL-E 3: "photorealistic, high resolution, detailed, professional, studio lighting, sharp focus, commercial photography"
+   ✓ Stable Diffusion: "masterpiece, best quality, ultra detailed, professional photography, highly detailed, realistic, award winning"
+   ✓ Leonardo AI: "photorealistic, ultra detailed, professional, cinematic, high quality, commercial grade"
+
+🎯 **COMPLETE ULTRA-DETAILED EXAMPLE:**
 **[0:00-0:03] AI IMAGE PROMPT:**
 "Professional woman in her 30s with confident warm smile, navy blue tailored blazer over white silk blouse, natural wavy auburn hair, subtle makeup with bright green eyes, leaning slightly forward with hands clasped, direct eye contact, medium shot from slightly below eye level, positioned on right third line, shallow depth of field, soft natural window light from left side with warm golden hour glow, gentle rim lighting, modern glass office background with city skyline, floor-to-ceiling windows, blurred urban cityscape with soft bokeh lights, professional commercial photography style, shot with Canon EOS R5 85mm lens f/2.8, ultra-high quality 8K resolution, cinematic framing, warm color palette with orange and blue accents, confident and approachable mood, bright optimistic atmosphere, contemporary professional aesthetic, commercial quality lighting, sharp focus on subject"
 
