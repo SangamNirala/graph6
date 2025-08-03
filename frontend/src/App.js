@@ -864,14 +864,6 @@ const ScriptGenerator = () => {
                 />
                 
                 <div className="mt-4 pt-4 border-t border-white/20 flex flex-wrap gap-3">
-                  <button
-                    onClick={() => navigator.clipboard.writeText(generatedScript)}
-                    className="px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors flex items-center space-x-2"
-                  >
-                    <span>📋</span>
-                    <span>Copy Script</span>
-                  </button>
-                  
                   {lastGeneratedAudio && selectedVoice && (
                     <button
                       onClick={handleDownloadAudio}
