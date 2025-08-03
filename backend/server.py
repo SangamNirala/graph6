@@ -2153,7 +2153,7 @@ Remember: Every shot description must be a COMPLETE, STANDALONE AI IMAGE PROMPT 
         }
 
         script_message = UserMessage(
-            text=f"""Create an ULTRA-DETAILED, professional AI video generation script based on this creative brief:
+            text=f"""Create a MASTERPIECE-QUALITY AI video script with ULTRA-DETAILED AI image prompts for professional production:
 
 **CREATIVE BRIEF:**
 "{request.prompt}"
@@ -2165,35 +2165,40 @@ Remember: Every shot description must be a COMPLETE, STANDALONE AI IMAGE PROMPT 
 - Target Platform: {request.target_platform}
 - Mood: {request.mood}
 
-**MANDATORY DELIVERABLES:**
+🎯 **MANDATORY ULTRA-DETAILED SHOT REQUIREMENTS:**
 
-1. **COMPLETE SHOT LIST** with extreme visual detail:
-   - Every shot numbered and timed precisely
-   - Camera specs, movements, and compositions
-   - Character descriptions and performances  
-   - Environmental and lighting details
-   - Color palettes and visual moods
+1. **MASTERPIECE-QUALITY AI IMAGE PROMPTS** (300-500 words each):
+   ✓ ULTRA-SPECIFIC SUBJECT DETAILS: Precise age, hair texture/color, eye color, facial features, skin tone, clothing fabrics, accessories, jewelry, makeup details, micro-expressions
+   ✓ PROFESSIONAL CAMERA SPECIFICATIONS: Exact camera model, lens specifications, aperture settings, ISO, shutter speed, focal length, sensor format
+   ✓ STUDIO-GRADE LIGHTING: Three-point lighting setup, softbox specifications, color temperature (Kelvin), lighting ratios, shadow control, rim lighting
+   ✓ ADVANCED COMPOSITION: Rule of thirds positioning, golden ratio intersections, framing ratios, depth of field calculations, subject placement percentages
+   ✓ TECHNICAL ENVIRONMENT: Architectural details, surface textures, material specifications, atmospheric conditions, background element positioning
+   ✓ COLOR SCIENCE: Specific hex codes, color temperature values, saturation levels, contrast ratios, color grading specifications
+   ✓ CROSS-PLATFORM KEYWORDS: MidJourney v6, DALL-E 3, Stable Diffusion XL, Leonardo AI optimization terms
 
-2. **AI-OPTIMIZED FORMATTING** for each shot:
-   - [CAMERA:], [SETTING:], [CHARACTER:], [LIGHTING:], [MOVEMENT:] tags
-   - Specific technical specifications
-   - Visual composition guidelines
-   - Quality assurance checkpoints
+2. **REQUIRED FORMAT** for each shot:
+**[0:XX-0:XX] ULTRA-DETAILED AI IMAGE PROMPT:**
+"[300-500 word ultra-detailed prompt with ALL technical specifications]"
 
-3. **PRODUCTION INTELLIGENCE:**
-   - Estimated shot count and complexity ratings
-   - Platform-specific optimization notes
-   - AI generation tips and best practices
-   - Alternative angles for shot variety
-   - Quality control checkpoints
+**[DIALOGUE:]** (Tone) "Spoken content"
 
-4. **NARRATIVE EXCELLENCE:**
-   - Compelling opening hook (first 3 seconds)
-   - Strong story arc with visual progression
-   - Engagement retention throughout
-   - Professional closing and call-to-action
+**[PRODUCTION NOTES:]** Additional technical details for video generation
 
-Generate a script so comprehensive that when input into AI video generation tools, it will produce professional, broadcast-quality video content that exceeds client expectations and industry standards."""
+3. **QUALITY STANDARDS:**
+   - Each prompt must work immediately when copied into ANY AI generator
+   - Include specific technical photography terminology
+   - Layer multiple quality-enhancing keywords
+   - Maintain perfect visual consistency across shots
+   - Publication-ready professional quality
+
+4. **CROSS-PLATFORM OPTIMIZATION:**
+   Include these keywords in every prompt:
+   ✓ Universal: "masterpiece, best quality, ultra detailed, professional photography, award-winning, commercial grade"
+   ✓ MidJourney: "professional photography, commercial quality, ultra-realistic, 8k uhd, cinematic"
+   ✓ DALL-E 3: "photorealistic, high resolution, detailed, professional, studio lighting, sharp focus"
+   ✓ Stable Diffusion: "highly detailed, realistic, professional photography, ultra detailed"
+
+Create a script where every shot is a MASTERPIECE-QUALITY AI image prompt that produces STUNNING professional visuals."""
         )
 
         generated_script = await chat.send_message(script_message)
