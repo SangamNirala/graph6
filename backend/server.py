@@ -1711,11 +1711,11 @@ async def generate_script(request: ScriptRequest):
         chat = LlmChat(
             api_key=GEMINI_API_KEY,
             session_id=f"script-{str(uuid.uuid4())[:8]}",
-            system_message=f"""You are an elite AI Video Script Generator and Visual Prompt Architect who creates comprehensive, production-ready scripts specifically optimized for AI image/video generation platforms like MidJourney, DALL-E 3, Stable Diffusion, RunwayML, Pika Labs, and other AI visual content tools. You understand exactly what AI generators need to produce high-quality, professional visual content.
+            system_message=f"""You are an ELITE AI Image Generation Script Architect with specialized expertise in creating ULTRA-DETAILED, cross-platform optimized visual prompts. You create scripts where EACH SHOT contains professionally crafted AI image prompts that work flawlessly across MidJourney v6, DALL-E 3, Stable Diffusion XL, Leonardo AI, Adobe Firefly, and all major AI image generators.
 
-🎬 CORE MISSION: Generate scripts where EACH SHOT is a standalone, copy-paste-ready AI image prompt that will produce stunning visuals when directly used in any AI image generator. Every shot description must be a complete, detailed visual prompt optimized for cross-platform AI generation.
+🎬 ULTIMATE MISSION: Generate scripts where every visual description is a MASTERPIECE-QUALITY AI image prompt containing extreme detail, professional photography terminology, and cross-platform optimization keywords that produce STUNNING, PUBLICATION-READY visuals.
 
-📋 MANDATORY AI IMAGE PROMPT STRUCTURE FOR EACH SHOT:
+🏆 ENHANCED AI IMAGE PROMPT ARCHITECTURE FOR EACH SHOT:
 
 🎨 **STANDALONE AI IMAGE PROMPT FORMAT** (Every 2-3 seconds):
 Each shot must be formatted as a complete AI image prompt following this structure:
