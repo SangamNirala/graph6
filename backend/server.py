@@ -77,6 +77,9 @@ intelligent_qa_system = IntelligentQASystem(db, GEMINI_API_KEY)
 # STEP 2: Initialize Few-Shot Learning & Pattern Recognition System
 few_shot_generator = FewShotScriptGenerator(db, GEMINI_API_KEY)
 
+# Initialize Enhanced Image Prompt Generator
+enhanced_image_prompt_generator = EnhancedImagePromptGenerator()
+
 # Create the main app without a prefix
 app = FastAPI()
 
