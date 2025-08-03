@@ -10,7 +10,7 @@ from datetime import datetime
 import sys
 
 # Get backend URL from frontend .env
-BACKEND_URL = "https://e521dba6-6d64-479b-a930-d179c6c2acc3.preview.emergentagent.com/api"
+BACKEND_URL = "https://de22dc7e-c52e-4c5b-9703-037e2acf8b06.preview.emergentagent.com/api"
 
 class EnhancedAvatarTester:
     def __init__(self):
